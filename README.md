@@ -1,222 +1,170 @@
-# plainwhite
+Zolan - Modern & Minimal Theme for Jekyll
+======
+Zolan is a minimal blog theme for Jekyll.
 
-Simplistic jekyll portfolio-style theme for writers.
+* * *
 
-**Demo**: [samarsault.com](https://samarsault.com)
+Table of Contents
+-----------------
+*   [Features](#features)
+*   [Demo](#demo)
+*   [Deployment](#deployment)
+*   [Posts](#posts)
+*   [Disqus Comments](#DisqusComments)
+*   [Instagram](#instagram)
+*   [Google Analytics](#GoogleAnalytics)
+*   [Update favicon](#UpdateFavicon)
+*   [Credits](#Credits)
+*   [Support](#Support)
 
-![plainwhite theme preview](/screenshot.png)
+* * *
 
-## Installation on Github Pages
+### Features
 
-Add this line to your site's `_config.yml`:
+* 100% responsive and clean theme
 
-```yaml
-remote_theme: samarsault/plainwhite-jekyll
-```
+* Optimized for mobile devices
 
-## Installation
+* Minimal design
 
-Add this line to your Jekyll site's `Gemfile`:
+* Valid HTML5 code
 
-```ruby
-gem "plainwhite"
-```
+* Post sharing
 
-And add this line to your Jekyll site's `_config.yml`:
+* Subscription form
 
-```yaml
-theme: plainwhite
-```
+* Supports Disqus Comments
 
-And then execute:
+* Instagram Feed
 
-    $ bundle
+* Ionicons Icons
 
-Or install it yourself as:
+* Google Fonts
 
-    $ gem install plainwhite
 
-## Usage
+* * *
 
-The "plainwhite" key in \_config.yml is used to customize the theme data.
+### Demo
 
-```yaml
-plainwhite:
-  name: Adam Denisov
-  tagline: Developer. Designer
-  date_format: "%b %-d, %Y"
+Check the theme in action [Demo](https://zolan-jekyll.netlify.app/)
 
-  social_links:
-    twitter: samarsault
-    github: samarsault
-    linkedIn: in/samarsault # format: locale/username
-```
+![Main page preview](https://github.com/artemsheludko/zolan/blob/master/images/zolan-main-page.png?raw=true)
 
-**Updating Placeholder Image**
+The post page would look like this:
 
-The placeholder portfolio image can be replaced by the desired image by placing it as `assets/portfolio.png` in your jekyll website, or by changing the following line in `_config.yaml`
+![Post page preview](https://github.com/artemsheludko/zolan/blob/master/images/zolan-post.png?raw=true)
 
-```yaml
-plainwhite:
-  portfolio_image:  "assets/portfolio.png" # the path from the base directory of the site to the image to display (no / at the start)
-```
+* * *
 
-To use a different image for dark mode, e.g. with different colors that work better in dark mode, add a `portfolio_image_dark` entry in addition to the `portfolio_image`.
+### Deployment
 
-```yaml
-plainwhite:
-  portfolio_image:      "assets/portfolio.png"
-  portfolio_image_dark: "assets/portfolio_dark.png"
-```
+To run the theme locally, navigate to the theme directory and run `bundle install` to install the dependencies, then run `jekyll serve` or `bundle exec jekyll serve` to start the Jekyll server.
 
-**Comments (Disqus)**
+I would recommend checking the [Deployment Methods](https://jekyllrb.com/docs/deployment-methods/) page on Jekyll website.
 
-Comments on posts can be enabled by specifying your disqus_shortname under plainwhite in `_config.yml`. For example,
+* * *
 
-```yaml
-plainwhite:
-  disqus_shortname: games
-```
+### Posts
 
-**Google Analytics**
+To create a new post, you can create a new markdown file inside the \_posts directory by following the [recommended file structure](https://jekyllrb.com/docs/posts/#creating-post-files).
 
-It can be enabled by specifying your analytics id under plainwhite in `_config.yml`
+      ---
+      layout: post
+      title: Time to give gifts to everyone
+      date: 2018-08-23 16:04:00 +0300
+      image: 03.jpg
+      tags: Life
+      ---
 
-```yaml
-plainwhite:
-  analytics_id: "< YOUR ID >"
-```
 
-**Sitemap**
+You can set the tags and the post image.
 
-It can be toggled by the following line to under plainwhite in `_config.yml`
+Add post images to **/images/** directory.
 
-```yaml
-plainwhite:
-  sitemap: true
-```
+For tags, try to not add space between two words, for example, `Ruby on Rails`, could be something like (`ruby-on-rails`, `Ruby_on_Rails`, or `Ruby-on-Rails`).
 
-**Excerpts**
+* * *
 
-Excerpts can be enabled by adding the following line to your `_config.yml`
+### Disqus Comments
 
-```yaml
-show_excerpts: true
-```
+Zolan Theme comes with Disqus comments enabled.
 
-**Layouts**
+Open `_data/settings.yml` file, and change the `mr-brown` value on line 26 with your [Disqus account shortname](https://help.disqus.com/customer/portal/articles/466208).
 
-- Home
-- Page
-- Post
+      Comment Section (Disqus)
+      disqus-identifier: mr-brown # Add your shortname for Disqus Comment. For example mr-brown
 
-**Navigation**
 
-Navigation can be enabled by adding the following line to your `_config.yml`
+That’s all you need to setup Disqus from the theme side. If you get any issue regarding that comments are unable to load. First, make sure you have [registered your website with Disqus (Step 1)](https://help.disqus.com/customer/portal/articles/466182-publisher-quick-start-guide).
 
-```yaml
-plainwhite:
-  navigation:
-    - title: My Work
-      url: "/my-work"
-    - title: Resume
-      url: "/resume"
-```
+And also check [Disqus troubleshooting guide](https://help.disqus.com/customer/portal/articles/472007-i-m-receiving-the-message-%22we-were-unable-to-load-disqus-%22) if you still have issues.
 
-**Mobile**
+* * *
 
-By default, Plainwhite places the sidebar (logo, name, tagline etc.) above the content on mobile (narrow screens).
-To condense it (moving some things to the bottom of the page and making the rest smaller) so it takes up less space, add the following to your `_config.yml`:
+### Instagram
 
-```yaml
-plainwhite:
-  condensed_mobile:
-    - home
-    - post
-    - page
-```
+The Instagram feed is working using [Instafeed.js](http://instafeedjs.com/) to show the photos.
 
-This chooses which layouts (types of page) should be condensed on mobile screens. E.g. if you want everything but the landing page to be condensed, remove `home` from the list. This option does not affect rendering on wider screens.
+First, you will need to get your account `userId` and `accessToken` from the following URLs:
 
-**Dark mode**
+*   userId: [http://codeofaninja.com/tools/find-instagram-user-id/](http://codeofaninja.com/tools/find-instagram-user-id/)
+*   accessToken: [instagram.pixelunion.net](http://instagram.pixelunion.net/)
 
-Dark mode can be enabled by setting the `dark_mode` flag in your `_config.yml`
+Second, open the `js/common.js` file and replace the `userId` and `accessToken` values.
 
-The website will check the OS preferred color scheme and set the theme accordingly, the preference will then be saved in a cookie
+    var instagramFeed = new Instafeed({
+          get: 'user',
+          limit: 6,
+          resolution: 'standard_resolution',
+          userId: '8987997106',
+          accessToken: '8987997106.924f677.8555ecbd52584f41b9b22ec1a16dafb9',
+          template: ''
+    });
 
-```yaml
-plainwhite:
-  dark_mode: true
-```
 
-![plainwhite dark theme previe](/dark.png)
+Third, open the `_data/settings.yml` file and replace the `instafeed: false` on `instafeed: true` value.
 
-**Multiline tagline**
+    # Instagram Feed
+    instafeed: false # To enable the instafeed, use the value true. To turn off use the value false.
 
-Tagline can be multiline in this way
 
-```yaml
-plainwhite:
-  tagline: |
-  First Line. 
+* * *
 
-  Second Line. 
+### Google Analytics
 
-  Third Line.
-```
+To integrate Google Analytics, open `_data/settings.yml`, and add your Google Analytics identifier.
 
-**Search-bar**
+    # Google Analytics
+    google-analytics: # Add your identifier. For example UA-99631805-1
 
-Search-bar can be enabled by adding the following line to `config.yml`
 
-```yaml
-plainwhite:
-  search: true
-```
+* * *
 
-Search is powered by [Simple-Jekyll-Search](https://github.com/christian-fei/Simple-Jekyll-Search) Jekyll plugin. A `search.json` containing post meta and contents will be generated in site root folder. Plugin JavaScript will then match for posts based on user input. More info and `search.json` customization documentation can be found in plugin repository.
+### Update favicon
 
-**Base URL**
+You can find the current favicon (favicon.ico) inside the theme root directory, just replace it with your new favicon.
 
-You can specify a custom base URL (eg. example.com/blog/) by adding the following line to `_config.yaml`. Note that there is no trailing slash on the URL.
+* * *
 
-```yaml
-baseurl: "/blog"
-```
+### Credits
 
-**Language**
+I have used the following scripts, fonts or other files as listed.
 
-You can set the `lang` attribute of the `<html>` tag on your pages by changing the following line in `_config.yml`:
+*   [Google Fonts](https://fonts.google.com/specimen/Nunito) (Roboto, Sans Serif).
+*   [Ionicons Icons](https://ionicons.com/)
+*   [FitVids.js](http://fitvidsjs.com/)
+*   [Medium’s Image Zoom](https://github.com/fat/zoom.js)
+*   [Instafeed.js](http://instafeedjs.com/)
+*   [jQuery.com](https://jquery.com/)
+*   Preview Images form [unsplash.com](https://unsplash.com/), [pexels.com](https://www.pexels.com/)
 
-```yaml
-plainwhite:
-  html_lang: "en"
-```
+* * *
+### License
 
-[See here for a full list of available language codes](https://www.w3schools.com/tags/ref_country_codes.asp)
+Mit License
 
-## Contributing
+* * *
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/samarsault/plainwhite-jekyll. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
-## Development
-
-To set up your environment to develop this theme, run `bundle install`.
-
-Your theme is setup just like a normal Jekyll site! To test your theme, run `bundle exec jekyll serve` and open your browser at `http://localhost:4000`. This starts a Jekyll server using your theme. Add pages, documents, data, etc. like normal to test your theme's contents. As you make modifications to your theme and to your content, your site will regenerate and you should see the changes in the browser after a refresh, just like normal.
-
-When your theme is released, only the files in `_layouts`, `_includes`, `_sass` and `assets` tracked with Git will be bundled.
-To add a custom directory to your theme-gem, please edit the regexp in `plainwhite.gemspec` accordingly.
-
-## Donation
-If this project help you reduce time to develop, you can give me a cup of coffee :) 
-
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/thelehhman)
-
-## License
-
-The theme is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
-## More themes
-
-- [Texture](https://github.com/samarsault/texture)
+### Support
+<p>If you like the themes that I create you can become my sponsor on <a href="https://www.patreon.com/artemsheludko" target="_blank">Patreon</a>.
+<p align="center"><b>Thank you for your support ❤️</b></p>
