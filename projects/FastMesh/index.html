@@ -105,8 +105,94 @@
     </div>
   </div>
 </section>
-      
-         
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser" autoplay muted loop playsinline height="100%">
+        <source src="./static/videos/Teaser.mp4"
+                type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        <b>FastMesh</b> generates high-quality artistic meshes from input shape conditions.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Recent mesh generation approaches typically tokenize triangle meshes into sequences of tokens and train autoregressive models to generate these tokens sequentially. 
+            Despite substantial progress, such token sequences inevitably reuse vertices multiple times to fully represent manifold meshes, as each vertex is shared by multiple faces. 
+            This redundancy leads to excessively long token sequences and inefficient generation processes. In this paper, we propose an efficient framework that generates artistic meshes by treating vertices and faces separately, significantly reducing redundancy. 
+            We employ an autoregressive model solely for vertex generation, decreasing the token count to approximately 23% of that required by the most compact existing tokenizer. 
+            Next, we leverage a bidirectional transformer to complete the mesh in a single step by capturing inter-vertex relationships and constructing the adjacency matrix that defines the mesh faces. 
+            To further improve the generation quality, we introduce a fidelity enhancer to refine vertex positioning into more natural arrangements and propose a post-processing framework to remove undesirable edge connections. 
+            Experimental results show that our method achieves more than 8× faster speed on mesh generation compared to state-of-the-art approaches, while producing higher mesh quality.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->     
+  <div class="container is-max-desktop">
+    <!-- Pipeline. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-widt">
+        <h2 class="title is-3">Method</h2>
+        <div class="content has-text-justified">
+          <p>
+            <b>FastMesh</b> generate mesh components—vertices and faces—sequentially to avoid duplication issues commonly encountered in mesh tokenization.
+            For vertex generation, we employ an autoregressive model, as it inherently accommodates varying vertex counts.
+          </p>
+          <video id="vertgen" autoplay muted loop playsinline height="100%">
+          <source src="./static/videos/vertgen.mp4"
+                  type="video/mp4">
+          </video>
+          <p>
+            For face generation, we leverage a bidirectional transformer to model the relationships between vertices, from which edge connections can be directly derived in one step.
+          </p>
+          <video id="facegen" autoplay muted loop playsinline height="1%">
+          <source src="./static/videos/facegen.mp4"
+                  type="video/mp4">
+          </video>
+          
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->     
+</section>
 
 </body>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link"
+         href="">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is built using the source code provided by the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> project. 
+            Special thanks to the Nerfies team for creating this excellent project page template.
+
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
 </html>
