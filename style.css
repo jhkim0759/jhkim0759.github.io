@@ -335,23 +335,192 @@ h1 {
     font-size: 0.8em;
     font-weight: 600;
 }
-
 @media (max-width: 768px) {
-    .paper-item {
+    body {
+        font-size: 14px;
+    }
+    
+    .container {
+        padding: 10px;
+    }
+    
+    .profile-header {
         flex-direction: column;
+        align-items: center;
         text-align: center;
+        padding: 20px 10px;
+    }
+    
+    .profile-info {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    
+    .profile-details {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .profile-img {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto 20px auto;
+    }
+    
+    .profile-details {
+        width: 100%;
+    }
+    
+    h1 {
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
+    
+    .subtitle {
+        font-size: 1.1em;
+    }
+    
+    .social-links {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+    
+    .social-link {
+        padding: 8px 12px;
+        font-size: 0.85em;
+        white-space: nowrap;
+    }
+    
+    .description {
+        font-size: 0.95rem;
+        padding: 0 10px;
+        text-align: center;
+    }
+    
+    .content {
+        padding: 20px 15px;
+        margin: 15px 0;
+        border-radius: 15px;
+    }
+    
+    .section {
+        margin-bottom: 30px;
+    }
+    
+    .section h2 {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+    }
+    
+    .about-text {
+        font-size: 1em;
+        padding: 0 5px;
+    }
+    
+    .detail-text {
+        font-size: 0.9em;
+        padding: 0 10px;
+    }
+    
+    .paper-item {
+        padding: 20px 15px;
+        flex-direction: column;
     }
     
     .paper-image {
         width: 100%;
-        max-width: 300px;
-        margin: 0 auto;
+        max-width: 100%;
+        margin-bottom: 15px;
     }
     
     .paper-year {
         position: static;
         display: inline-block;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
+    }
+    
+    .paper-title {
+        font-size: 1.2em;
+    }
+    
+    .paper-authors,
+    .paper-venue {
+        font-size: 0.95em;
+    }
+    
+    .paper-links {
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .paper-link {
+        font-size: 0.85em;
+        padding: 6px 12px;
+    }
+    
+    .skills-grid,
+    .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .project-card {
+        padding: 20px;
+    }
+    
+    .stats-container {
+        gap: 20px;
+    }
+    
+    .stat-item {
+        min-width: 100px;
+        padding: 15px;
+    }
+    
+    .stat-number {
+        font-size: 2em;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.6em;
+    }
+    
+    .subtitle {
+        font-size: 1em;
+    }
+    
+    .profile-img {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto;
+    }
+    
+    .social-link {
+        padding: 6px 10px;
+        font-size: 0.8em;
+        white-space: nowrap;
+    }
+    
+    .content {
+        padding: 15px 10px;
+    }
+    
+    .section h2 {
+        font-size: 1.3em;
+    }
+    
+    .paper-title {
+        font-size: 1.1em;
+    }
+    
+    .paper-image {
+        aspect-ratio: 4 / 3;
     }
 }
 
