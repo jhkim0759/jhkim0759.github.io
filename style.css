@@ -5,7 +5,7 @@
 }
 
 html {
-    zoom: 1.1;
+    zoom: 0.9;
 }
 
 body {
@@ -153,6 +153,10 @@ h1 {
     position: relative;
 }
 
+.about-text.news-item {
+    font-weight: normal;
+}
+
 .about-text::before {
     content: "\2713";
     position: absolute;
@@ -290,7 +294,7 @@ h1 {
 }
 
 .paper-list {
-    max-width: 900px;
+    max-width: 100%;
     margin: 0 auto;
 }
 
@@ -305,7 +309,7 @@ h1 {
     position: relative;
     display: flex;
     gap: 25px;
-    align-items: flex-start;
+    align-items: stretch;
 }
 
 .paper-item:hover {
@@ -396,8 +400,8 @@ h1 {
 
 .paper-image {
     flex-shrink: 0;
-    width: 240px;
-    aspect-ratio: 16 / 9;
+    width: 330px;
+    aspect-ratio: 4 / 3;
     border-radius: 12px;
     overflow: hidden;
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4facfe 100%);
@@ -427,6 +431,9 @@ h1 {
 .paper-content {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .paper-year {
@@ -454,7 +461,19 @@ h1 {
     color: #ffffff;
     font-size: 1rem;
     text-align: justify;
-    padding: 0 20px;
+    padding: 0 36px;
+}
+
+.tldr {
+    margin-top: 8px;
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    color: #555;
+    font-size: 0.85em;
+    line-height: 1.5;
+    border-left: 3px solid #667eea;
 }
 
 /* ===== Mobile: 768px ===== */

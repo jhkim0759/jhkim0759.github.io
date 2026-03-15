@@ -46,15 +46,16 @@
             <section class="section">
                 <h2>News</h2>
                 <ul class="news-list">
-                    <li class="about-text">One paper has accepted in 2026 3DV</li>
-                    <li class="about-text">One paper has accepted in Multimedia System</li>
-                    <li class="about-text">One paper has accepted in 2023 CVPR</li>
-                    <li class="about-text">One paper has accepted in J. Vis. Commun. Image Represent.</li>
                     <li class="about-text">
                         Reviewer Services:
                         <div class="detail-text"><b>Conference</b>: 3DV 2026, ACM SIGGRAPH Asia 2025</div>
                         <div class="detail-text"><b>Journal</b>: ACM Transactions on Multimedia Computing, Communications, and Applications (TOMM), The Journal of Supercomputing, IEEE Transactions on Information Forensics and Security (T-IFS)</div>
                     </li>
+
+                    <li class="about-text news-item">One paper has accepted in <b>2026 3DV</b></li>
+                    <li class="about-text news-item">One paper has accepted in <b>Multimedia System</b></li>
+                    <li class="about-text news-item">One paper has accepted in <b>2023 CVPR</b></li>
+                    <li class="about-text news-item">One paper has accepted in <b>J. Vis. Commun. Image Represent.</b></li>
                 </ul>
             </section>
         </div>
@@ -72,9 +73,12 @@
                         </div>
                         <div class="paper-content">
                             <div class="paper-year">2025</div>
-                            <div class="paper-title">FastMesh: Efficient Artistic Mesh Generation<br> via Component Decoupling</div>
+                            <div class="paper-title">FastMesh: Efficient Artistic Mesh Generation via Component Decoupling</div>
                             <div class="paper-authors"><strong>J. Kim</strong>, Y. Lan, A. Fortes, Y. Chen, X. Pan. </div>
                             <div class="paper-venue">International Conference on 3D Vision, 2026.</div>
+                            <div class="tldr">
+                            <strong>TL;DR:</strong> An efficient mesh generation framework that handles vertices and faces separately. Vertices are generated autoregressively, while a bidirectional transformer predicts mesh faces from vertex relationships. This reduces token redundancy to ~23% of prior methods and achieves over 8× faster mesh generation with improved quality.
+                        </div>
                             <div class="paper-links">
                                 <a href="https://jhkim0759.github.io/projects/FastMesh/" class="paper-link primary">Project Page</a>
                                 <a href="https://arxiv.org/abs/2508.19188" class="paper-link">arXiv</a>
@@ -92,6 +96,7 @@
                             <div class="paper-title">Sampling is Matter: Point-guided 3D Human Mesh Reconstruction </div>
                             <div class="paper-authors"><strong>J. Kim*</strong>, M. Gwon*, H. Park, H. Kwon, G. Um, W. Kim. </div>
                             <div class="paper-venue">IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2023</div>
+                            <div class="tldr"><strong>TL;DR:</strong> A method for 3D human mesh reconstruction from a single RGB image that samples image features at projected vertex locations to better link 2D features with 3D representation points. Combined with progressive attention masking to model local vertex interactions under occlusion, it improves reconstruction accuracy on benchmark datasets.</div>
                             <div class="paper-links">
                                 <a href="https://openaccess.thecvf.com/content/CVPR2023/papers/Kim_Sampling_Is_Matter_Point-Guided_3D_Human_Mesh_Reconstruction_CVPR_2023_paper.pdf" class="paper-link primary">Paper</a>
                                 <a href="https://arxiv.org/abs/2304.09502" class="paper-link">arXiv</a>
@@ -109,6 +114,7 @@
                             <div class="paper-title">Learning Scale-aware Relationships via Laplacian Decomposition-based Transformer for 3D Human Pose Estimation</div>
                             <div class="paper-authors"><strong>J. Kim</strong>, H. Kwon, S. Y. Lim, W. Kim. </div>
                             <div class="paper-venue">Multimedia Systems, vol. 30, Jan., 2024</div>
+                            <div class="tldr"><strong>TL;DR:</strong> A parameter-free 3D human pose estimation method that integrates a Laplacian pyramid with a transformer to capture multi-scale body-part relationships. It also applies body-part–wise self-attention to model local interactions, improving pose estimation performance on benchmark datasets.</div>
                             <div class="paper-links">
                                 <a href="https://link.springer.com/article/10.1007/s00530-023-01216-5" class="paper-link primary">Paper</a>
                                 <a href="https://github.com/DCVL-3D/Laphormer_release" class="paper-link">Code</a>
@@ -122,9 +128,10 @@
                         </div>
                         <div class="paper-content">
                             <div class="paper-year">2023</div>
-                            <div class="paper-title">Part-attentive Kinematic Chain-based Regressor<br> for 3D Human Modeling</div>
+                            <div class="paper-title">Part-attentive Kinematic Chain-based Regressor for 3D Human Modeling</div>
                             <div class="paper-authors"><strong>J. Kim</strong>, G. Um, J. Seo, W. Kim.  </div>
                             <div class="paper-venue">Journal of Visual Communication and Image Representation, vol. 95, Sep., 2023</div>
+                            <div class="tldr"><strong>TL;DR:</strong> A parametric human modeling method from a single image that applies body-part attention around body centers and estimates pose and shape through a kinematic chain–based decoder. This improves robustness to severe occlusions and produces more natural human shapes and poses.</div>
                             <div class="paper-links">
                                 <a href="https://www.sciencedirect.com/science/article/abs/pii/S1047320323001311" class="paper-link primary">Paper</a>
                                 <a href="https://github.com/DCVL-3D/PKCN_release" class="paper-link">Code</a>
