@@ -7,8 +7,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Navigation Tabs - fixed to top -->
+    <nav class="tab-nav">
+        <a href="#home" class="tab-link active">Home</a>
+        <a href="#news" class="tab-link">News</a>
+        <a href="#publication" class="tab-link">Publication</a>
+        <a href="#experience" class="tab-link">Experience</a>
+    </nav>
+
     <div class="container">
-        <header class="profile-header">
+        <header class="profile-header" id="home">
             <div class="profile-info">
                 <img class="profile-img" src="assets/profile.jpg" alt="논문 이미지">
             </div>
@@ -16,7 +24,7 @@
             <div class="profile-details">
                 <h1>Jeonghwan Kim</h1>
                 <p class="subtitle">AI Researcher / Ph.D Student @ NTU</p>
-                
+
                 <div class="social-links">
                 <a href="mailto:kimj0010@e.ntu.edu.sg" class="social-link">E-mail</a>
                 <a href="https://drive.google.com/file/d/1aGD5n-ihUfxBD4DsdFoOielenmgR6mF8/view?usp=drive_link" class="social-link">CV</a>
@@ -33,29 +41,31 @@
             </div>
         </header>
 
-
-        <div class="content">
+        <!-- News Section -->
+        <div class="content" id="news">
             <section class="section">
                 <h2>News</h2>
-                <li class="about-text">One paper has accepted in 2026 3DV</li>
-                <li class="about-text">One paper has accepted in Multimedia System</li>
-                <li class="about-text">One paper has accepted in 2023 CVPR</li>
-                <li class="about-text">One paper has accepted in Journal of Visual Communication and Image Representation</li>
-                <li class="about-text">
-                    Reviewer Services: 
-                    <div class="detail-text"><b>Conference</b>: 3DV 2026, ACM SIGGRAPH Asia 2025</div>
-                    <div class="detail-text"><b>Journal</b>: ACM Transactions on Multimedia Computing, Communications, and Applications (TOMM), The Journal of Supercomputing, IEEE Transactions on Information Forensics and Security (T-IFS)</div>
-                </li>
+                <ul class="news-list">
+                    <li class="about-text">One paper has accepted in 2026 3DV</li>
+                    <li class="about-text">One paper has accepted in Multimedia System</li>
+                    <li class="about-text">One paper has accepted in 2023 CVPR</li>
+                    <li class="about-text">One paper has accepted in J. Vis. Commun. Image Represent.</li>
+                    <li class="about-text">
+                        Reviewer Services:
+                        <div class="detail-text"><b>Conference</b>: 3DV 2026, ACM SIGGRAPH Asia 2025</div>
+                        <div class="detail-text"><b>Journal</b>: ACM Transactions on Multimedia Computing, Communications, and Applications (TOMM), The Journal of Supercomputing, IEEE Transactions on Information Forensics and Security (T-IFS)</div>
+                    </li>
+                </ul>
             </section>
-            
+        </div>
+
+        <!-- Publication Section -->
+        <div class="content" id="publication">
             <section class="section">
                 <h2>Publication</h2>
                 <div class="paper-list">
                     <div class="paper-item" OnClick="location.href='https://jhkim0759.github.io/projects/FastMesh/'" style="cursor:pointer;">
                         <div class="paper-image">
-                            <!-- 실제 논문 이미지로 교체하세요: <img src="assets/ " alt="논문 이미지"> -->
-                            <!-- <div class="paper-placeholder">🧠</div> -->
-
                             <video id="teaser" autoplay muted loop playsinline height="100%">
                             <source src="projects/FastMesh/static/videos/Teaser.mp4"
                                     type="video/mp4">
@@ -75,8 +85,6 @@
 
                     <div class="paper-item" OnClick="location.href='https://arxiv.org/abs/2304.09502'" style="cursor:pointer;">
                         <div class="paper-image">
-                            <!-- 실제 논문 이미지로 교체하세요: <img src="your-paper-image.jpg" alt="논문 이미지"> -->
-                            <!-- <div class="paper-placeholder">🧠</div> -->
                             <img src="assets/PointHMR.png" alt="PointHMR">
                         </div>
                         <div class="paper-content">
@@ -87,15 +95,14 @@
                             <div class="paper-links">
                                 <a href="https://openaccess.thecvf.com/content/CVPR2023/papers/Kim_Sampling_Is_Matter_Point-Guided_3D_Human_Mesh_Reconstruction_CVPR_2023_paper.pdf" class="paper-link primary">Paper</a>
                                 <a href="https://arxiv.org/abs/2304.09502" class="paper-link">arXiv</a>
-                                <a href="https://github.com/DCVL-3D/PointHMR_release" class="paper-link">Code</a>     
+                                <a href="https://github.com/DCVL-3D/PointHMR_release" class="paper-link">Code</a>
                             </div>
                         </div>
                     </div>
 
                     <div class="paper-item" OnClick="location.href='https://link.springer.com/article/10.1007/s00530-023-01216-5'" style="cursor:pointer;">
                         <div class="paper-image">
-                            <!-- 실제 논문 이미지로 교체하세요: <img src="your-paper-image.jpg" alt="논문 이미지"> -->
-                            <img src="assets/Lapformer.jpg" alt="PointHMR">
+                            <img src="assets/Lapformer.jpg" alt="Lapformer">
                         </div>
                         <div class="paper-content">
                             <div class="paper-year">2024</div>
@@ -111,12 +118,11 @@
 
                     <div class="paper-item" OnClick="location.href='https://www.sciencedirect.com/science/article/abs/pii/S1047320323001311'" style="cursor:pointer;">
                         <div class="paper-image">
-                            <!-- 실제 논문 이미지로 교체하세요: <img src="your-paper-image.jpg" alt="논문 이미지"> -->
-                            <img src="assets/pkcn.png" alt="PointHMR">
+                            <img src="assets/pkcn.png" alt="PKCN">
                         </div>
                         <div class="paper-content">
                             <div class="paper-year">2023</div>
-                            <div class="paper-title">Part-attentive Kinematic Chain-based Regressor for 3D Human Modeling</div>
+                            <div class="paper-title">Part-attentive Kinematic Chain-based Regressor<br> for 3D Human Modeling</div>
                             <div class="paper-authors"><strong>J. Kim</strong>, G. Um, J. Seo, W. Kim.  </div>
                             <div class="paper-venue">Journal of Visual Communication and Image Representation, vol. 95, Sep., 2023</div>
                             <div class="paper-links">
@@ -125,53 +131,55 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
+        </div>
 
-
-                
-            
-            
+        <!-- Research Experience Section -->
+        <div class="content" id="experience">
             <section class="section">
                 <h2>Research Experience</h2>
                 <div class="projects-grid">
                     <div class="project-card">
-                        <h3>Spocklabs, Research engineer</h3>
-                        <p>Research on Video Frame Interpolation and Video Super Resolution</p>
+                        <img class="project-logo" src="assets/spocklab.png" alt="Spocklabs">
+                        <div class="project-info">
+                            <h3>Spocklabs Co., Ltd.</h3>
+                            <span class="project-role">Research Engineer</span>
+                            <p>Research on Video Frame Interpolation and Video Super Resolution</p>
+                        </div>
                     </div>
                     <div class="project-card">
-                        <h3>Electronics and Telecommunications Research Institute (ETRI)</h3>
-                        <p>A Study on 3D Information Acquisition Technology for Producing Volumetric Images</p>
+                        <img class="project-logo" src="assets/etri.png" alt="ETRI">
+                        <div class="project-info">
+                            <h3>Electronics and Telecommunications Research Institute (ETRI)</h3>
+                            <p>A Study on 3D Information Acquisition Technology for Producing Volumetric Images</p>
+                        </div>
                     </div>
                     <div class="project-card">
-                        <h3>National Research Foundation of Korea (NRF)</h3>
-                        <p>High-Performance Method for Image Enhancement via Deep Neural Network on Mobile Devices</p>
+                        <img class="project-logo" src="assets/nrf.svg" alt="NRF">
+                        <div class="project-info">
+                            <h3>National Research Foundation of Korea (NRF)</h3>
+                            <p>High-Performance Method for Image Enhancement via Deep Neural Network on Mobile Devices</p>
+                        </div>
                     </div>
                     <div class="project-card">
-                        <h3>Korea Institute of Science and Technology Information (KISTI)</h3>
-                        <p>Development of Deep Learning-Based Image Restoration Technology</p>
+                        <img class="project-logo" src="assets/kisti.png" alt="KISTI">
+                        <div class="project-info">
+                            <h3>Korea Institute of Science and Technology Information (KISTI)</h3>
+                            <p>Development of Deep Learning-Based Image Restoration Technology</p>
+                        </div>
                     </div>
                     <div class="project-card">
-                        <h3>N Tech Service, Intern</h3>
-                        <p>Trained in JAVA Spring-based web development techniques and learned how to write collaborative and comprehensible codes</p>
+                        <img class="project-logo" src="assets/n-tech.webp" alt="N Tech Service">
+                        <div class="project-info">
+                            <h3>N Tech Service Co., Ltd.</h3>
+                            <span class="project-role">Intern</span>
+                            <p>Trained in JAVA Spring-based web development techniques and learned how to write collaborative and comprehensible codes</p>
+                        </div>
                     </div>
                 </div>
             </section>
-            <!-- <section class="section">
-                <h2>Research Experience</h2>
-                <div class="skills-grid">
-                    <div class="skill-card">
-                        <h3>SpockLab</h3>
-                        <p>TensorFlow, PyTorch<br>Scikit-learn, Keras</p>
-                    </div>
-                    <div class="skill-card">
-                        <h3>ETRI</h3>
-                        <p>BERT, GPT, Transformer<br>NLTK, spaCy, Hugging Face</p>
-                    </div>
-                    <div class="skill-card">
-                        <h3></h3>
-                        <p>OpenCV, YOLO<br>CNN, Image Classification</p>
-                    </div>
-                </div>
-            </section> -->
+        </div>
 
         <footer>
             <p>&copy; 2025 Jeonghwan Kim. All rights reserved.</p>
@@ -179,42 +187,82 @@
     </div>
 
     <script>
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
+        // Tab navigation: smooth scroll + active highlight
+        const tabLinks = document.querySelectorAll('.tab-link');
+        const sections = document.querySelectorAll('#home, #news, #publication, #experience');
+
+        tabLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth'
-                    });
+                    const navHeight = document.querySelector('.tab-nav').offsetHeight;
+                    const targetPos = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 10;
+                    window.scrollTo({ top: targetPos, behavior: 'smooth' });
                 }
             });
         });
 
-        document.querySelector('.contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('메시지가 전송되었습니다! (실제로는 백엔드 서버가 필요합니다)');
+        // Update active tab on scroll
+        window.addEventListener('scroll', function () {
+            const navHeight = document.querySelector('.tab-nav').offsetHeight;
+            let current = '';
+            sections.forEach(section => {
+                const top = section.offsetTop - navHeight - 60;
+                if (window.pageYOffset >= top) {
+                    current = section.getAttribute('id');
+                }
+            });
+            tabLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
         });
 
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver(function(entries) {
+        // Scroll reveal animations
+        const revealObserver = new IntersectionObserver(function(entries) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
+                    entry.target.classList.add('revealed');
+                    revealObserver.unobserve(entry.target);
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-        document.querySelectorAll('.skill-card, .project-card, .paper-item').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(20px)';
-            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(el);
+        // Content boxes (fade up)
+        document.querySelectorAll('.content').forEach((el, i) => {
+            el.classList.add('reveal', 'reveal-up');
+            el.style.transitionDelay = (i * 0.05) + 's';
+            revealObserver.observe(el);
+        });
+
+        // Paper items (slide in from left, staggered)
+        document.querySelectorAll('.paper-item').forEach((el, i) => {
+            el.classList.add('reveal', 'reveal-left');
+            el.style.transitionDelay = (i * 0.12) + 's';
+            revealObserver.observe(el);
+        });
+
+        // Project cards (scale up, staggered)
+        document.querySelectorAll('.project-card').forEach((el, i) => {
+            el.classList.add('reveal', 'reveal-scale');
+            el.style.transitionDelay = (i * 0.1) + 's';
+            revealObserver.observe(el);
+        });
+
+        // News list items (fade in, staggered)
+        document.querySelectorAll('.about-text').forEach((el, i) => {
+            el.classList.add('reveal', 'reveal-up');
+            el.style.transitionDelay = (i * 0.1) + 's';
+            revealObserver.observe(el);
+        });
+
+        // Section headings (fade in)
+        document.querySelectorAll('.section h2').forEach(el => {
+            el.classList.add('reveal', 'reveal-up');
+            revealObserver.observe(el);
         });
     </script>
 </body>
