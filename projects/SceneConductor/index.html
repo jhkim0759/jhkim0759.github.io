@@ -56,6 +56,9 @@
   <script defer src="static/js/bulma-carousel.min.js"></script>
   <script defer src="static/js/bulma-slider.min.js"></script>
   <script defer src="static/js/index.js"></script>
+  <!-- FontAwesome JS kit renders icons as inline SVG. Required: the project ships
+       no static/webfonts/, so the CSS-only path cannot render icons without this. -->
+  <script defer src="static/js/fontawesome.all.min.js"></script>
 
   <!-- Google <model-viewer> for interactive .glb 3D viewer (used in Stage 1 panel) -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
@@ -1074,7 +1077,7 @@
 
       // ── comparison (Qualitative Comparison 섹션) ──
       { id: 'sample2',              name: 'Sample 2' },
-      { id: 'sample3',              name: 'Sample 3' }
+      { id: 'sample3',              name: 'Sample 3' },
       { id: '0000963',              name: 'Scene 0963' },
       { id: '0002204',              name: 'Scene 2204' },
       { id: '0002267',              name: 'Scene 2267' },
