@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="SceneConductor: 3D Scene Generation from Single Image with Multi-Agent Orchestration">
+  <meta name="description" content="A multi-agent orchestration framework that decomposes single-image 3D scene generation into initialization, environment construction, and planner-guided refinement.">
+  <meta name="keywords" content="3D scene generation, single image, multi-agent, layout prediction, point map, indoor scene, computer vision">
+  <!-- TODO(author): Fill in author names -->
+  <meta name="author" content="Anonymous Authors">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="SceneConductor Project Page">
+  <meta property="og:title" content="SceneConductor: 3D Scene Generation from Single Image with Multi-Agent Orchestration">
+  <meta property="og:description" content="A multi-agent orchestration framework for single-image 3D scene generation, decomposed into three structured stages.">
+  <!-- TODO(url): Replace with real project URL once deployed -->
+  <meta property="og:url" content="#">
+  <meta property="og:image" content="static/images/figures/pipeline.png">
+
+  <!-- Academic citation meta -->
+  <meta name="citation_title" content="SceneConductor: 3D Scene Generation from Single Image with Multi-Agent Orchestration">
+  <!-- TODO(author): Add citation_author tags per author -->
+  <meta name="citation_publication_date" content="2026">
+
+  <meta name="theme-color" content="#2563eb">
+
+  <title>SceneConductor | 3D Scene Generation from Single Image</title>
+
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="static/images/apple-touch-icon.png">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <link rel="preload" href="static/css/bulma-carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/bulma-slider.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/fontawesome.all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+  <noscript>
+    <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  </noscript>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="static/js/bulma-carousel.min.js"></script>
+  <script defer src="static/js/bulma-slider.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+
+  <!-- Google <model-viewer> for interactive .glb 3D viewer (used in Stage 1 panel) -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+
+  <!-- Page-specific styles for stage toggle and comparison grid -->
+  <style>
+    .stage-toggle-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .stage-tabs {
+      display: inline-flex;
+      gap: 0.5rem;
+      background: #f1f5f9;
+      padding: 6px;
+      border-radius: 999px;
+    }
+    .stage-tab {
+      border: none;
+      background: transparent;
+      padding: 0.6rem 1.2rem;
+      font-weight: 600;
+      border-radius: 999px;
+      cursor: pointer;
+      color: #475569;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+    }
+    .stage-tab.is-active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(102,126,234,0.35);
+    }
+    .stage-panel {
+      width: 100%;
+      max-width: 1100px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 25px -10px rgba(0,0,0,0.1);
+    }
+    .stage-panel img {
+      width: 100%;
+      border-radius: 10px;
+      display: block;
+    }
+    .viewer-3d-wrap {
+      position: relative;
+      width: 100%;
+    }
+    model-viewer {
+      --poster-color: transparent;
+    }
+    .viewer-hint {
+      position: absolute;
+      bottom: 0.9rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.78);
+      color: white;
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      pointer-events: none;
+      letter-spacing: 0.01em;
+      backdrop-filter: blur(8px);
+    }
+    .viewer-hint i { color: #93c5fd; margin-right: 0.2rem; }
+    .mv-progress-bar {
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 2px;
+    }
+
+    /* ===== Sample-driven results viewer (TRELLIS style) ===== */
+    .sample-results {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .result-row {
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr);
+      gap: 1.5rem;
+      align-items: stretch;
+      margin-bottom: 2rem;
+    }
+    .result-input-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 1rem;
+      box-shadow: 0 6px 16px -8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+    .result-input-card .input-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+    .result-input-card .input-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.75rem;
+    }
+    .result-input-card img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: contain;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+      border: 1px solid #eef2f7;
+      border-radius: 10px;
+      display: block;
+      flex: 0 0 auto;
+    }
+    .result-input-card .input-arrow {
+      text-align: center;
+      color: #667eea;
+      font-size: 1.5rem;
+      margin: 0.75rem 0 0.25rem 0;
+    }
+    .result-input-card .input-arrow-text {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #64748b;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .result-output-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 1rem;
+      box-shadow: 0 6px 16px -8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+    .result-output-card .output-tabs {
+      display: flex;
+      gap: 0.4rem;
+      background: #f1f5f9;
+      padding: 5px;
+      border-radius: 999px;
+      margin-bottom: 0.85rem;
+      align-self: center;
+    }
+    .result-output-card .output-tabs button {
+      border: none;
+      background: transparent;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      border-radius: 999px;
+      cursor: pointer;
+      color: #475569;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    .result-output-card .output-tabs button.is-active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 10px rgba(102,126,234,0.35);
+    }
+    .viewer-stack {
+      position: relative;
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 420px;
+      background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .viewer-stack model-viewer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      background: transparent;
+    }
+    .viewer-stack model-viewer.is-active {
+      visibility: visible;
+      opacity: 1;
+    }
+    .result-output-card .output-caption {
+      margin-top: 0.75rem;
+      padding: 0.6rem 0.85rem;
+      background: #f8fafc;
+      border-left: 3px solid #667eea;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: #334155;
+      line-height: 1.5;
+    }
+    .result-output-card .output-caption strong { color: #1e293b; }
+
+    /* Sample picker (horizontal scroll) */
+    .sample-picker {
+      margin-top: 1rem;
+      padding: 1.25rem 1rem;
+      background: #f8fafc;
+      border-radius: 14px;
+      border: 1px solid #e2e8f0;
+    }
+    .sample-picker .picker-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 0.75rem;
+      padding: 0 0.25rem;
+    }
+    .sample-thumbs {
+      display: flex;
+      gap: 0.8rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding: 0.25rem 0.25rem 0.5rem 0.25rem;
+      scrollbar-width: thin;
+    }
+    .sample-thumbs::-webkit-scrollbar { height: 6px; }
+    .sample-thumbs::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .sample-thumb {
+      flex: 0 0 auto;
+      width: 160px;
+      background: white;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.2s ease;
+      scroll-snap-align: start;
+      box-shadow: 0 2px 6px -3px rgba(0,0,0,0.1);
+    }
+    .sample-thumb:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 16px -8px rgba(0,0,0,0.18);
+    }
+    .sample-thumb img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: contain;
+      background: #f1f5f9;
+      display: block;
+    }
+    .sample-thumb .thumb-name {
+      padding: 0.45rem 0.55rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #475569;
+      text-align: left;
+      background: white;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sample-thumb.is-active {
+      border-color: #667eea;
+      box-shadow: 0 10px 22px -8px rgba(102,126,234,0.5);
+    }
+    .sample-thumb.is-active .thumb-name {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .sample-thumb.is-placeholder {
+      border: 2px dashed #cbd5e1;
+      background: #fafbfc;
+      cursor: not-allowed;
+    }
+    .sample-thumb.is-placeholder img {
+      opacity: 0.25;
+    }
+    .sample-thumb.is-placeholder .thumb-name {
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    @media (max-width: 900px) {
+      .result-row { grid-template-columns: 1fr; }
+      .result-input-card .input-arrow { transform: rotate(90deg); }
+    }
+    .stage-caption { margin-top: 0.9rem; }
+    .stage-caption .stage-label {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #667eea;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+    }
+    .stage-caption h4 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: #1e293b;
+    }
+    .stage-caption p {
+      color: #475569;
+      line-height: 1.55;
+      margin: 0;
+    }
+    .hidden { display: none; }
+
+    /* Comparison grid */
+    .comp-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    .comp-cell {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 10px -4px rgba(0,0,0,0.08);
+    }
+    .comp-cell img { width: 100%; display: block; }
+    .comp-cell .comp-label {
+      padding: 0.55rem 0.75rem;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.88rem;
+      background: #f8fafc;
+      color: #334155;
+    }
+    .comp-cell.is-ours { border: 2px solid #667eea; }
+    .comp-cell.is-ours .comp-label {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    @media (max-width: 900px) {
+      .comp-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* View switch buttons for results gallery */
+    .view-switch {
+      display: inline-flex;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    .view-btn {
+      border: 1px solid #cbd5e1;
+      background: white;
+      padding: 0.4rem 0.9rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #475569;
+      font-size: 0.85rem;
+      transition: all 0.15s ease;
+    }
+    .view-btn.is-active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    /* Quantitative table */
+    .metric-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.5rem 0 1.5rem 0;
+      font-size: 0.95rem;
+    }
+    .metric-table th, .metric-table td {
+      padding: 0.65rem 0.9rem;
+      text-align: center;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .metric-table th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .metric-table tr.is-ours td {
+      background: #eef2ff;
+      font-weight: 700;
+      color: #4338ca;
+    }
+    .metric-table td:first-child, .metric-table th:first-child {
+      text-align: left;
+    }
+
+    /* TL;DR */
+    .tldr-box {
+      background: linear-gradient(135deg, #eef2ff 0%, #fdf2f8 100%);
+      border-left: 4px solid #667eea;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .tldr-box p {
+      text-align: justify;
+      text-align-last: left;
+      hyphens: auto;
+      -webkit-hyphens: auto;
+    }
+    .tldr-box .tldr-tag {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 0.6rem;
+      vertical-align: middle;
+    }
+
+    /* ===== Cinematic hero (scenesmith style) ===== */
+    .sc-hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 640px;
+      overflow: hidden;
+      background: #0f172a;
+    }
+    .sc-hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    .sc-hero-video video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .sc-hero-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(180deg,
+        rgba(15, 23, 42, 0.55) 0%,
+        rgba(15, 23, 42, 0.35) 40%,
+        rgba(15, 23, 42, 0.85) 100%);
+      /* Starts faint so the teaser video reads clearly; JS darkens it on scroll. */
+      opacity: 0.25;
+      transition: opacity 0.3s linear;
+    }
+    .sc-hero-content {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 2.5rem 2rem 3.5rem 2rem;
+      color: white;
+      text-align: center;
+      /* Hidden at the top so attention goes to the video; revealed on scroll via JS. */
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      will-change: opacity, transform;
+    }
+    .sc-hero-scroll-hint { transition: opacity 0.3s linear; }
+    .sc-hero-content h1.sc-hero-title {
+      font-size: clamp(2.6rem, 6vw, 4.8rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      margin-bottom: 0.25rem;
+      background: linear-gradient(120deg,
+        #fde68a 0%,
+        #fbcfe8 28%,
+        #c4b5fd 55%,
+        #93c5fd 80%,
+        #67e8f9 100%);
+      background-size: 220% 100%;
+      background-position: 0% 50%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.45));
+      transition: background-position 0.15s linear;
+      will-change: background-position;
+    }
+    .sc-hero-content .sc-hero-subtitle {
+      font-size: clamp(1rem, 1.8vw, 1.35rem);
+      color: rgba(255,255,255,0.92);
+      font-weight: 500;
+      margin-bottom: 1.4rem;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+    .sc-hero-content .sc-hero-authors {
+      font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+      color: rgba(255,255,255,0.88);
+      margin-bottom: 0.3rem;
+    }
+    .sc-hero-content .sc-hero-authors a {
+      color: white;
+      text-decoration: underline;
+      text-decoration-color: rgba(255,255,255,0.4);
+      text-underline-offset: 3px;
+    }
+    .sc-hero-content .sc-hero-affil {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 1.6rem;
+    }
+    .sc-hero-content .sc-hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+    }
+    .sc-hero-content .sc-hero-buttons .button {
+      background: rgba(255,255,255,0.95) !important;
+      color: #1e293b !important;
+      border: none !important;
+      backdrop-filter: blur(8px);
+    }
+    .sc-hero-content .sc-hero-buttons .button:hover {
+      background: white !important;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3) !important;
+    }
+    .sc-hero-scroll-hint {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      animation: scrollBounce 2.2s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .sc-hero-scroll-hint i { display: block; margin: 0.3rem auto 0; font-size: 1rem; }
+    @keyframes scrollBounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.75; }
+      50% { transform: translateX(-50%) translateY(8px); opacity: 1; }
+    }
+
+    /* ===== Scroll-reveal fade-in ===== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+      will-change: opacity, transform;
+    }
+    .fade-in.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Pipeline (a)(b)(c) captions */
+    .pipeline-captions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1.75rem;
+    }
+    .pipe-cap {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.1rem 1.2rem;
+      box-shadow: 0 4px 12px -6px rgba(0,0,0,0.08);
+      position: relative;
+    }
+    .pipe-cap-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.55rem;
+    }
+    .pipe-cap-tag {
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      margin-right: 0.3rem;
+    }
+    .pipe-cap-body {
+      font-size: 0.88rem;
+      color: #475569;
+      line-height: 1.55;
+    }
+    @media (max-width: 800px) {
+      .pipeline-captions { grid-template-columns: 1fr; }
+    }
+
+    /* Comparison sample-based layout */
+    .comparison-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) repeat(3, minmax(220px, 1.3fr));
+      gap: 1rem;
+      align-items: stretch;
+      margin-bottom: 1.5rem;
+    }
+    .comp-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 6px 16px -8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+    .comp-card .comp-card-head {
+      padding: 0.55rem 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-align: center;
+      background: #f8fafc;
+      color: #475569;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .comp-card.is-input .comp-card-head {
+      background: #fefce8;
+      color: #854d0e;
+    }
+    .comp-card.is-ours .comp-card-head {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .comp-card .comp-body {
+      flex: 1 1 auto;
+      min-height: 240px;
+      background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .comp-card .comp-body img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .comp-card .comp-body model-viewer {
+      width: 100%;
+      height: 100%;
+      min-height: 240px;
+      background: transparent;
+    }
+    .comp-card .comp-static-tag {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: rgba(15,23,42,0.7);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+    @media (max-width: 1000px) {
+      .comparison-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 600px) {
+      .comparison-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <main id="main-content">
+
+  <!-- ============ HERO (cinematic full-screen video + overlay) ============ -->
+  <section class="sc-hero">
+    <div class="sc-hero-video">
+      <video autoplay muted playsinline preload="auto"
+             poster="static/images/stages/stage3.jpg">
+        <source src="static/videos/teaser.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="sc-hero-overlay"></div>
+
+    <div class="sc-hero-content">
+      <h1 class="sc-hero-title">SceneConductor</h1>
+      <p class="sc-hero-subtitle">3D Scene Generation from Single Image with Multi-Agent Orchestration</p>
+
+      <!-- TODO(author): Replace with real author list and links -->
+      <div class="sc-hero-authors">
+        <a href="https://jhkim0759.github.io/" target="_blank">Jeonghwan Kim</a><sup>1</sup>,
+        <a href="https://nirvanalan.github.io/" target="_blank">Yushi Lan</a><sup>2</sup>,
+        <a href="https://cyw-3d.github.io/" target="_blank">Yongwei Chen</a><sup>1</sup>
+        <a href="https://hieu1999210.github.io/" target="_blank">Hieu Trung Nguyen</a><sup>3</sup>
+        <a href="https://pptrick.github.io/" target="_blank">Chuanyu Pan</a><sup>3</sup>
+        <a href="https://xingangpan.github.io/" target="_blank">Xingang Pan</a><sup>1</sup>
+      </div>
+      <!-- TODO(author): Replace with real affiliations -->
+      <div class="sc-hero-affil">
+        <sup>1</sup>Nanyang Technological University &nbsp;&middot;&nbsp;
+        <sup>2</sup>University of Oxford &nbsp;&middot;&nbsp;
+        <sup>3</sup>Meshy AI
+      </div>
+
+      <div class="sc-hero-buttons">
+        <!-- Paper / Supplementary 버튼은 현재 비공개 - 공개 단계에서 주석 해제 -->
+        <!--
+        <a href="static/pdfs/paper.pdf" target="_blank" class="button is-normal is-rounded">
+          <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span>
+        </a>
+        <a href="static/pdfs/supplementary.pdf" target="_blank" class="button is-normal is-rounded">
+          <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Supplementary</span>
+        </a>
+        -->
+        <!-- TODO(link): Replace with arXiv abs link -->
+        <a href="#" target="_blank" class="button is-normal is-rounded">
+          <span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span>
+        </a>
+        <!-- TODO(link): Replace with GitHub repo -->
+        <a href="https://github.com/jhkim0759/SceneConductor" target="_blank" class="button is-normal is-rounded">
+          <span class="icon"><i class="fab fa-github"></i></span><span>Code</span>
+        </a>
+        <!-- TODO(link): Replace with checkpoint download URL (HuggingFace / GitHub release / Google Drive) -->
+        <a href="https://huggingface.co/WopperSet/GALP" target="_blank" class="button is-normal is-rounded">
+          <span class="icon"><i class="fas fa-cube"></i></span><span>Checkpoint</span>
+        </a>
+        <a href="#BibTeX" class="button is-normal is-rounded">
+          <span class="icon"><i class="fas fa-quote-left"></i></span><span>BibTeX</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="sc-hero-scroll-hint">
+      Scroll
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  </section>
+
+  <!-- ============ PIPELINE VIDEO (above TL;DR) ============ -->
+  <section class="section fade-in" style="padding-bottom:0.5rem;">
+    <div class="container is-max-desktop">
+      <video autoplay muted loop playsinline preload="metadata"
+             style="width:100%;border-radius:14px;display:block;">
+        <source src="static/videos/pipeline.mp4" type="video/mp4">
+      </video>
+    </div>
+  </section>
+
+  <!-- ============ TL;DR (moved above Pipeline) ============ -->
+  <section class="section fade-in" style="padding-top:1.5rem;padding-bottom:0.5rem;">
+    <div class="container is-max-desktop">
+      <div class="tldr-box">
+        <p>
+          <span class="tldr-tag">TL;DR</span>
+          Our framework performs <strong>single-image 3D scene generation</strong> into three structured stages
+          &mdash; <em>scene initialization</em>, <em>environment construction</em>, and
+          <em>multi-agent refinement</em> &mdash; and introduce a
+          <strong>geometry-aware layout predictor</strong> trained with sparse point-map priors, achieving consistent gains in geometric accuracy and perceptual realism.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PIPELINE OVERVIEW ============ -->
+  <section class="section hero is-white fade-in">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered" style="margin-bottom:1.5rem;">Pipeline Overview</h2>
+      <img src="static/figures/pipeline.webp"
+           alt="SceneConductor pipeline overview"
+           style="width:100%;border-radius:14px;box-shadow:0 12px 30px -12px rgba(0,0,0,0.18);"
+           loading="lazy"/>
+
+      <!-- (a) (b) (c) stage captions under the figure -->
+      <div class="pipeline-captions">
+        <div class="pipe-cap">
+          <div class="pipe-cap-title"><span class="pipe-cap-tag">(a) Scene Initialization</span></div>
+          <div class="pipe-cap-body">
+            Per-object segmentation masks are lifted to object-level 3D representations, and a
+            <em>geometry-aware layout predictor</em> places them into a coarse initial scene &mdash;
+            <strong>no scene-level layout annotations required</strong>.
+          </div>
+        </div>
+        <div class="pipe-cap">
+          <div class="pipe-cap-title"><span class="pipe-cap-tag">(b) Environment Construction</span></div>
+          <div class="pipe-cap-body">
+            Point-map geometry is fused with the initialization to build the environmental scaffold:
+            <strong>floors, walls, materials, and illumination</strong> are reconstructed and grounded around
+            the placed objects.
+          </div>
+        </div>
+        <div class="pipe-cap">
+          <div class="pipe-cap-title"><span class="pipe-cap-tag">(c) Multi-Agent Refinement</span></div>
+          <div class="pipe-cap-body">
+            A <em>planner agent</em> detects structural and visual inconsistencies, applies simple corrections
+            itself, and dispatches <em>specialist agents</em> for complex localized edits that are reintegrated
+            into the global scene.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ SAMPLE-DRIVEN RESULTS (Three-Stage interactive viewer) ============ -->
+  <section class="section fade-in" id="results-section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Results</h2>
+      <p class="has-text-centered" style="color:#64748b;margin-bottom:2rem;max-width:780px;margin-left:auto;margin-right:auto;">
+        <strong>Pick a scene</strong> from the gallery below, then toggle through Stage&nbsp;1 &rarr; 2 &rarr; 3
+        to see how SceneConductor reconstructs a complete 3D environment from a single image.
+        All three stages are <strong>interactive</strong>
+      </p>
+
+      <div class="sample-results">
+        <!-- Top row: input image (left) + interactive 3D output (right) -->
+        <div class="result-row">
+          <div class="result-input-card">
+            <div class="input-label">Input Image</div>
+            <img id="sample-input-img" src="static/data/pipeline/TEASER/input.webp" alt="Selected input image">
+            <div class="input-label" style="margin-top:0.9rem;">Current View &middot; <span id="preview-stage-label">Stage 1</span></div>
+            <img id="sample-preview-img" src="static/data/pipeline/TEASER/stage1_render.webp" alt="Current stage preview"
+                 style="margin-top:0.4rem;">
+          </div>
+
+          <div class="result-output-card">
+            <div class="output-tabs" role="tablist">
+              <button class="is-active" data-stage="1" onclick="selectStage(1)">Stage 1 &middot; Scene Initialization</button>
+              <button data-stage="2" onclick="selectStage(2)">Stage 2 &middot; Environment Construction</button>
+              <button data-stage="3" onclick="selectStage(3)">Stage 3 &middot; Multi-Agent Refinement</button>
+            </div>
+
+            <div class="viewer-stack" id="viewer-stack">
+              <!-- All three stages mounted upfront so they download in parallel and
+                   subsequent stage toggles are instant (no re-fetch / no re-decode). -->
+              <model-viewer id="viewer-stage1" class="is-active"
+                src="static/data/pipeline/TEASER/stage1.glb"
+                alt="Stage 1 result"
+                camera-controls touch-action="pan-y"
+                auto-rotate auto-rotate-delay="3000" rotation-per-second="20deg"
+                interaction-prompt="auto" shadow-intensity="0.6" exposure="1.0"
+                environment-image="neutral">
+                <div slot="progress-bar" class="mv-progress-bar"></div>
+                <div slot="poster" style="background:#f1f5f9;display:flex;align-items:center;justify-content:center;height:100%;color:#64748b;">
+                  <span><i class="fas fa-cube" style="margin-right:0.5rem;"></i>Loading Stage 1...</span>
+                </div>
+              </model-viewer>
+              <model-viewer id="viewer-stage2"
+                src="static/data/pipeline/TEASER/stage2.glb"
+                alt="Stage 2 result"
+                camera-controls touch-action="pan-y"
+                auto-rotate auto-rotate-delay="3000" rotation-per-second="20deg"
+                interaction-prompt="auto" shadow-intensity="0.6" exposure="1.0"
+                environment-image="neutral">
+                <div slot="progress-bar" class="mv-progress-bar"></div>
+                <div slot="poster" style="background:#f1f5f9;display:flex;align-items:center;justify-content:center;height:100%;color:#64748b;">
+                  <span><i class="fas fa-cube" style="margin-right:0.5rem;"></i>Loading Stage 2...</span>
+                </div>
+              </model-viewer>
+              <model-viewer id="viewer-stage3"
+                src="static/data/pipeline/TEASER/stage3.glb"
+                alt="Stage 3 result"
+                camera-controls touch-action="pan-y"
+                auto-rotate auto-rotate-delay="3000" rotation-per-second="20deg"
+                interaction-prompt="auto" shadow-intensity="0.6" exposure="1.0"
+                environment-image="neutral">
+                <div slot="progress-bar" class="mv-progress-bar"></div>
+                <div slot="poster" style="background:#f1f5f9;display:flex;align-items:center;justify-content:center;height:100%;color:#64748b;">
+                  <span><i class="fas fa-cube" style="margin-right:0.5rem;"></i>Loading Stage 3...</span>
+                </div>
+              </model-viewer>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Bottom row: sample picker (horizontal scroll, add more samples by extending SAMPLES) -->
+        <div class="sample-picker">
+          <div class="picker-title"><i class="fas fa-images"></i>&nbsp;&nbsp;Example scenes</div>
+          <div class="sample-thumbs" id="sample-thumbs">
+            <!-- Populated by JS from the SAMPLES array. -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ METHOD - Layout Predictor ============ -->
+  <section class="section hero is-light fade-in" style="padding-bottom:1rem;">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Geometry-Aware Layout Predictor</h2>
+      <p class="has-text-centered" style="color:#64748b;max-width:760px;margin:0 auto 1.5rem auto;">
+        Supervised by <em>sparse geometric priors</em> derived from point maps, enabling training from
+        segmentation-level data without scene-level layout annotations.
+      </p>
+      <img src="static/figures/predictor.webp" alt="Geometry-aware layout predictor"
+           style="width:100%;border-radius:12px;box-shadow:0 8px 20px -10px rgba(0,0,0,0.15);" loading="lazy"/>
+    </div>
+  </section>
+
+
+
+  <!-- ============ QUALITATIVE COMPARISON (sample-based, baselines + interactive Ours) ============ -->
+  <section class="section hero is-light fade-in" id="comparison-section" style="padding-top:1rem;">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Qualitative Comparison</h2>
+      <p class="has-text-centered" style="color:#64748b;margin-bottom:1.5rem;max-width:780px;margin-left:auto;margin-right:auto;">
+        Same input photo reconstructed by prior methods vs. our Geometry-aware Layout Predictor.
+        <strong>Ours is interactive</strong>
+      </p>
+
+      <div class="sample-results">
+        <!-- Comparison row is rebuilt by JS from sample.comparison (data-driven).
+             Each cell becomes <model-viewer> when its file ends in .glb, otherwise <img>. -->
+        <div class="comparison-row" id="comparison-row"></div>
+
+        <!-- Independent sample picker for the comparison section -->
+        <div class="sample-picker">
+          <div class="picker-title"><i class="fas fa-images"></i>&nbsp;&nbsp;Example scenes</div>
+          <div class="sample-thumbs" id="comparison-thumbs">
+            <!-- Populated by JS, same SAMPLES list as the Results section. -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ BIBTEX ============ -->
+  <!-- <section class="section fade-in" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <div class="bibtex-header">
+        <h2 class="title">BibTeX</h2>
+        <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard">
+          <i class="fas fa-copy"></i>
+          <span class="copy-text">Copy</span>
+        </button>
+      </div>
+<pre id="bibtex-code"><code>@inproceedings{sceneconductor2026,
+  title  = {SceneConductor: 3D Scene Generation from Single Image with Multi-Agent Orchestration},
+  author = {Jeonghwan Kim, },
+  booktitle = {Arxiv},
+  year   = {2026}
+}</code></pre>
+    </div>
+  </section> -->
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content has-text-centered">
+            <p>
+              This page was built using the
+              <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>,
+              adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+              Licensed under
+              <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  </main>
+
+  <!-- ============ PAGE SCRIPTS ============ -->
+  <script>
+    // ===========================================================================
+    // SAMPLES — add more entries here to extend the example gallery.
+    // For each new sample:
+    //   1. Drop the input photo into  static/images/inputs/<id>.png
+    //   2. Export 3 .glb files into   static/models/<id>-stage{1,2,3}.glb
+    //   3. Append a new object below.
+    // ===========================================================================
+    var SAMPLES = [
+      // ── 직접 지정 (수동 목록) ───────────────────────────────────────────
+      // GitHub Pages 는 디렉터리 목록을 제공하지 않으므로(=자동 탐색이 동작하지
+      // 않으므로) 보여줄 scene 을 아래에 직접 나열합니다.
+      //
+      // 각 entry 는 input.png 존재 여부(HEAD 요청)로 섹션이 자동 결정됩니다:
+      //   - static/data/pipeline/<id>/input.png      있으면 → Results 섹션에 등장
+      //   - static/data/comparison/<id>/input.png    있으면 → Comparison 섹션에 등장
+      //
+      // pipeline 폴더와 comparison 폴더 이름이 다른 scene 은
+      // comparisonFolder / pipelineFolder 를 직접 지정해 짝지을 수 있습니다.
+      // 새 scene 추가: 폴더를 만들고 아래에 한 줄(entry) 추가하면 됩니다.
+
+      // ── pipeline (Results 섹션) ──
+      // TEASER 는 비교 폴더명이 다르므로(teaser_compare) 짝지어 두 섹션 모두에 표시.
+      { id: 'TEASER', name: 'Teaser' },
+      { id: 'bedroom_b1',                     name: 'Bedroom' },
+      { id: 'gameroom_at_04_04_2000_36_l',    name: 'Game Room 1' },
+      { id: 'gameroom_ho_06_03_3000_63_l',    name: 'Game Room 2' },
+      { id: 'hairsalon_1870565281_d339778e97', name: 'Hair Salon' },
+      { id: 'nursery_modern_fish',            name: 'Nursery' },
+
+      // ── comparison (Qualitative Comparison 섹션) ──
+      { id: 'sample2',              name: 'Sample 2' },
+      { id: 'sample3',              name: 'Sample 3' }
+      { id: '0000963',              name: 'Scene 0963' },
+      { id: '0002204',              name: 'Scene 2204' },
+      { id: '0002267',              name: 'Scene 2267' },
+      { id: 'children_room_kids2_46', name: "Children's Room" },
+    ];
+
+    var currentResultsSampleId = null;
+    var currentComparisonSampleId = null;
+    var currentStage = 1;
+
+    // ── auto-discover: scan static/data/<src>/ for ANY sub-folder ─────────────
+    // Detection order for each source ('pipeline' / 'comparison'):
+    //   1) static/data/<src>/manifest.json  →  ["sample1", "kitchen", "office"]
+    //   2) <src>/ directory listing (python http.server returns HTML with <a>'s)
+    //   3) probe sample1..sampleAUTO_PROBE_MAX/input.png  (final fallback)
+    //
+    // → 폴더 이름은 자유. sample1/ 같은 패턴이 아니어도 잡힙니다 (manifest 또는 listing 사용 시).
+    var AUTO_PROBE_MAX = 30;
+
+    function defaultSample(id, displayName) {
+      return {
+        id: id,
+        name: displayName || id,
+        hasPipeline: false,
+        hasComparison: false,
+        pipelineFolder: 'static/data/pipeline/' + id,
+        comparisonFolder: 'static/data/comparison/' + id,
+        comparison: [
+          { name: 'SAM3D',                 file: 'sam3d.glb' },
+          { name: 'SceneGen',              file: 'scenegen.glb' },
+          // Ours is authored facing opposite the baselines → rotate 180° in yaw (about up-axis) for all scenes.
+          { name: 'Ours (SceneConductor)', file: 'ours.glb', isOurs: true, orientation: '0deg 0deg 180deg' }
+        ]
+      };
+    }
+    function fillDefaults(s) {
+      var d = defaultSample(s.id, s.name);
+      for (var k in d) if (s[k] === undefined) s[k] = d[k];
+      return s;
+    }
+    function headOk(url) {
+      return fetch(url, { method: 'HEAD' }).then(function (r) { return r.ok; }).catch(function () { return false; });
+    }
+
+    // Try to list folder names under static/data/<source>/.
+    function listSampleIds(source) {
+      var base = 'static/data/' + source + '/';
+      // 1) manifest.json
+      return fetch(base + 'manifest.json').then(function (r) {
+        if (r.ok) return r.json();
+        throw 0;
+      }).catch(function () {
+        // 2) directory listing (python http.server)
+        return fetch(base).then(function (r) {
+          if (!r.ok) return [];
+          return r.text().then(function (html) {
+            var ids = [];
+            var re = /<a\s+href="([^"?#]+)"/gi;
+            var m;
+            while ((m = re.exec(html)) !== null) {
+              var href = decodeURIComponent(m[1].replace(/\/$/, ''));
+              if (!href || href === '..' || href === '.' || href.indexOf('/') >= 0) continue;
+              if (/\.[a-z0-9]+$/i.test(href)) continue;       // skip files
+              ids.push(href);
+            }
+            return ids;
+          });
+        }).catch(function () { return []; });
+      });
+    }
+
+    function discoverSamples() {
+      // Remember the order the author wrote SAMPLES in — those entries should
+      // always come first in the gallery, in the order written.
+      var explicitOrder = {};
+      SAMPLES.forEach(function (s, i) { explicitOrder[s.id] = i; });
+
+      var byId = {};
+      SAMPLES.forEach(function (s) { byId[s.id] = fillDefaults(s); });
+
+      return Promise.all([listSampleIds('pipeline'), listSampleIds('comparison')])
+        .then(function (lists) {
+          var ids = {};
+          lists[0].forEach(function (id) { ids[id] = true; });
+          lists[1].forEach(function (id) { ids[id] = true; });
+          var idArr = Object.keys(ids);
+
+          // Fallback probe if listing returned nothing (e.g. server blocks it).
+          if (idArr.length === 0) {
+            for (var n = 1; n <= AUTO_PROBE_MAX; n++) idArr.push('sample' + n);
+          }
+
+          idArr.forEach(function (id) {
+            if (!byId[id]) {
+              byId[id] = defaultSample(id);
+              SAMPLES.push(byId[id]);
+            }
+          });
+
+          var probes = [];
+          SAMPLES.forEach(function (s) {
+            probes.push(headOk(s.pipelineFolder + '/input.webp').then(function (ok) { s.hasPipeline = ok; }));
+            probes.push(headOk(s.comparisonFolder + '/input.webp').then(function (ok) { s.hasComparison = ok; }));
+          });
+          return Promise.all(probes);
+        })
+        .then(function () {
+          // Drop entries with no data on either side.
+          for (var i = SAMPLES.length - 1; i >= 0; i--) {
+            var s = SAMPLES[i];
+            if (!s.hasPipeline && !s.hasComparison) SAMPLES.splice(i, 1);
+          }
+          // Order: SAMPLES-array order first (as the author wrote them),
+          //        then any auto-discovered ids alphabetically/numerically.
+          SAMPLES.sort(function (a, b) {
+            var ea = explicitOrder[a.id];
+            var eb = explicitOrder[b.id];
+            if (ea !== undefined && eb !== undefined) return ea - eb;
+            if (ea !== undefined) return -1;
+            if (eb !== undefined) return 1;
+            return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+          });
+        });
+    }
+
+    function getResultsSample() {
+      return SAMPLES.find(function (s) { return s.id === currentResultsSampleId; })
+          || SAMPLES.find(function (s) { return s.hasPipeline; });
+    }
+    function getComparisonSample() {
+      return SAMPLES.find(function (s) { return s.id === currentComparisonSampleId; })
+          || SAMPLES.find(function (s) { return s.hasComparison; });
+    }
+
+    // --- path helpers --------------------------------------------------------
+    function samplePath(sample, kind, stage) {
+      switch (kind) {
+        case 'input':   return sample.pipelineFolder + '/input.webp';
+        case 'preview': return sample.pipelineFolder + '/stage' + stage + '_render.webp';
+        case 'glb':     return sample.pipelineFolder + '/stage' + stage + '.glb';
+      }
+    }
+    function thumbInput(sample, source) {
+      var folder = (source === 'comparison') ? sample.comparisonFolder : sample.pipelineFolder;
+      return folder + '/input.webp';
+    }
+
+    function renderThumbs(hostId, source, onclickFactory) {
+      var host = document.getElementById(hostId);
+      if (!host) return;
+      host.innerHTML = '';
+      var activeId = (source === 'comparison') ? currentComparisonSampleId : currentResultsSampleId;
+      SAMPLES.forEach(function (s) {
+        // Only show in this gallery if the matching folder actually has data.
+        if (source === 'pipeline'   && !s.hasPipeline)   return;
+        if (source === 'comparison' && !s.hasComparison) return;
+        var btn = document.createElement('button');
+        btn.className = 'sample-thumb' + (s.id === activeId ? ' is-active' : '');
+        btn.dataset.id = s.id;
+        btn.onclick = onclickFactory(s.id);
+        btn.innerHTML =
+          '<img src="' + thumbInput(s, source) + '" alt="' + s.name + '" loading="lazy" title="' + s.name + '">';
+        host.appendChild(btn);
+      });
+    }
+
+    function updateResultsView() {
+      var sample = getResultsSample();
+      if (!sample) return;
+      var inputImg = document.getElementById('sample-input-img');
+      var previewImg = document.getElementById('sample-preview-img');
+      var previewLabel = document.getElementById('preview-stage-label');
+
+      if (inputImg) inputImg.src = samplePath(sample, 'input');
+      if (previewImg) previewImg.src = samplePath(sample, 'preview', currentStage);
+      if (previewLabel) previewLabel.textContent = 'Stage ' + currentStage;
+
+      for (var s = 1; s <= 3; s++) {
+        var v = document.getElementById('viewer-stage' + s);
+        if (!v) continue;
+        var nextSrc = samplePath(sample, 'glb', s);
+        if (v.getAttribute('src') !== nextSrc) v.setAttribute('src', nextSrc);
+        v.classList.toggle('is-active', s === currentStage);
+      }
+
+      document.querySelectorAll('.result-output-card .output-tabs button').forEach(function (b) {
+        b.classList.toggle('is-active', parseInt(b.dataset.stage, 10) === currentStage);
+      });
+    }
+
+    function buildCompCard(spec, folder) {
+      var card = document.createElement('div');
+      card.className = 'comp-card' + (spec.isInput ? ' is-input' : '') + (spec.isOurs ? ' is-ours' : '');
+
+      var head = document.createElement('div');
+      head.className = 'comp-card-head';
+      head.textContent = spec.name;
+      card.appendChild(head);
+
+      var body = document.createElement('div');
+      body.className = 'comp-body';
+      var fullPath = folder + '/' + spec.file;
+      var isGlb = /\.glb$/i.test(spec.file);
+
+      if (isGlb) {
+        var mv = document.createElement('model-viewer');
+        mv.setAttribute('src', fullPath);
+        mv.setAttribute('alt', spec.name);
+        // Only fetch/decode the .glb when the card scrolls near the viewport,
+        // so off-screen comparison models don't block initial page load.
+        mv.setAttribute('loading', 'lazy');
+        mv.setAttribute('reveal', 'auto');
+        mv.setAttribute('camera-controls', '');
+        mv.setAttribute('touch-action', 'pan-y');
+        mv.setAttribute('auto-rotate', '');
+        mv.setAttribute('auto-rotate-delay', '3000');
+        mv.setAttribute('rotation-per-second', '20deg');
+        mv.setAttribute('interaction-prompt', 'auto');
+        mv.setAttribute('shadow-intensity', '0.6');
+        mv.setAttribute('exposure', '1.0');
+        mv.setAttribute('environment-image', 'neutral');
+        // Per-spec orientation override (roll pitch yaw), e.g. fix a baseline's up-axis/facing.
+        if (spec.orientation) mv.setAttribute('orientation', spec.orientation);
+        var pb = document.createElement('div');
+        pb.setAttribute('slot', 'progress-bar');
+        pb.className = 'mv-progress-bar';
+        mv.appendChild(pb);
+        body.appendChild(mv);
+      } else {
+        var img = document.createElement('img');
+        img.src = fullPath;
+        img.alt = spec.name;
+        img.loading = 'lazy';
+        body.appendChild(img);
+        if (!spec.isInput) {
+          var tag = document.createElement('div');
+          tag.className = 'comp-static-tag';
+          tag.textContent = 'Static render';
+          body.appendChild(tag);
+        }
+      }
+
+      card.appendChild(body);
+      return card;
+    }
+
+    function updateComparison() {
+      var sample = getComparisonSample();
+      if (!sample) return;
+      var row = document.getElementById('comparison-row');
+      if (!row) return;
+      row.innerHTML = '';
+      row.appendChild(buildCompCard({ name: 'Input', file: 'input.webp', isInput: true }, sample.comparisonFolder));
+      (sample.comparison || []).forEach(function (spec) {
+        row.appendChild(buildCompCard(spec, sample.comparisonFolder));
+      });
+    }
+
+    function selectResultsSample(id) {
+      currentResultsSampleId = id;
+      updateResultsView();
+      renderThumbs('sample-thumbs', 'pipeline', function (id) { return function () { selectResultsSample(id); }; });
+    }
+    function selectComparisonSample(id) {
+      currentComparisonSampleId = id;
+      updateComparison();
+      renderThumbs('comparison-thumbs', 'comparison', function (id) { return function () { selectComparisonSample(id); }; });
+    }
+    function selectStage(n) {
+      currentStage = n;
+      updateResultsView();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      discoverSamples().then(function () {
+        var firstPipe = SAMPLES.find(function (s) { return s.hasPipeline; });
+        var firstComp = SAMPLES.find(function (s) { return s.hasComparison; });
+        if (firstPipe) currentResultsSampleId = firstPipe.id;
+        if (firstComp) currentComparisonSampleId = firstComp.id;
+        renderThumbs('sample-thumbs', 'pipeline',
+          function (id) { return function () { selectResultsSample(id); }; });
+        renderThumbs('comparison-thumbs', 'comparison',
+          function (id) { return function () { selectComparisonSample(id); }; });
+        updateResultsView();
+        updateComparison();
+      });
+    });
+
+    // Comparison grid synchronized view switch
+    function showCompView(view) {
+      document.querySelectorAll('#comp-grid img').forEach(function (img) {
+        var baseline = img.dataset.baseline;
+        img.src = 'static/images/comparison/' + baseline + '/' + view + '.png';
+      });
+      document.querySelectorAll('#comp-view-switch .view-btn').forEach(function (btn) {
+        btn.classList.toggle('is-active', btn.dataset.view === view);
+      });
+    }
+
+    // Scroll to top
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Copy BibTeX
+    function copyBibTeX() {
+      var code = document.getElementById('bibtex-code').innerText;
+      navigator.clipboard.writeText(code).then(function () {
+        var btn = document.querySelector('.copy-bibtex-btn .copy-text');
+        if (!btn) return;
+        var orig = btn.innerText;
+        btn.innerText = 'Copied!';
+        setTimeout(function () { btn.innerText = orig; }, 1500);
+      });
+    }
+
+    // Scroll-driven hero: title gradient + reveal text on scroll (video-first intro)
+    (function () {
+      var title   = document.querySelector('.sc-hero-title');
+      var content = document.querySelector('.sc-hero-content');
+      var overlay = document.querySelector('.sc-hero-overlay');
+      var hint    = document.querySelector('.sc-hero-scroll-hint');
+      if (!title && !content) return;
+      var ticking = false;
+      function update() {
+        var hero = document.querySelector('.sc-hero');
+        var hH   = hero ? hero.offsetHeight : window.innerHeight;
+        var y    = window.scrollY;
+
+        // Title gradient sweep over the first 1.5x hero height.
+        if (title) {
+          var p = Math.min(100, Math.max(0, (y / (hH * 1.5)) * 100));
+          title.style.backgroundPosition = p + '% 50%';
+        }
+
+        // Reveal text/overlay across the first ~half of the hero so the
+        // video reads alone at the top, then the title appears as you scroll.
+        var r = Math.min(1, Math.max(0, y / (hH * 0.5)));
+        if (content) {
+          content.style.opacity = r;
+          content.style.transform = 'translateY(' + (28 * (1 - r)) + 'px)';
+        }
+        if (overlay) overlay.style.opacity = (0.25 + 0.6 * r).toFixed(3);
+        if (hint)    hint.style.opacity = (1 - r).toFixed(3);
+
+        ticking = false;
+      }
+      window.addEventListener('scroll', function () {
+        if (!ticking) { requestAnimationFrame(update); ticking = true; }
+      }, { passive: true });
+      window.addEventListener('resize', update, { passive: true });
+      update();
+    })();
+
+    // When the hero (teaser) video finishes playing, gently scroll down so the
+    // title/content reveals itself (reveal completes at hero-height * 0.5 — see above).
+    (function () {
+      var video = document.querySelector('.sc-hero-video video');
+      var hero  = document.querySelector('.sc-hero');
+      if (!video || !hero) return;
+      var done = false;
+      function revealScroll() {
+        if (done) return;
+        done = true;
+        // Don't hijack the page if the user already scrolled, or prefers reduced motion.
+        if (window.scrollY > 40) return;
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var target = Math.round(hero.offsetHeight * 0.5);
+        window.scrollTo({ top: target, behavior: 'smooth' });
+      }
+      video.addEventListener('ended', revealScroll);
+    })();
+
+    // Scroll-triggered fade-in for each .fade-in section
+    (function () {
+      var els = document.querySelectorAll('.fade-in');
+      if (!('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('is-visible'); });
+        return;
+      }
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      els.forEach(function (el) { obs.observe(el); });
+    })();
+  </script>
+</body>
+</html>

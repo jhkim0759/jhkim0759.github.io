@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeonghwan's Web page(Jeonghwan Kim)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Tabs - fixed to top -->
+    <nav class="tab-nav">
+        <a href="#home" class="tab-link active">Home</a>
+        <a href="#news" class="tab-link">News</a>
+        <a href="#publication" class="tab-link">Publication</a>
+        <a href="#experience" class="tab-link">Experience</a>
+    </nav>
+
+    <div class="container">
+        <header class="profile-header" id="home">
+            <div class="profile-info">
+                <img class="profile-img" src="assets/profile.jpg" alt="논문 이미지">
+            </div>
+
+            <div class="profile-details">
+                <h1>Jeonghwan Kim</h1>
+                <p class="subtitle">AI Researcher / Ph.D Student @ NTU</p>
+
+                <div class="social-links">
+                <a href="mailto:kimj0010@e.ntu.edu.sg" class="social-link">E-mail</a>
+                <a href="https://drive.google.com/file/d/1aGD5n-ihUfxBD4DsdFoOielenmgR6mF8/view?usp=drive_link" class="social-link">CV</a>
+                <a href="https://scholar.google.com/citations?user=TKvOvEwAAAAJ&hl=ko" class="social-link">Google Scholar</a>
+                <a href="https://github.com/jhkim0759" class="social-link">GitHub</a>
+                <a href="https://www.linkedin.com/in/jhkim0759/" class="social-link">LinkedIn</a>
+                </div>
+
+                <p class="description">
+                I'm a Ph.D. student at MMLab, Nanyang Technological University (NTU), advised by Prof. Xingang Pan.
+                I completed my M.S. in Artificial Intelligence at Konkuk University, where I was advised by Prof. Wonjun Kim.
+                Throughout my research journey, I have primarily focused on 3D Vision and related areas in computer vision.
+                </p>
+            </div>
+        </header>
+
+        <!-- News Section -->
+        <div class="content" id="news">
+            <section class="section">
+                <h2>News</h2>
+                <ul class="news-list">
+                    <li class="about-text">
+                        Reviewer Services:
+                        <div class="detail-text"><b>Conference</b>: ECCV 2026/3DV 2026/SIGGRAPH Asia 2025</div>
+                        <div class="detail-text"><b>Journal</b>: Signal, Image and Video Processing • ACM Transactions on Multimedia Computing, Communications, and Applications • The Journal of Supercomputing • IEEE Transactions on Information Forensics and Security</div>
+                    </li>
+
+                    <li class="about-text news-item">One paper has accepted in <b>2026 3DV</b></li>
+                    <li class="about-text news-item">One paper has accepted in <b>Multimedia System</b></li>
+                    <li class="about-text news-item">One paper has accepted in <b>2023 CVPR</b></li>
+                    <li class="about-text news-item">One paper has accepted in <b>J. Vis. Commun. Image Represent.</b></li>
+                </ul>
+            </section>
+        </div>
+
+        <!-- Publication Section -->
+        <div class="content" id="publication">
+            <section class="section">
+                <h2>Publication</h2>
+                <div class="paper-list">
+                    <div class="paper-item" OnClick="location.href='https://jhkim0759.github.io/projects/FastMesh/'" style="cursor:pointer;">
+                        <div class="paper-image">
+                            <video id="teaser" autoplay muted loop playsinline height="100%">
+                            <source src="projects/FastMesh/static/videos/Teaser.mp4"
+                                    type="video/mp4">
+                        </div>
+                        <div class="paper-content">
+                            <div class="paper-year">2025</div>
+                            <div class="paper-title">FastMesh: Efficient Artistic Mesh Generation via Component Decoupling</div>
+                            <div class="paper-authors"><strong>J. Kim</strong>, Y. Lan, A. Fortes, Y. Chen, X. Pan. </div>
+                            <div class="paper-venue">International Conference on 3D Vision, 2026.</div>
+                            <div class="tldr">
+                            <strong>TL;DR:</strong> An efficient mesh generation framework that handles vertices and faces separately. Vertices are generated autoregressively, while a bidirectional transformer predicts mesh faces from vertex relationships. This reduces token redundancy to ~23% of prior methods and achieves over 8× faster mesh generation with improved quality.
+                        </div>
+                            <div class="paper-links">
+                                <a href="https://jhkim0759.github.io/projects/FastMesh/" class="paper-link primary">Project Page</a>
+                                <a href="https://arxiv.org/abs/2508.19188" class="paper-link">arXiv</a>
+                                <a href="https://github.com/jhkim0759/FastMesh" class="paper-link">Code</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="paper-item" OnClick="location.href='https://arxiv.org/abs/2304.09502'" style="cursor:pointer;">
+                        <div class="paper-image">
+                            <img src="assets/PointHMR.png" alt="PointHMR">
+                        </div>
+                        <div class="paper-content">
+                            <div class="paper-year">2023</div>
+                            <div class="paper-title">Sampling is Matter: Point-guided 3D Human Mesh Reconstruction </div>
+                            <div class="paper-authors"><strong>J. Kim*</strong>, M. Gwon*, H. Park, H. Kwon, G. Um, W. Kim. </div>
+                            <div class="paper-venue">IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2023</div>
+                            <div class="tldr"><strong>TL;DR:</strong> A method for 3D human mesh reconstruction from a single RGB image that samples image features at projected vertex locations to better link 2D features with 3D representation points. Combined with progressive attention masking to model local vertex interactions under occlusion, it improves reconstruction accuracy on benchmark datasets.</div>
+                            <div class="paper-links">
+                                <a href="https://openaccess.thecvf.com/content/CVPR2023/papers/Kim_Sampling_Is_Matter_Point-Guided_3D_Human_Mesh_Reconstruction_CVPR_2023_paper.pdf" class="paper-link primary">Paper</a>
+                                <a href="https://arxiv.org/abs/2304.09502" class="paper-link">arXiv</a>
+                                <a href="https://github.com/DCVL-3D/PointHMR_release" class="paper-link">Code</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="paper-item" OnClick="location.href='https://link.springer.com/article/10.1007/s00530-023-01216-5'" style="cursor:pointer;">
+                        <div class="paper-image">
+                            <img src="assets/Lapformer.jpg" alt="Lapformer">
+                        </div>
+                        <div class="paper-content">
+                            <div class="paper-year">2024</div>
+                            <div class="paper-title">Learning Scale-aware Relationships via Laplacian Decomposition-based Transformer for 3D Human Pose Estimation</div>
+                            <div class="paper-authors"><strong>J. Kim</strong>, H. Kwon, S. Y. Lim, W. Kim. </div>
+                            <div class="paper-venue">Multimedia Systems, vol. 30, Jan., 2024</div>
+                            <div class="tldr"><strong>TL;DR:</strong> A parameter-free 3D human pose estimation method that integrates a Laplacian pyramid with a transformer to capture multi-scale body-part relationships. It also applies body-part–wise self-attention to model local interactions, improving pose estimation performance on benchmark datasets.</div>
+                            <div class="paper-links">
+                                <a href="https://link.springer.com/article/10.1007/s00530-023-01216-5" class="paper-link primary">Paper</a>
+                                <a href="https://github.com/DCVL-3D/Laphormer_release" class="paper-link">Code</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="paper-item" OnClick="location.href='https://www.sciencedirect.com/science/article/abs/pii/S1047320323001311'" style="cursor:pointer;">
+                        <div class="paper-image">
+                            <img src="assets/pkcn.png" alt="PKCN">
+                        </div>
+                        <div class="paper-content">
+                            <div class="paper-year">2023</div>
+                            <div class="paper-title">Part-attentive Kinematic Chain-based Regressor for 3D Human Modeling</div>
+                            <div class="paper-authors"><strong>J. Kim</strong>, G. Um, J. Seo, W. Kim.  </div>
+                            <div class="paper-venue">Journal of Visual Communication and Image Representation, vol. 95, Sep., 2023</div>
+                            <div class="tldr"><strong>TL;DR:</strong> A parametric human modeling method from a single image that applies body-part attention around body centers and estimates pose and shape through a kinematic chain–based decoder. This improves robustness to severe occlusions and produces more natural human shapes and poses.</div>
+                            <div class="paper-links">
+                                <a href="https://www.sciencedirect.com/science/article/abs/pii/S1047320323001311" class="paper-link primary">Paper</a>
+                                <a href="https://github.com/DCVL-3D/PKCN_release" class="paper-link">Code</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Research Experience Section -->
+        <div class="content" id="experience">
+            <section class="section">
+                <h2>Research Experience</h2>
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <img class="project-logo" src="assets/spocklab.png" alt="Spocklabs">
+                        <div class="project-info">
+                            <h3>Spocklabs Co., Ltd.</h3>
+                            <span class="project-role">Research Engineer</span>
+                            <p>Research on Video Frame Interpolation and Video Super Resolution</p>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <img class="project-logo" src="assets/etri.png" alt="ETRI">
+                        <div class="project-info">
+                            <h3>Electronics and Telecommunications Research Institute (ETRI)</h3>
+                            <p>A Study on 3D Information Acquisition Technology for Producing Volumetric Images</p>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <img class="project-logo" src="assets/nrf.svg" alt="NRF">
+                        <div class="project-info">
+                            <h3>National Research Foundation of Korea (NRF)</h3>
+                            <p>High-Performance Method for Image Enhancement via Deep Neural Network on Mobile Devices</p>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <img class="project-logo" src="assets/kisti.png" alt="KISTI">
+                        <div class="project-info">
+                            <h3>Korea Institute of Science and Technology Information (KISTI)</h3>
+                            <p>Development of Deep Learning-Based Image Restoration Technology</p>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <img class="project-logo" src="assets/n-tech.webp" alt="N Tech Service">
+                        <div class="project-info">
+                            <h3>N Tech Service Co., Ltd.</h3>
+                            <span class="project-role">Intern</span>
+                            <p>Trained in JAVA Spring-based web development techniques and learned how to write collaborative and comprehensible codes</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 Jeonghwan Kim. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Tab navigation: smooth scroll + active highlight
+        const tabLinks = document.querySelectorAll('.tab-link');
+        const sections = document.querySelectorAll('#home, #news, #publication, #experience');
+
+        tabLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const navHeight = document.querySelector('.tab-nav').offsetHeight;
+                    const targetPos = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 10;
+                    window.scrollTo({ top: targetPos, behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Update active tab on scroll
+        window.addEventListener('scroll', function () {
+            const navHeight = document.querySelector('.tab-nav').offsetHeight;
+            let current = '';
+            sections.forEach(section => {
+                const top = section.offsetTop - navHeight - 60;
+                if (window.pageYOffset >= top) {
+                    current = section.getAttribute('id');
+                }
+            });
+            tabLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Scroll reveal animations
+        const revealObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+        // Content boxes (fade up)
+        document.querySelectorAll('.content').forEach((el, i) => {
+            el.classList.add('reveal', 'reveal-up');
+            el.style.transitionDelay = (i * 0.05) + 's';
+            revealObserver.observe(el);
+        });
+
+        // Paper items (slide in from left, staggered)
+        document.querySelectorAll('.paper-item').forEach((el, i) => {
+            el.classList.add('reveal', 'reveal-left');
+            el.style.transitionDelay = (i * 0.12) + 's';
+            revealObserver.observe(el);
+        });
+
+        // Project cards (scale up, staggered)
+        document.querySelectorAll('.project-card').forEach((el, i) => {
+            el.classList.add('reveal', 'reveal-scale');
+            el.style.transitionDelay = (i * 0.1) + 's';
+            revealObserver.observe(el);
+        });
+
+        // News list items (fade in, staggered)
+        document.querySelectorAll('.about-text').forEach((el, i) => {
+            el.classList.add('reveal', 'reveal-up');
+            el.style.transitionDelay = (i * 0.1) + 's';
+            revealObserver.observe(el);
+        });
+
+        // Section headings (fade in)
+        document.querySelectorAll('.section h2').forEach(el => {
+            el.classList.add('reveal', 'reveal-up');
+            revealObserver.observe(el);
+        });
+    </script>
+</body>
+</html>
