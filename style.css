@@ -411,14 +411,16 @@ h1 {
     position: relative;
 }
 
-.paper-image img {
+.paper-image img,
+.paper-image video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
 }
 
-.paper-image:hover img {
+.paper-image:hover img,
+.paper-image:hover video {
     transform: scale(1.05);
 }
 
