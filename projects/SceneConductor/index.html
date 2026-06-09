@@ -1150,9 +1150,10 @@
       // GitHub Pages 는 디렉터리 목록을 제공하지 않으므로(=자동 탐색이 동작하지
       // 않으므로) 보여줄 scene 을 아래에 직접 나열합니다.
       //
-      // 각 entry 는 input.png 존재 여부(HEAD 요청)로 섹션이 자동 결정됩니다:
-      //   - static/data/pipeline/<id>/input.png      있으면 → Results 섹션에 등장
-      //   - static/data/comparison/<id>/input.png    있으면 → Comparison 섹션에 등장
+      // 각 entry 의 섹션은 manifest.json 목록으로 결정됩니다(HEAD 추측 요청 없음):
+      //   - static/data/pipeline/manifest.json 에 id 포함   → Results 섹션에 등장
+      //   - static/data/comparison/manifest.json 에 id 포함 → Comparison 섹션에 등장
+      //   (폴더 추가/삭제 후 tasks/generate_manifest.py 로 manifest 재생성)
       //
       // pipeline 폴더와 comparison 폴더 이름이 다른 scene 은
       // comparisonFolder / pipelineFolder 를 직접 지정해 짝지을 수 있습니다.
@@ -1180,14 +1181,13 @@
     var currentComparisonSampleId = null;
     var currentStage = 1;
 
-    // ── auto-discover: scan static/data/<src>/ for ANY sub-folder ─────────────
-    // Detection order for each source ('pipeline' / 'comparison'):
-    //   1) static/data/<src>/manifest.json  →  ["sample1", "kitchen", "office"]
-    //   2) <src>/ directory listing (python http.server returns HTML with <a>'s)
-    //   3) probe sample1..sampleAUTO_PROBE_MAX/input.png  (final fallback)
-    //
-    // → 폴더 이름은 자유. sample1/ 같은 패턴이 아니어도 잡힙니다 (manifest 또는 listing 사용 시).
-    var AUTO_PROBE_MAX = 30;
+    // ── scene discovery: list folder ids under static/data/<src>/ ─────────────
+    // For each source ('pipeline' / 'comparison'):
+    //   1) static/data/<src>/manifest.json  →  ["TEASER", "bedroom_b1", ...]   (GitHub Pages)
+    //   2) <src>/ directory listing (python http.server returns HTML with <a>'s) (local dev)
+    // Section membership (Results vs Comparison) is then taken from which manifest
+    // each id appears in — see discoverSamples(). Regenerate the manifests with
+    // tasks/generate_manifest.py after adding/removing scene folders.
 
     function defaultSample(id, displayName) {
       return {
@@ -1209,9 +1209,6 @@
       var d = defaultSample(s.id, s.name);
       for (var k in d) if (s[k] === undefined) s[k] = d[k];
       return s;
-    }
-    function headOk(url) {
-      return fetch(url, { method: 'HEAD' }).then(function (r) { return r.ok; }).catch(function () { return false; });
     }
 
     // Try to list folder names under static/data/<source>/.
@@ -1252,38 +1249,34 @@
 
       return Promise.all([listSampleIds('pipeline'), listSampleIds('comparison')])
         .then(function (lists) {
-          var ids = {};
-          lists[0].forEach(function (id) { ids[id] = true; });
-          lists[1].forEach(function (id) { ids[id] = true; });
-          var idArr = Object.keys(ids);
+          var pipeIds = lists[0] || [];
+          var compIds = lists[1] || [];
 
-          // Fallback probe if listing returned nothing (e.g. server blocks it).
-          if (idArr.length === 0) {
-            for (var n = 1; n <= AUTO_PROBE_MAX; n++) idArr.push('sample' + n);
-          }
-
-          idArr.forEach(function (id) {
+          // Any manifest id not already hand-written in SAMPLES gets a default entry.
+          pipeIds.concat(compIds).forEach(function (id) {
             if (!byId[id]) {
               byId[id] = defaultSample(id);
               SAMPLES.push(byId[id]);
             }
           });
 
-          var probes = [];
+          // Section membership comes straight from the manifests — no per-file
+          // HEAD probing, so a scene that lives in only one section no longer
+          // triggers a 404 for the other (and no sample1..N guessing at all).
+          var inPipe = {}; pipeIds.forEach(function (id) { inPipe[id] = true; });
+          var inComp = {}; compIds.forEach(function (id) { inComp[id] = true; });
           SAMPLES.forEach(function (s) {
-            probes.push(headOk(s.pipelineFolder + '/input.webp').then(function (ok) { s.hasPipeline = ok; }));
-            probes.push(headOk(s.comparisonFolder + '/input.webp').then(function (ok) { s.hasComparison = ok; }));
+            s.hasPipeline = !!inPipe[s.id];
+            s.hasComparison = !!inComp[s.id];
           });
-          return Promise.all(probes);
-        })
-        .then(function () {
+
           // Drop entries with no data on either side.
           for (var i = SAMPLES.length - 1; i >= 0; i--) {
             var s = SAMPLES[i];
             if (!s.hasPipeline && !s.hasComparison) SAMPLES.splice(i, 1);
           }
           // Order: SAMPLES-array order first (as the author wrote them),
-          //        then any auto-discovered ids alphabetically/numerically.
+          //        then any manifest-only ids alphabetically/numerically.
           SAMPLES.sort(function (a, b) {
             var ea = explicitOrder[a.id];
             var eb = explicitOrder[b.id];
@@ -1487,8 +1480,9 @@
     }
 
     // Hero: the teaser plays first with the text hidden; the title/authors fade
-    // up ~10s in (the full teaser is ~20s, so this avoids a long wait) while the
-    // video keeps looping. Scroll drives title gradient / overlay / hint only.
+    // up ~10s in (the full teaser is ~20s, so this avoids a long wait) OR as soon
+    // as the user scrolls down — whichever comes first — while the video keeps
+    // looping. Scroll also drives title gradient / overlay / hint.
     (function () {
       var title   = document.querySelector('.sc-hero-title');
       var content = document.querySelector('.sc-hero-content');
@@ -1529,6 +1523,9 @@
         var hero = document.querySelector('.sc-hero');
         var hH   = hero ? hero.offsetHeight : window.innerHeight;
         var y    = window.scrollY;
+
+        // Scrolling down reveals the text immediately (no need to wait out the timer).
+        if (y > 40) reveal();
 
         // Title gradient sweep over the first 1.5x hero height.
         if (title) {
