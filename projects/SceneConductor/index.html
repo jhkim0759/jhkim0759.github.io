@@ -791,6 +791,24 @@
       .sc-hero-content .sc-hero-subtitle { font-size: 1rem; line-height: 1.35; }
       .sc-hero-content .sc-hero-authors  { font-size: 0.9rem; line-height: 1.6; }
 
+      /* Compact hero buttons on phones so several fit per row. The template's
+         index.css forces .button to font-size:0.875rem !important and (<=480px)
+         width:100%, so we must override with !important + higher specificity. */
+      .sc-hero-content .sc-hero-buttons { gap: 0.4rem; }
+      .sc-hero-content .sc-hero-buttons .button {
+        font-size: 0.72rem !important;
+        padding: 0.4rem 0.75rem !important;
+        margin: 0 !important;
+        width: auto !important;
+        height: auto;
+        border-radius: 999px !important;
+      }
+      .sc-hero-content .sc-hero-buttons .button .icon {
+        height: 1em;
+        width: 1em;
+        margin-right: 0.1rem;
+      }
+
       /* Tab pills wrap instead of overflowing their card width. */
       .result-output-card .output-tabs,
       .stage-tabs { flex-wrap: wrap; justify-content: center; }
@@ -823,7 +841,9 @@
   <!-- ============ HERO (cinematic full-screen video + overlay) ============ -->
   <section class="sc-hero">
     <div class="sc-hero-video">
-      <video autoplay muted loop playsinline preload="auto"
+      <!-- 'loop' is handled in JS (not the attribute) so the first play-through
+           can be detected and the title/authors revealed only after it ends. -->
+      <video autoplay muted playsinline preload="auto"
              poster="static/images/stages/stage3.jpg">
         <source src="static/videos/teaser.mp4" type="video/mp4">
       </video>
@@ -1466,28 +1486,43 @@
       });
     }
 
-    // Hero: title/authors fade up on their own shortly after load (no scroll
-    // needed), over a continuously looping teaser video. Scroll only drives the
-    // title gradient sweep, the overlay darkening, and the scroll-hint fade.
+    // Hero: the teaser plays first with the text hidden; the title/authors fade
+    // up ~10s in (the full teaser is ~20s, so this avoids a long wait) while the
+    // video keeps looping. Scroll drives title gradient / overlay / hint only.
     (function () {
       var title   = document.querySelector('.sc-hero-title');
       var content = document.querySelector('.sc-hero-content');
       var overlay = document.querySelector('.sc-hero-overlay');
       var hint    = document.querySelector('.sc-hero-scroll-hint');
+      var video   = document.querySelector('.sc-hero-video video');
       if (!title && !content) return;
 
-      // Reveal the hero text on its own, a touch after load — it "appears" on
-      // screen naturally instead of being scrolled into view.
+      var revealed = false;
       function reveal() {
+        if (revealed) return;
+        revealed = true;
         if (content) content.classList.add('is-revealed');
       }
-      if (document.readyState === 'complete') {
-        setTimeout(reveal, 500);
-      } else {
-        window.addEventListener('load', function () { setTimeout(reveal, 500); });
-        // Fallback in case 'load' is delayed by heavy assets.
-        setTimeout(reveal, 1400);
+
+      // How long the teaser plays before the text appears.
+      var REVEAL_DELAY_MS = 10000;
+
+      if (video) {
+        // 'loop' attribute was removed so we re-loop manually on 'ended' — this
+        // keeps the teaser playing continuously after the first pass.
+        video.loop = false;
+        video.addEventListener('ended', function () {
+          try {
+            video.currentTime = 0;
+            var pr = video.play();
+            if (pr && pr.catch) pr.catch(function () {});
+          } catch (e) {}
+        });
       }
+      // Reveal after the delay (or near-immediately for reduced-motion users).
+      // A plain timer also covers the autoplay-blocked case (text never stuck).
+      var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      setTimeout(reveal, reduced ? 400 : REVEAL_DELAY_MS);
 
       var ticking = false;
       function update() {
