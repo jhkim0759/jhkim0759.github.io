@@ -501,8 +501,11 @@
     .sc-hero-video video {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      /* Teaser is ultra-wide 2:1 — 'contain' shows the whole frame (no edge
+         cropping) and letterboxes against the dark hero background. */
+      object-fit: contain;
       display: block;
+      background: #0f172a;
     }
     .sc-hero-overlay {
       position: absolute;
@@ -512,8 +515,8 @@
         rgba(15, 23, 42, 0.55) 0%,
         rgba(15, 23, 42, 0.35) 40%,
         rgba(15, 23, 42, 0.85) 100%);
-      /* Starts faint so the teaser video reads clearly; JS darkens it on scroll. */
-      opacity: 0.25;
+      /* Dark enough that the title/authors read clearly over the looping video. */
+      opacity: 0.5;
       transition: opacity 0.3s linear;
     }
     .sc-hero-content {
@@ -526,11 +529,15 @@
       padding: 2.5rem 2rem 3.5rem 2rem;
       color: white;
       text-align: center;
-      /* Hidden at the top so attention goes to the video; revealed on scroll via JS. */
+      /* Hidden initially, then fades up on its own shortly after load (no scroll needed). */
       opacity: 0;
       transform: translateY(28px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
+      transition: opacity 0.9s ease, transform 0.9s ease;
       will-change: opacity, transform;
+    }
+    .sc-hero-content.is-revealed {
+      opacity: 1;
+      transform: translateY(0);
     }
     .sc-hero-scroll-hint { transition: opacity 0.3s linear; }
     .sc-hero-content h1.sc-hero-title {
@@ -668,7 +675,7 @@
     /* Comparison sample-based layout */
     .comparison-row {
       display: grid;
-      grid-template-columns: minmax(220px, 1fr) repeat(3, minmax(220px, 1.3fr));
+      grid-template-columns: minmax(0, 1fr) repeat(3, minmax(0, 1.3fr));
       gap: 1rem;
       align-items: stretch;
       margin-bottom: 1.5rem;
@@ -681,6 +688,9 @@
       box-shadow: 0 6px 16px -8px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
+      /* Allow the card (a grid item) to shrink below its content's min-content,
+         otherwise the model-viewer forces the column wider than the screen. */
+      min-width: 0;
     }
     .comp-card .comp-card-head {
       padding: 0.55rem 0.85rem;
@@ -708,6 +718,8 @@
       align-items: center;
       justify-content: center;
       position: relative;
+      min-width: 0;
+      overflow: hidden;
     }
     .comp-card .comp-body img {
       width: 100%;
@@ -719,6 +731,9 @@
       height: 100%;
       min-height: 240px;
       background: transparent;
+      /* A flex item defaults to min-width:auto (=content size); zero it so the
+         viewer follows the card width instead of overflowing the viewport. */
+      min-width: 0;
     }
     .comp-card .comp-static-tag {
       position: absolute;
@@ -734,11 +749,65 @@
     }
     @media (max-width: 1000px) {
       .comparison-row {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       }
     }
     @media (max-width: 600px) {
-      .comparison-row { grid-template-columns: 1fr; }
+      .comparison-row { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    /* ===== Mobile: keep video + every component fully on-screen (no clipping) ===== */
+    /* Never let a stray wide child push the page sideways on a phone. */
+    html, body { overflow-x: hidden; }
+    img, video, model-viewer { max-width: 100%; }
+    /* Bulma's .hero is a flex container; its .container is a flex item that
+       defaults to min-width:auto and so refuses to shrink below its content's
+       min-content. That let the Comparison model-viewers blow the container
+       wider than the screen (right side clipped). Allow it to shrink. */
+    .hero .container { min-width: 0; }
+    /* Below Bulma's 1024px breakpoint the .container has no max-width, so the
+       flex blowout above could push it past the screen edge — cap it to the
+       viewport there (at >=1024px Bulma's own max-width already fits). */
+    @media (max-width: 1023px) {
+      .hero .container { max-width: 100%; }
+    }
+
+    @media (max-width: 768px) {
+      /* Hero: was bottom-anchored inside an overflow:hidden box, so on a tall
+         phone the title/authors were clipped at the top. Let the content flow
+         and center itself over the looping video instead. */
+      .sc-hero {
+        height: auto;
+        min-height: 100svh;
+      }
+      .sc-hero-content {
+        position: relative;
+        justify-content: center;
+        min-height: 100svh;
+        padding: 5.5rem 1.25rem 4.5rem;
+        box-sizing: border-box;
+      }
+      .sc-hero-content h1.sc-hero-title { font-size: clamp(2.1rem, 11vw, 3rem); }
+      .sc-hero-content .sc-hero-subtitle { font-size: 1rem; line-height: 1.35; }
+      .sc-hero-content .sc-hero-authors  { font-size: 0.9rem; line-height: 1.6; }
+
+      /* Tab pills wrap instead of overflowing their card width. */
+      .result-output-card .output-tabs,
+      .stage-tabs { flex-wrap: wrap; justify-content: center; }
+      .result-output-card .output-tabs button { font-size: 0.78rem; padding: 0.45rem 0.7rem; }
+      .stage-tab { font-size: 0.85rem; padding: 0.5rem 0.9rem; }
+
+      /* Shrink the 3D viewers so a whole model fits a phone screen. */
+      .viewer-stack { min-height: 300px; }
+      .comp-card .comp-body { min-height: 200px; }
+      .comp-card .comp-body model-viewer { min-height: 200px; }
+
+      /* Cards/sections breathe less so they don't get cropped by the viewport. */
+      .stage-panel { padding: 1rem; }
+      .result-input-card,
+      .result-output-card { padding: 0.85rem; }
+      .tldr-box { padding: 1rem 1.1rem; }
+      .sample-thumb { width: 130px; }
     }
   </style>
 </head>
@@ -754,7 +823,7 @@
   <!-- ============ HERO (cinematic full-screen video + overlay) ============ -->
   <section class="sc-hero">
     <div class="sc-hero-video">
-      <video autoplay muted playsinline preload="auto"
+      <video autoplay muted loop playsinline preload="auto"
              poster="static/images/stages/stage3.jpg">
         <source src="static/videos/teaser.mp4" type="video/mp4">
       </video>
@@ -791,8 +860,7 @@
           <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Supplementary</span>
         </a>
         -->
-        <!-- TODO(link): Replace with arXiv abs link -->
-        <a href="#" target="_blank" class="button is-normal is-rounded">
+        <a href="https://arxiv.org/abs/2606.08402" target="_blank" class="button is-normal is-rounded">
           <span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span>
         </a>
         <!-- TODO(link): Replace with GitHub repo -->
@@ -1009,7 +1077,7 @@
 
 
   <!-- ============ BIBTEX ============ -->
-  <!-- <section class="section fade-in" id="BibTeX">
+  <section class="section fade-in" id="BibTeX">
     <div class="container is-max-desktop content">
       <div class="bibtex-header">
         <h2 class="title">BibTeX</h2>
@@ -1018,14 +1086,14 @@
           <span class="copy-text">Copy</span>
         </button>
       </div>
-<pre id="bibtex-code"><code>@inproceedings{sceneconductor2026,
-  title  = {SceneConductor: 3D Scene Generation from Single Image with Multi-Agent Orchestration},
-  author = {Jeonghwan Kim, },
-  booktitle = {Arxiv},
-  year   = {2026}
+<pre id="bibtex-code"><code>@article{kim2026sceneconductor,
+  title   = {SceneConductor: 3D Scene Generation from Single Image with Multi-Agent Orchestration},
+  author  = {Kim, Jeonghwan and Lan, Yushi and Chen, Yongwei and Nguyen, Hieu Trung and Pan, Chuanyu and Pan, Xingang},
+  journal = {arXiv preprint arXiv:2606.08402},
+  year    = {2026}
 }</code></pre>
     </div>
-  </section> -->
+  </section>
 
   <!-- ============ FOOTER ============ -->
   <footer class="footer">
@@ -1398,13 +1466,29 @@
       });
     }
 
-    // Scroll-driven hero: title gradient + reveal text on scroll (video-first intro)
+    // Hero: title/authors fade up on their own shortly after load (no scroll
+    // needed), over a continuously looping teaser video. Scroll only drives the
+    // title gradient sweep, the overlay darkening, and the scroll-hint fade.
     (function () {
       var title   = document.querySelector('.sc-hero-title');
       var content = document.querySelector('.sc-hero-content');
       var overlay = document.querySelector('.sc-hero-overlay');
       var hint    = document.querySelector('.sc-hero-scroll-hint');
       if (!title && !content) return;
+
+      // Reveal the hero text on its own, a touch after load — it "appears" on
+      // screen naturally instead of being scrolled into view.
+      function reveal() {
+        if (content) content.classList.add('is-revealed');
+      }
+      if (document.readyState === 'complete') {
+        setTimeout(reveal, 500);
+      } else {
+        window.addEventListener('load', function () { setTimeout(reveal, 500); });
+        // Fallback in case 'load' is delayed by heavy assets.
+        setTimeout(reveal, 1400);
+      }
+
       var ticking = false;
       function update() {
         var hero = document.querySelector('.sc-hero');
@@ -1417,14 +1501,9 @@
           title.style.backgroundPosition = p + '% 50%';
         }
 
-        // Reveal text/overlay across the first ~half of the hero so the
-        // video reads alone at the top, then the title appears as you scroll.
+        // Overlay darkens a little more as you scroll; hint fades out.
         var r = Math.min(1, Math.max(0, y / (hH * 0.5)));
-        if (content) {
-          content.style.opacity = r;
-          content.style.transform = 'translateY(' + (28 * (1 - r)) + 'px)';
-        }
-        if (overlay) overlay.style.opacity = (0.25 + 0.6 * r).toFixed(3);
+        if (overlay) overlay.style.opacity = (0.5 + 0.35 * r).toFixed(3);
         if (hint)    hint.style.opacity = (1 - r).toFixed(3);
 
         ticking = false;
@@ -1434,25 +1513,6 @@
       }, { passive: true });
       window.addEventListener('resize', update, { passive: true });
       update();
-    })();
-
-    // When the hero (teaser) video finishes playing, gently scroll down so the
-    // title/content reveals itself (reveal completes at hero-height * 0.5 — see above).
-    (function () {
-      var video = document.querySelector('.sc-hero-video video');
-      var hero  = document.querySelector('.sc-hero');
-      if (!video || !hero) return;
-      var done = false;
-      function revealScroll() {
-        if (done) return;
-        done = true;
-        // Don't hijack the page if the user already scrolled, or prefers reduced motion.
-        if (window.scrollY > 40) return;
-        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        var target = Math.round(hero.offsetHeight * 0.5);
-        window.scrollTo({ top: target, behavior: 'smooth' });
-      }
-      video.addEventListener('ended', revealScroll);
     })();
 
     // Scroll-triggered fade-in for each .fade-in section
