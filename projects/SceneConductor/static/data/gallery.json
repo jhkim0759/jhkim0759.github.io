@@ -14,7 +14,7 @@
    "s3"
   ],
   "crop_top": 0.19,
-  "compare": false
+  "fig3": null
  },
  {
   "key": "mit-gameroom-at",
@@ -31,7 +31,7 @@
    "s3"
   ],
   "crop_top": 0,
-  "compare": true
+  "fig3": null
  },
  {
   "key": "mit-nursery-nursery",
@@ -48,16 +48,16 @@
    "s3"
   ],
   "crop_top": 0,
-  "compare": true
+  "fig3": null
  },
  {
-  "key": "coco-578500",
-  "name": "Parlor",
+  "key": "coco-462614",
+  "name": "Bathroom",
   "dataset": "COCO",
-  "src": "coco75/000000578500",
+  "src": "coco75/000000462614",
   "photo_size": [
    640,
-   290
+   484
   ],
   "stills": [
    "s1",
@@ -65,7 +65,24 @@
    "s3"
   ],
   "crop_top": 0,
-  "compare": true
+  "fig3": 0
+ },
+ {
+  "key": "mit-bathroom-room322",
+  "name": "Bathroom",
+  "dataset": "MIT-67",
+  "src": "mit67/bathroom_room322",
+  "photo_size": [
+   1024,
+   1024
+  ],
+  "stills": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "crop_top": 0,
+  "fig3": 1
  },
  {
   "key": "mit-children-room",
@@ -82,24 +99,7 @@
    "s3"
   ],
   "crop_top": 0,
-  "compare": true
- },
- {
-  "key": "coco-255165",
-  "name": "Home office",
-  "dataset": "COCO",
-  "src": "coco75/000000255165",
-  "photo_size": [
-   640,
-   480
-  ],
-  "stills": [
-   "s1",
-   "s2",
-   "s3"
-  ],
-  "crop_top": 0,
-  "compare": true
+  "fig3": 2
  },
  {
   "key": "coco-31248",
@@ -116,13 +116,13 @@
    "s3"
   ],
   "crop_top": 0,
-  "compare": true
+  "fig3": 3
  },
  {
-  "key": "coco-367386",
-  "name": "Living room",
+  "key": "coco-255165",
+  "name": "Home office",
   "dataset": "COCO",
-  "src": "coco75/000000367386",
+  "src": "coco75/000000255165",
   "photo_size": [
    640,
    480
@@ -133,7 +133,24 @@
    "s3"
   ],
   "crop_top": 0,
-  "compare": true
+  "fig3": 4
+ },
+ {
+  "key": "coco-186980",
+  "name": "Dining room",
+  "dataset": "COCO",
+  "src": "coco75/000000186980",
+  "photo_size": [
+   457,
+   640
+  ],
+  "stills": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "crop_top": 0,
+  "fig3": 5
  },
  {
   "key": "coco-492758",
@@ -150,40 +167,6 @@
    "s3"
   ],
   "crop_top": 0,
-  "compare": true
- },
- {
-  "key": "mit-kindergarden-pre",
-  "name": "Kindergarten",
-  "dataset": "MIT-67",
-  "src": "mit67/kindergarden_pre_school_015_137130855_std",
-  "photo_size": [
-   3200,
-   2400
-  ],
-  "stills": [
-   "s1",
-   "s2",
-   "s3"
-  ],
-  "crop_top": 0,
-  "compare": true
- },
- {
-  "key": "coco-395701",
-  "name": "Den",
-  "dataset": "COCO",
-  "src": "coco75/000000395701",
-  "photo_size": [
-   640,
-   480
-  ],
-  "stills": [
-   "s1",
-   "s2",
-   "s3"
-  ],
-  "crop_top": 0,
-  "compare": true
+  "fig3": 6
  }
 ]

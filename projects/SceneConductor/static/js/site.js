@@ -210,6 +210,9 @@
       const setX = (p) => { p = Math.min(Math.max(p, 0), 100); cmp.style.setProperty('--x', p.toFixed(2) + '%'); handle.setAttribute('aria-valuenow', Math.round(p)); };
       const load = () => {
         const pre = cur.crop_top ? 'scrub_' : '';
+        // cap the height for square / portrait photos: width follows the photo's aspect, centred
+        const [pw, ph] = cur.photo_size, ar = pw / (ph * (1 - (cur.crop_top || 0)));
+        cmp.style.maxWidth = `min(100%, calc(min(78vh, 760px) * ${ar.toFixed(4)}))`;
         A.src = SCENES + cur.key + '/' + pre + 'photo.webp';
         B.src = SCENES + cur.key + '/' + pre + 's' + stage + '.webp';
         $('#cmpBadge').textContent = 'Ours · Stage ' + stage;
@@ -252,11 +255,12 @@
     }
 
     /* gallery */
-    const PANELS = [['photo', 'Input'], ['sam3d', 'SAM3D'], ['viga', 'VIGA'], ['rest3d', 'REST3D'], ['car', 'Code-as-Room'], ['ours', 'Ours']];
+    // the paper's Fig. 3 cells (f3_*), rows in the figure's order
+    const PANELS = [['f3_photo', 'Input'], ['f3_sam3d', 'SAM3D'], ['f3_viga', 'VIGA'], ['f3_rest3d', 'REST3D'], ['f3_car', 'Code-as-Room'], ['f3_ours', 'Ours']];
     const grid = $('#galGrid');
     grid.innerHTML = PANELS.map(([k, n]) => `<figure class="gal-cell ${k}"><div class="im"><img alt="${esc(n)}" loading="lazy"></div><figcaption>${esc(n)}</figcaption></figure>`).join('');
     const cells = $$('.gal-cell', grid);
-    const GC = G.filter((g) => g.compare !== false);
+    const GC = G.filter((g) => g.fig3 != null).sort((a, b) => a.fig3 - b.fig3);
     const show = (g) => {
       cells.forEach((c, i) => { const k = PANELS[i][0]; $('img', c).src = SCENES + g.key + '/' + k + '.webp'; });
       $$('#galScenes .thumb').forEach((b) => b.setAttribute('aria-current', b.dataset.key === g.key));

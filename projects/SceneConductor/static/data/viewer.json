@@ -24,11 +24,11 @@
   "mb": 3.4
  },
  {
-  "key": "coco-578500",
-  "name": "Parlor",
-  "glb": "static/models/coco-578500.glb",
-  "photo": "static/img/scenes/coco-578500/thumb.webp",
-  "poster": "static/img/scenes/coco-578500/loop_poster.webp",
-  "mb": 3.6
+  "key": "coco-186980",
+  "name": "Dining room",
+  "glb": "static/models/coco-186980.glb",
+  "photo": "static/img/scenes/coco-186980/thumb.webp",
+  "poster": "static/img/scenes/coco-186980/loop_poster.webp",
+  "mb": 2.0
  }
 ]

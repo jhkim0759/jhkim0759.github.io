@@ -24,27 +24,27 @@
   "photo": "static/img/scenes/mit-nursery-nursery/thumb.webp"
  },
  {
-  "key": "coco-578500",
-  "name": "Parlor",
+  "key": "coco-186980",
+  "name": "Dining room",
   "dataset": "COCO",
-  "video": "static/videos/loops/coco-578500.mp4",
-  "poster": "static/img/scenes/coco-578500/loop_poster.webp",
-  "photo": "static/img/scenes/coco-578500/thumb.webp"
+  "video": "static/videos/loops/coco-186980.mp4",
+  "poster": "static/img/scenes/coco-186980/loop_poster.webp",
+  "photo": "static/img/scenes/coco-186980/thumb.webp"
  },
  {
-  "key": "coco-31248",
-  "name": "Fireplace lounge",
-  "dataset": "COCO",
-  "video": "static/videos/loops/coco-31248.mp4",
-  "poster": "static/img/scenes/coco-31248/loop_poster.webp",
-  "photo": "static/img/scenes/coco-31248/thumb.webp"
+  "key": "mit-children-room",
+  "name": "Children's room",
+  "dataset": "MIT-67",
+  "video": "static/videos/loops/mit-children-room.mp4",
+  "poster": "static/img/scenes/mit-children-room/loop_poster.webp",
+  "photo": "static/img/scenes/mit-children-room/thumb.webp"
  },
  {
-  "key": "coco-462614",
-  "name": "Bathroom",
+  "key": "coco-492758",
+  "name": "Sitting room",
   "dataset": "COCO",
-  "video": "static/videos/loops/coco-462614.mp4",
-  "poster": "static/img/scenes/coco-462614/loop_poster.webp",
-  "photo": "static/img/scenes/coco-462614/thumb.webp"
+  "video": "static/videos/loops/coco-492758.mp4",
+  "poster": "static/img/scenes/coco-492758/loop_poster.webp",
+  "photo": "static/img/scenes/coco-492758/thumb.webp"
  }
 ]
