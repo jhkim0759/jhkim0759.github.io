@@ -1,0 +1,50 @@
+[
+ {
+  "key": "coco-340175",
+  "name": "Living room",
+  "dataset": "COCO",
+  "video": "static/videos/loops/coco-340175.mp4",
+  "poster": "static/img/scenes/coco-340175/loop_poster.webp",
+  "photo": "static/img/scenes/coco-340175/thumb.webp"
+ },
+ {
+  "key": "mit-gameroom-at",
+  "name": "Game room",
+  "dataset": "MIT-67",
+  "video": "static/videos/loops/mit-gameroom-at.mp4",
+  "poster": "static/img/scenes/mit-gameroom-at/loop_poster.webp",
+  "photo": "static/img/scenes/mit-gameroom-at/thumb.webp"
+ },
+ {
+  "key": "mit-nursery-nursery",
+  "name": "Nursery",
+  "dataset": "MIT-67",
+  "video": "static/videos/loops/mit-nursery-nursery.mp4",
+  "poster": "static/img/scenes/mit-nursery-nursery/loop_poster.webp",
+  "photo": "static/img/scenes/mit-nursery-nursery/thumb.webp"
+ },
+ {
+  "key": "coco-578500",
+  "name": "Parlor",
+  "dataset": "COCO",
+  "video": "static/videos/loops/coco-578500.mp4",
+  "poster": "static/img/scenes/coco-578500/loop_poster.webp",
+  "photo": "static/img/scenes/coco-578500/thumb.webp"
+ },
+ {
+  "key": "coco-31248",
+  "name": "Fireplace lounge",
+  "dataset": "COCO",
+  "video": "static/videos/loops/coco-31248.mp4",
+  "poster": "static/img/scenes/coco-31248/loop_poster.webp",
+  "photo": "static/img/scenes/coco-31248/thumb.webp"
+ },
+ {
+  "key": "coco-462614",
+  "name": "Bathroom",
+  "dataset": "COCO",
+  "video": "static/videos/loops/coco-462614.mp4",
+  "poster": "static/img/scenes/coco-462614/loop_poster.webp",
+  "photo": "static/img/scenes/coco-462614/thumb.webp"
+ }
+]

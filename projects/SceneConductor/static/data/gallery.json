@@ -1,0 +1,189 @@
+[
+ {
+  "key": "coco-340175",
+  "name": "Living room",
+  "dataset": "COCO",
+  "src": "coco75/000000340175",
+  "photo_size": [
+   640,
+   394
+  ],
+  "stills": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "crop_top": 0.19,
+  "compare": false
+ },
+ {
+  "key": "mit-gameroom-at",
+  "name": "Game room",
+  "dataset": "MIT-67",
+  "src": "mit67/gameroom_at_99_4_7096_33_l",
+  "photo_size": [
+   2760,
+   1840
+  ],
+  "stills": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "crop_top": 0,
+  "compare": true
+ },
+ {
+  "key": "mit-nursery-nursery",
+  "name": "Nursery",
+  "dataset": "MIT-67",
+  "src": "mit67/nursery_nursery_front",
+  "photo_size": [
+   1600,
+   1200
+  ],
+  "stills": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "crop_top": 0,
+  "compare": true
+ },
+ {
+  "key": "coco-578500",
+  "name": "Parlor",
+  "dataset": "COCO",
+  "src": "coco75/000000578500",
+  "photo_size": [
+   640,
+   290
+  ],
+  "stills": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "crop_top": 0,
+  "compare": true
+ },
+ {
+  "key": "mit-children-room",
+  "name": "Children's room",
+  "dataset": "MIT-67",
+  "src": "mit67/children_room_img_3971_25",
+  "photo_size": [
+   2560,
+   1708
+  ],
+  "stills": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "crop_top": 0,
+  "compare": true
+ },
+ {
+  "key": "coco-255165",
+  "name": "Home office",
+  "dataset": "COCO",
+  "src": "coco75/000000255165",
+  "photo_size": [
+   640,
+   480
+  ],
+  "stills": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "crop_top": 0,
+  "compare": true
+ },
+ {
+  "key": "coco-31248",
+  "name": "Fireplace lounge",
+  "dataset": "COCO",
+  "src": "coco75/000000031248",
+  "photo_size": [
+   500,
+   333
+  ],
+  "stills": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "crop_top": 0,
+  "compare": true
+ },
+ {
+  "key": "coco-367386",
+  "name": "Living room",
+  "dataset": "COCO",
+  "src": "coco75/000000367386",
+  "photo_size": [
+   640,
+   480
+  ],
+  "stills": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "crop_top": 0,
+  "compare": true
+ },
+ {
+  "key": "coco-492758",
+  "name": "Sitting room",
+  "dataset": "COCO",
+  "src": "coco75/000000492758",
+  "photo_size": [
+   640,
+   427
+  ],
+  "stills": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "crop_top": 0,
+  "compare": true
+ },
+ {
+  "key": "mit-kindergarden-pre",
+  "name": "Kindergarten",
+  "dataset": "MIT-67",
+  "src": "mit67/kindergarden_pre_school_015_137130855_std",
+  "photo_size": [
+   3200,
+   2400
+  ],
+  "stills": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "crop_top": 0,
+  "compare": true
+ },
+ {
+  "key": "coco-395701",
+  "name": "Den",
+  "dataset": "COCO",
+  "src": "coco75/000000395701",
+  "photo_size": [
+   640,
+   480
+  ],
+  "stills": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "crop_top": 0,
+  "compare": true
+ }
+]

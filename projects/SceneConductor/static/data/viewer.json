@@ -1,0 +1,34 @@
+[
+ {
+  "key": "coco-340175",
+  "name": "Living room",
+  "glb": "static/models/coco-340175.glb",
+  "photo": "static/img/scenes/coco-340175/thumb.webp",
+  "poster": "static/img/scenes/coco-340175/loop_poster.webp",
+  "mb": 3.2
+ },
+ {
+  "key": "mit-gameroom-at",
+  "name": "Game room",
+  "glb": "static/models/mit-gameroom-at.glb",
+  "photo": "static/img/scenes/mit-gameroom-at/thumb.webp",
+  "poster": "static/img/scenes/mit-gameroom-at/loop_poster.webp",
+  "mb": 1.7
+ },
+ {
+  "key": "mit-nursery-nursery",
+  "name": "Nursery",
+  "glb": "static/models/mit-nursery-nursery.glb",
+  "photo": "static/img/scenes/mit-nursery-nursery/thumb.webp",
+  "poster": "static/img/scenes/mit-nursery-nursery/loop_poster.webp",
+  "mb": 3.4
+ },
+ {
+  "key": "coco-578500",
+  "name": "Parlor",
+  "glb": "static/models/coco-578500.glb",
+  "photo": "static/img/scenes/coco-578500/thumb.webp",
+  "poster": "static/img/scenes/coco-578500/loop_poster.webp",
+  "mb": 3.6
+ }
+]

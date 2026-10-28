@@ -3,31 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Primary Meta Tags -->
-  <meta name="title" content="SceneConductor: 3D Scene Generation from a Single Image with Multi-Agent Orchestration">
-  <meta name="description" content="A multi-agent orchestration framework that decomposes single-image 3D scene generation into initialization, environment construction, and planner-guided refinement.">
-  <meta name="keywords" content="SceneConductor, 3D scene generation, single image, multi-agent, layout prediction, point map, indoor scene, computer vision, Jeonghwan Kim, Xingang Pan, NTU">
-  <meta name="author" content="Jeonghwan Kim, Y. Lan, Y. Chen, H. T. Nguyen, C. Pan, Xingang Pan">
+  <title>Don't Ask Agents to Do Everything: Selective Agentic Reasoning for Single Image to 3D Scene Generation</title>
+  <meta name="description" content="A framework that generates a complete 3D scene from a single image. Geometry measures the scene and proposes candidate edits; agents mainly accept or reject them against the photograph. With a geometry-aware layout predictor supervised by point maps.">
+  <meta name="keywords" content="single image to 3D scene, 3D scene generation, agents, VLM, selective agentic reasoning, layout prediction, point map, indoor scene, Blender">
+  <meta name="author" content="Jeonghwan Kim, Yushi Lan, Yongwei Chen, Hieu Trung Nguyen, Chuanyu Pan, Yuanming Hu, Xingang Pan">
   <meta name="robots" content="index, follow">
-  <meta name="language" content="English">
   <link rel="canonical" href="https://jhkim0759.github.io/projects/SceneConductor/">
+  <meta name="theme-color" content="#f5f4f0">
 
-  <!-- Open Graph -->
   <meta property="og:type" content="article">
-  <meta property="og:site_name" content="SceneConductor Project Page">
-  <meta property="og:title" content="SceneConductor: 3D Scene Generation from a Single Image with Multi-Agent Orchestration">
-  <meta property="og:description" content="A multi-agent orchestration framework for single-image 3D scene generation, decomposed into three structured stages.">
+  <meta property="og:title" content="Don't Ask Agents to Do Everything">
+  <meta property="og:description" content="Selective agentic reasoning for single image to 3D scene generation: geometry proposes, agents accept or reject.">
   <meta property="og:url" content="https://jhkim0759.github.io/projects/SceneConductor/">
-  <meta property="og:image" content="https://jhkim0759.github.io/projects/SceneConductor/static/images/stages/stage3.jpg">
-
-  <!-- Twitter Card -->
+  <meta property="og:image" content="https://jhkim0759.github.io/projects/SceneConductor/static/img/og.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="SceneConductor: 3D Scene Generation from a Single Image with Multi-Agent Orchestration">
-  <meta name="twitter:description" content="A multi-agent orchestration framework for single-image 3D scene generation, decomposed into three structured stages.">
-  <meta name="twitter:image" content="https://jhkim0759.github.io/projects/SceneConductor/static/images/stages/stage3.jpg">
+  <meta name="twitter:title" content="Don't Ask Agents to Do Everything">
+  <meta name="twitter:description" content="Selective agentic reasoning for single image to 3D scene generation.">
+  <meta name="twitter:image" content="https://jhkim0759.github.io/projects/SceneConductor/static/img/og.jpg">
 
-  <!-- Academic citation meta (Google Scholar) -->
   <meta name="citation_title" content="SceneConductor: 3D Scene Generation from a Single Image with Multi-Agent Orchestration">
   <meta name="citation_author" content="Kim, Jeonghwan">
   <meta name="citation_author" content="Lan, Y.">
@@ -40,1548 +33,357 @@
   <meta name="citation_public_url" content="https://jhkim0759.github.io/projects/SceneConductor/">
   <meta name="citation_pdf_url" content="https://arxiv.org/pdf/2606.08402">
 
-  <meta name="theme-color" content="#2563eb">
-
-  <title>SceneConductor | 3D Scene Generation from Single Image</title>
-
   <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="static/images/apple-touch-icon.png">
-
-  <link rel="stylesheet" href="static/css/bulma.min.css">
-  <link rel="stylesheet" href="static/css/index.css">
-
-  <link rel="preload" href="static/css/bulma-carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="static/css/bulma-slider.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="static/css/fontawesome.all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-
-  <noscript>
-    <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
-    <link rel="stylesheet" href="static/css/bulma-slider.min.css">
-    <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  </noscript>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="static/js/bulma-carousel.min.js"></script>
-  <script defer src="static/js/bulma-slider.min.js"></script>
-  <script defer src="static/js/index.js"></script>
-  <!-- FontAwesome JS kit renders icons as inline SVG. Required: the project ships
-       no static/webfonts/, so the CSS-only path cannot render icons without this. -->
-  <script defer src="static/js/fontawesome.all.min.js"></script>
-
-  <!-- Google <model-viewer> for interactive .glb 3D viewer (used in Stage 1 panel) -->
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
-
-  <!-- Page-specific styles for stage toggle and comparison grid -->
-  <style>
-    .stage-toggle-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.25rem;
-    }
-    .stage-tabs {
-      display: inline-flex;
-      gap: 0.5rem;
-      background: #f1f5f9;
-      padding: 6px;
-      border-radius: 999px;
-    }
-    .stage-tab {
-      border: none;
-      background: transparent;
-      padding: 0.6rem 1.2rem;
-      font-weight: 600;
-      border-radius: 999px;
-      cursor: pointer;
-      color: #475569;
-      transition: all 0.2s ease;
-      font-size: 0.95rem;
-    }
-    .stage-tab.is-active {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      box-shadow: 0 4px 12px rgba(102,126,234,0.35);
-    }
-    .stage-panel {
-      width: 100%;
-      max-width: 1100px;
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 1.5rem;
-      box-shadow: 0 10px 25px -10px rgba(0,0,0,0.1);
-    }
-    .stage-panel img {
-      width: 100%;
-      border-radius: 10px;
-      display: block;
-    }
-    .viewer-3d-wrap {
-      position: relative;
-      width: 100%;
-    }
-    model-viewer {
-      --poster-color: transparent;
-    }
-    .viewer-hint {
-      position: absolute;
-      bottom: 0.9rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.78);
-      color: white;
-      padding: 0.4rem 0.9rem;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 500;
-      pointer-events: none;
-      letter-spacing: 0.01em;
-      backdrop-filter: blur(8px);
-    }
-    .viewer-hint i { color: #93c5fd; margin-right: 0.2rem; }
-    .mv-progress-bar {
-      height: 4px;
-      background: linear-gradient(90deg, #667eea, #764ba2);
-      border-radius: 2px;
-    }
-
-    /* ===== Sample-driven results viewer (TRELLIS style) ===== */
-    .sample-results {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .result-row {
-      display: grid;
-      grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr);
-      gap: 1.5rem;
-      align-items: stretch;
-      margin-bottom: 2rem;
-    }
-    .result-input-card {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 1rem;
-      box-shadow: 0 6px 16px -8px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-    }
-    .result-input-card .input-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #667eea;
-      margin-bottom: 0.5rem;
-    }
-    .result-input-card .input-name {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #1e293b;
-      margin-bottom: 0.75rem;
-    }
-    .result-input-card img {
-      width: 100%;
-      aspect-ratio: 4 / 3;
-      object-fit: contain;
-      background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
-      border: 1px solid #eef2f7;
-      border-radius: 10px;
-      display: block;
-      flex: 0 0 auto;
-    }
-    .result-input-card .input-arrow {
-      text-align: center;
-      color: #667eea;
-      font-size: 1.5rem;
-      margin: 0.75rem 0 0.25rem 0;
-    }
-    .result-input-card .input-arrow-text {
-      text-align: center;
-      font-size: 0.78rem;
-      color: #64748b;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-    }
-    .result-output-card {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 1rem;
-      box-shadow: 0 6px 16px -8px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-    }
-    .result-output-card .output-tabs {
-      display: flex;
-      gap: 0.4rem;
-      background: #f1f5f9;
-      padding: 5px;
-      border-radius: 999px;
-      margin-bottom: 0.85rem;
-      align-self: center;
-    }
-    .result-output-card .output-tabs button {
-      border: none;
-      background: transparent;
-      padding: 0.5rem 1rem;
-      font-weight: 600;
-      border-radius: 999px;
-      cursor: pointer;
-      color: #475569;
-      font-size: 0.85rem;
-      transition: all 0.2s ease;
-    }
-    .result-output-card .output-tabs button.is-active {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      box-shadow: 0 4px 10px rgba(102,126,234,0.35);
-    }
-    .viewer-stack {
-      position: relative;
-      width: 100%;
-      flex: 1 1 auto;
-      min-height: 420px;
-      background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .viewer-stack model-viewer {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      visibility: hidden;
-      opacity: 0;
-      transition: opacity 0.25s ease;
-      background: transparent;
-    }
-    .viewer-stack model-viewer.is-active {
-      visibility: visible;
-      opacity: 1;
-    }
-    .result-output-card .output-caption {
-      margin-top: 0.75rem;
-      padding: 0.6rem 0.85rem;
-      background: #f8fafc;
-      border-left: 3px solid #667eea;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      color: #334155;
-      line-height: 1.5;
-    }
-    .result-output-card .output-caption strong { color: #1e293b; }
-
-    /* Sample picker (horizontal scroll) */
-    .sample-picker {
-      margin-top: 1rem;
-      padding: 1.25rem 1rem;
-      background: #f8fafc;
-      border-radius: 14px;
-      border: 1px solid #e2e8f0;
-    }
-    .sample-picker .picker-title {
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #64748b;
-      margin-bottom: 0.75rem;
-      padding: 0 0.25rem;
-    }
-    .sample-thumbs {
-      display: flex;
-      gap: 0.8rem;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      padding: 0.25rem 0.25rem 0.5rem 0.25rem;
-      scrollbar-width: thin;
-    }
-    .sample-thumbs::-webkit-scrollbar { height: 6px; }
-    .sample-thumbs::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-    .sample-thumb {
-      flex: 0 0 auto;
-      width: 160px;
-      background: white;
-      border: 2px solid transparent;
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: pointer;
-      padding: 0;
-      transition: all 0.2s ease;
-      scroll-snap-align: start;
-      box-shadow: 0 2px 6px -3px rgba(0,0,0,0.1);
-    }
-    .sample-thumb:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 16px -8px rgba(0,0,0,0.18);
-    }
-    .sample-thumb img {
-      width: 100%;
-      aspect-ratio: 4 / 3;
-      object-fit: contain;
-      background: #f1f5f9;
-      display: block;
-    }
-    .sample-thumb .thumb-name {
-      padding: 0.45rem 0.55rem;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: #475569;
-      text-align: left;
-      background: white;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .sample-thumb.is-active {
-      border-color: #667eea;
-      box-shadow: 0 10px 22px -8px rgba(102,126,234,0.5);
-    }
-    .sample-thumb.is-active .thumb-name {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    .sample-thumb.is-placeholder {
-      border: 2px dashed #cbd5e1;
-      background: #fafbfc;
-      cursor: not-allowed;
-    }
-    .sample-thumb.is-placeholder img {
-      opacity: 0.25;
-    }
-    .sample-thumb.is-placeholder .thumb-name {
-      color: #94a3b8;
-      font-style: italic;
-    }
-
-    @media (max-width: 900px) {
-      .result-row { grid-template-columns: 1fr; }
-      .result-input-card .input-arrow { transform: rotate(90deg); }
-    }
-    .stage-caption { margin-top: 0.9rem; }
-    .stage-caption .stage-label {
-      display: inline-block;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #667eea;
-      letter-spacing: 0.08em;
-      margin-bottom: 0.25rem;
-      text-transform: uppercase;
-    }
-    .stage-caption h4 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 0.4rem;
-      color: #1e293b;
-    }
-    .stage-caption p {
-      color: #475569;
-      line-height: 1.55;
-      margin: 0;
-    }
-    .hidden { display: none; }
-
-    /* Comparison grid */
-    .comp-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-    }
-    .comp-cell {
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 4px 10px -4px rgba(0,0,0,0.08);
-    }
-    .comp-cell img { width: 100%; display: block; }
-    .comp-cell .comp-label {
-      padding: 0.55rem 0.75rem;
-      text-align: center;
-      font-weight: 600;
-      font-size: 0.88rem;
-      background: #f8fafc;
-      color: #334155;
-    }
-    .comp-cell.is-ours { border: 2px solid #667eea; }
-    .comp-cell.is-ours .comp-label {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    @media (max-width: 900px) {
-      .comp-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    /* View switch buttons for results gallery */
-    .view-switch {
-      display: inline-flex;
-      gap: 0.4rem;
-      margin-bottom: 1rem;
-    }
-    .view-btn {
-      border: 1px solid #cbd5e1;
-      background: white;
-      padding: 0.4rem 0.9rem;
-      font-weight: 600;
-      border-radius: 8px;
-      cursor: pointer;
-      color: #475569;
-      font-size: 0.85rem;
-      transition: all 0.15s ease;
-    }
-    .view-btn.is-active {
-      background: #2563eb;
-      color: white;
-      border-color: #2563eb;
-    }
-
-    /* Quantitative table */
-    .metric-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 0.5rem 0 1.5rem 0;
-      font-size: 0.95rem;
-    }
-    .metric-table th, .metric-table td {
-      padding: 0.65rem 0.9rem;
-      text-align: center;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .metric-table th {
-      background: #f8fafc;
-      font-weight: 700;
-      color: #1e293b;
-    }
-    .metric-table tr.is-ours td {
-      background: #eef2ff;
-      font-weight: 700;
-      color: #4338ca;
-    }
-    .metric-table td:first-child, .metric-table th:first-child {
-      text-align: left;
-    }
-
-    /* TL;DR */
-    .tldr-box {
-      background: linear-gradient(135deg, #eef2ff 0%, #fdf2f8 100%);
-      border-left: 4px solid #667eea;
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .tldr-box p {
-      text-align: justify;
-      text-align-last: left;
-      hyphens: auto;
-      -webkit-hyphens: auto;
-    }
-    .tldr-box .tldr-tag {
-      display: inline-block;
-      background: #667eea;
-      color: white;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      padding: 2px 8px;
-      border-radius: 4px;
-      margin-right: 0.6rem;
-      vertical-align: middle;
-    }
-
-    /* ===== Cinematic hero (scenesmith style) ===== */
-    .sc-hero {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      min-height: 640px;
-      overflow: hidden;
-      background: #0f172a;
-    }
-    .sc-hero-video {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-    }
-    .sc-hero-video video {
-      width: 100%;
-      height: 100%;
-      /* Teaser is ultra-wide 2:1 — 'contain' shows the whole frame (no edge
-         cropping) and letterboxes against the dark hero background. */
-      object-fit: contain;
-      display: block;
-      background: #0f172a;
-    }
-    .sc-hero-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      background: linear-gradient(180deg,
-        rgba(15, 23, 42, 0.55) 0%,
-        rgba(15, 23, 42, 0.35) 40%,
-        rgba(15, 23, 42, 0.85) 100%);
-      /* Starts fully transparent so the raw teaser shows at full brightness;
-         JS fades it in together with the title (see reveal()) so the text
-         stays readable, then it darkens a touch more on scroll. */
-      opacity: 0;
-      transition: opacity 0.9s ease;
-    }
-    .sc-hero-content {
-      position: absolute;
-      inset: 0;
-      z-index: 3;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 2.5rem 2rem 3.5rem 2rem;
-      color: white;
-      text-align: center;
-      /* Hidden initially, then fades up on its own shortly after load (no scroll needed). */
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.9s ease, transform 0.9s ease;
-      will-change: opacity, transform;
-    }
-    .sc-hero-content.is-revealed {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .sc-hero-scroll-hint { transition: opacity 0.3s linear; }
-    .sc-hero-content h1.sc-hero-title {
-      font-size: clamp(2.6rem, 6vw, 4.8rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      line-height: 1.05;
-      margin-bottom: 0.25rem;
-      background: linear-gradient(120deg,
-        #fde68a 0%,
-        #fbcfe8 28%,
-        #c4b5fd 55%,
-        #93c5fd 80%,
-        #67e8f9 100%);
-      background-size: 220% 100%;
-      background-position: 0% 50%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      color: transparent;
-      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.45));
-      transition: background-position 0.15s linear;
-      will-change: background-position;
-    }
-    .sc-hero-content .sc-hero-subtitle {
-      font-size: clamp(1rem, 1.8vw, 1.35rem);
-      color: rgba(255,255,255,0.92);
-      font-weight: 500;
-      margin-bottom: 1.4rem;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.4);
-    }
-    .sc-hero-content .sc-hero-authors {
-      font-size: clamp(0.95rem, 1.4vw, 1.1rem);
-      color: rgba(255,255,255,0.88);
-      margin-bottom: 0.3rem;
-    }
-    .sc-hero-content .sc-hero-authors a {
-      color: white;
-      text-decoration: underline;
-      text-decoration-color: rgba(255,255,255,0.4);
-      text-underline-offset: 3px;
-    }
-    .sc-hero-content .sc-hero-affil {
-      font-size: 0.9rem;
-      color: rgba(255,255,255,0.75);
-      margin-bottom: 1.6rem;
-    }
-    .sc-hero-content .sc-hero-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      justify-content: center;
-    }
-    .sc-hero-content .sc-hero-buttons .button {
-      background: rgba(255,255,255,0.95) !important;
-      color: #1e293b !important;
-      border: none !important;
-      backdrop-filter: blur(8px);
-    }
-    .sc-hero-content .sc-hero-buttons .button:hover {
-      background: white !important;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3) !important;
-    }
-    .sc-hero-scroll-hint {
-      position: absolute;
-      bottom: 1rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 3;
-      color: rgba(255,255,255,0.75);
-      font-size: 0.78rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      animation: scrollBounce 2.2s ease-in-out infinite;
-      pointer-events: none;
-    }
-    .sc-hero-scroll-hint i { display: block; margin: 0.3rem auto 0; font-size: 1rem; }
-    @keyframes scrollBounce {
-      0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.75; }
-      50% { transform: translateX(-50%) translateY(8px); opacity: 1; }
-    }
-
-    /* ===== Scroll-reveal fade-in ===== */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-      will-change: opacity, transform;
-    }
-    .fade-in.is-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Pipeline (a)(b)(c) captions */
-    .pipeline-captions {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-top: 1.75rem;
-    }
-    .pipe-cap {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 1.1rem 1.2rem;
-      box-shadow: 0 4px 12px -6px rgba(0,0,0,0.08);
-      position: relative;
-    }
-    .pipe-cap-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #1e293b;
-      margin-bottom: 0.55rem;
-    }
-    .pipe-cap-tag {
-      font-weight: 800;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      color: transparent;
-      margin-right: 0.3rem;
-    }
-    .pipe-cap-body {
-      font-size: 0.88rem;
-      color: #475569;
-      line-height: 1.55;
-    }
-    @media (max-width: 800px) {
-      .pipeline-captions { grid-template-columns: 1fr; }
-    }
-
-    /* Comparison sample-based layout */
-    .comparison-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) repeat(3, minmax(0, 1.3fr));
-      gap: 1rem;
-      align-items: stretch;
-      margin-bottom: 1.5rem;
-    }
-    .comp-card {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 6px 16px -8px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      /* Allow the card (a grid item) to shrink below its content's min-content,
-         otherwise the model-viewer forces the column wider than the screen. */
-      min-width: 0;
-    }
-    .comp-card .comp-card-head {
-      padding: 0.55rem 0.85rem;
-      font-size: 0.82rem;
-      font-weight: 700;
-      text-align: center;
-      background: #f8fafc;
-      color: #475569;
-      letter-spacing: 0.04em;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .comp-card.is-input .comp-card-head {
-      background: #fefce8;
-      color: #854d0e;
-    }
-    .comp-card.is-ours .comp-card-head {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    .comp-card .comp-body {
-      flex: 1 1 auto;
-      min-height: 240px;
-      background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      min-width: 0;
-      overflow: hidden;
-    }
-    .comp-card .comp-body img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-    .comp-card .comp-body model-viewer {
-      width: 100%;
-      height: 100%;
-      min-height: 240px;
-      background: transparent;
-      /* A flex item defaults to min-width:auto (=content size); zero it so the
-         viewer follows the card width instead of overflowing the viewport. */
-      min-width: 0;
-    }
-    .comp-card .comp-static-tag {
-      position: absolute;
-      bottom: 6px;
-      right: 6px;
-      background: rgba(15,23,42,0.7);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 4px;
-      letter-spacing: 0.04em;
-    }
-    @media (max-width: 1000px) {
-      .comparison-row {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      }
-    }
-    @media (max-width: 600px) {
-      .comparison-row { grid-template-columns: minmax(0, 1fr); }
-    }
-
-    /* ===== Mobile: keep video + every component fully on-screen (no clipping) ===== */
-    /* Never let a stray wide child push the page sideways on a phone. */
-    html, body { overflow-x: hidden; }
-    img, video, model-viewer { max-width: 100%; }
-    /* Bulma's .hero is a flex container; its .container is a flex item that
-       defaults to min-width:auto and so refuses to shrink below its content's
-       min-content. That let the Comparison model-viewers blow the container
-       wider than the screen (right side clipped). Allow it to shrink. */
-    .hero .container { min-width: 0; }
-    /* Below Bulma's 1024px breakpoint the .container has no max-width, so the
-       flex blowout above could push it past the screen edge — cap it to the
-       viewport there (at >=1024px Bulma's own max-width already fits). */
-    @media (max-width: 1023px) {
-      .hero .container { max-width: 100%; }
-    }
-
-    @media (max-width: 768px) {
-      /* Hero: was bottom-anchored inside an overflow:hidden box, so on a tall
-         phone the title/authors were clipped at the top. Let the content flow
-         and center itself over the looping video instead. */
-      .sc-hero {
-        height: auto;
-        min-height: 100svh;
-      }
-      .sc-hero-content {
-        position: relative;
-        justify-content: center;
-        min-height: 100svh;
-        padding: 5.5rem 1.25rem 4.5rem;
-        box-sizing: border-box;
-      }
-      .sc-hero-content h1.sc-hero-title { font-size: clamp(2.1rem, 11vw, 3rem); }
-      .sc-hero-content .sc-hero-subtitle { font-size: 1rem; line-height: 1.35; }
-      .sc-hero-content .sc-hero-authors  { font-size: 0.9rem; line-height: 1.6; }
-
-      /* Compact hero buttons on phones so several fit per row. The template's
-         index.css forces .button to font-size:0.875rem !important and (<=480px)
-         width:100%, so we must override with !important + higher specificity. */
-      .sc-hero-content .sc-hero-buttons { gap: 0.4rem; }
-      .sc-hero-content .sc-hero-buttons .button {
-        font-size: 0.72rem !important;
-        padding: 0.4rem 0.75rem !important;
-        margin: 0 !important;
-        width: auto !important;
-        height: auto;
-        border-radius: 999px !important;
-      }
-      .sc-hero-content .sc-hero-buttons .button .icon {
-        height: 1em;
-        width: 1em;
-        margin-right: 0.1rem;
-      }
-
-      /* Tab pills wrap instead of overflowing their card width. */
-      .result-output-card .output-tabs,
-      .stage-tabs { flex-wrap: wrap; justify-content: center; }
-      .result-output-card .output-tabs button { font-size: 0.78rem; padding: 0.45rem 0.7rem; }
-      .stage-tab { font-size: 0.85rem; padding: 0.5rem 0.9rem; }
-
-      /* Shrink the 3D viewers so a whole model fits a phone screen. */
-      .viewer-stack { min-height: 300px; }
-      .comp-card .comp-body { min-height: 200px; }
-      .comp-card .comp-body model-viewer { min-height: 200px; }
-
-      /* Cards/sections breathe less so they don't get cropped by the viewport. */
-      .stage-panel { padding: 1rem; }
-      .result-input-card,
-      .result-output-card { padding: 0.85rem; }
-      .tldr-box { padding: 1rem 1.1rem; }
-      .sample-thumb { width: 130px; }
-    }
-  </style>
+  <link rel="preload" href="static/fonts/google-sans-flex-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="static/css/site.css">
+  <script>document.documentElement.classList.add('js');setTimeout(function(){var c=document.getElementById('titleCand');if(c)c.classList.add('go')},2500)</script>
 </head>
 <body>
 
-  <!-- Scroll to Top Button -->
-  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
-    <i class="fas fa-chevron-up"></i>
-  </button>
+<header class="topbar" id="topbar">
+  <a class="brand" href="#top"><span class="dot"></span>Don't Ask Agents to Do Everything</a>
+  <nav class="chapters" id="chapters" aria-label="Sections">
+    <a href="#abstract">Abstract</a>
+    <a href="#idea">Key idea</a>
+    <a href="#method">Method</a>
+    <a href="#results">Results</a>
+    <a href="#citation">Citation</a>
+  </nav>
+  <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="chapters">Menu</button>
+  <div class="progress"><span id="progress"></span></div>
+</header>
 
-  <main id="main-content">
-
-  <!-- ============ HERO (cinematic full-screen video + overlay) ============ -->
-  <section class="sc-hero">
-    <div class="sc-hero-video">
-      <!-- 'loop' is handled in JS (not the attribute) so the first play-through
-           can be detected and the title/authors revealed only after it ends. -->
-      <video autoplay muted playsinline preload="auto"
-             poster="static/images/stages/stage3.jpg">
-        <source src="static/videos/teaser.mp4" type="video/mp4">
-      </video>
-    </div>
-    <div class="sc-hero-overlay"></div>
-
-    <div class="sc-hero-content">
-      <h1 class="sc-hero-title">SceneConductor</h1>
-      <p class="sc-hero-subtitle">3D Scene Generation from a Single Image with Multi-Agent Orchestration</p>
-
-      <!-- TODO(author): Replace with real author list and links -->
-      <div class="sc-hero-authors">
-        <a href="https://jhkim0759.github.io/" target="_blank">Jeonghwan Kim</a><sup>1</sup>,
-        <a href="https://nirvanalan.github.io/" target="_blank">Yushi Lan</a><sup>2</sup>,
-        <a href="https://cyw-3d.github.io/" target="_blank">Yongwei Chen</a><sup>1</sup>
-        <a href="https://hieu1999210.github.io/" target="_blank">Hieu Trung Nguyen</a><sup>3</sup>
-        <a href="https://pptrick.github.io/" target="_blank">Chuanyu Pan</a><sup>3</sup>
-        <a href="https://xingangpan.github.io/" target="_blank">Xingang Pan</a><sup>1</sup>
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<section class="hero" id="top">
+  <!-- faint candidate boxes with verdict dots: the page's visual grammar (blue dashes = proposed, dot = agent verdict) -->
+  <svg class="hero-bg" aria-hidden="true">
+    <rect x="3.5%" y="13%" width="7.5%" height="6.5%" rx="8"/><circle class="no" cx="11%" cy="13%" r="4"/>
+    <rect x="6%" y="27%" width="4.5%" height="8%" rx="8"/><circle class="ok" cx="10.5%" cy="27%" r="4"/>
+    <rect x="2.5%" y="44%" width="6%" height="5%" rx="8"/>
+    <rect x="88.5%" y="10%" width="7%" height="8%" rx="8"/><circle class="ok" cx="95.5%" cy="10%" r="4"/>
+    <rect x="91%" y="25%" width="5%" height="5.5%" rx="8"/><circle class="no" cx="96%" cy="25%" r="4"/>
+    <rect x="89%" y="39%" width="6.5%" height="6%" rx="8"/>
+  </svg>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="eyebrow">Single-image 3D scene generation · Agentic reasoning</div>
+      <h1 class="title">Don't Ask Agents<br>to Do Everything</h1>
+      <p class="subtitle"><span class="cand" id="titleCand">Selective Agentic Reasoning<svg class="cand-box" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="10"/></svg><span class="cand-stamp" aria-hidden="true"><img src="static/img/icons/robot.webp" alt=""><span class="mark ok">✓</span></span></span> for Single Image to 3D&nbsp;Scene Generation</p>
+      <div class="authors">
+        <a href="https://jhkim0759.github.io/">Jeonghwan Kim</a><sup>1</sup>&ensp;
+        <a href="https://nirvanalan.github.io/">Yushi Lan</a><sup>2</sup>&ensp;
+        <a href="https://cyw-3d.github.io/">Yongwei Chen</a><sup>1</sup>&ensp;
+        <a href="https://hieu1999210.github.io/">Hieu Trung Nguyen</a><sup>3</sup>&ensp;
+        <a href="https://pptrick.github.io/">Chuanyu Pan</a><sup>3</sup>&ensp;
+        <a href="https://yuanming.taichi.graphics/">Yuanming Hu</a><sup>3</sup>&ensp;
+        <a href="https://xingangpan.github.io/">Xingang Pan</a><sup>1</sup>
       </div>
-      <!-- TODO(author): Replace with real affiliations -->
-      <div class="sc-hero-affil">
-        <sup>1</sup>Nanyang Technological University &nbsp;&middot;&nbsp;
-        <sup>2</sup>University of Oxford &nbsp;&middot;&nbsp;
-        <sup>3</sup>Meshy AI
-      </div>
-
-      <div class="sc-hero-buttons">
-        <!-- Paper / Supplementary 버튼은 현재 비공개 - 공개 단계에서 주석 해제 -->
-        <!--
-        <a href="static/pdfs/paper.pdf" target="_blank" class="button is-normal is-rounded">
-          <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span>
-        </a>
-        <a href="static/pdfs/supplementary.pdf" target="_blank" class="button is-normal is-rounded">
-          <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Supplementary</span>
-        </a>
-        -->
-        <a href="https://arxiv.org/abs/2606.08402" target="_blank" class="button is-normal is-rounded">
-          <span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span>
-        </a>
-        <!-- TODO(link): Replace with GitHub repo -->
-        <a href="https://github.com/jhkim0759/SceneConductor" target="_blank" class="button is-normal is-rounded">
-          <span class="icon"><i class="fab fa-github"></i></span><span>SceneConductor</span>
-        </a>
-        <!-- TODO(link): Replace with GitHub repo -->
-        <a href="https://github.com/jhkim0759/GALP" target="_blank" class="button is-normal is-rounded">
-          <span class="icon"><i class="fab fa-github"></i></span><span>GALP</span>
-        </a>
-        <!-- TODO(link): Replace with checkpoint download URL (HuggingFace / GitHub release / Google Drive) -->
-        <a href="https://huggingface.co/WopperSet/SceneConductor" target="_blank" class="button is-normal is-rounded">
-          <span class="icon"><i class="fas fa-cube"></i></span><span>Checkpoint</span>
-        </a>
-        <a href="#BibTeX" class="button is-normal is-rounded">
-          <span class="icon"><i class="fas fa-quote-left"></i></span><span>BibTeX</span>
-        </a>
+      <div class="affil"><sup>1</sup>Nanyang Technological University &nbsp;·&nbsp; <sup>2</sup>University of Oxford &nbsp;·&nbsp; <sup>3</sup>Meshy AI</div>
+      <div class="buttons">
+        <a class="btn" href="https://arxiv.org/abs/2606.08402">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 1.75h5.5L12.75 5v9.25H4z"/><path d="M9.25 1.75V5.25h3.5M6 8.5h4.5M6 11h4.5"/></svg>arXiv</a>
+        <a class="btn" href="https://github.com/jhkim0759/SceneConductor">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5.5 4.5 2 8l3.5 3.5M10.5 4.5 14 8l-3.5 3.5"/></svg>Code</a>
+        <a class="btn" href="https://github.com/jhkim0759/GALP">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 11.5 8 14l6-2.5M2 8l6 2.5L14 8M8 2 2 4.5 8 7l6-2.5z"/></svg>Layout predictor</a>
+        <a class="btn" href="https://huggingface.co/WopperSet/SceneConductor">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 1.75 13.5 4.75v6.5L8 14.25 2.5 11.25v-6.5z"/><path d="M2.5 4.75 8 7.75l5.5-3M8 7.75v6.5"/></svg>Checkpoint</a>
+        <a class="btn ghost" href="#citation">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3 9.5C3 6.4 4.6 4.4 7 3.6l.5 1.1C6 5.4 5.3 6.5 5.2 7.6H7V12H3zM9 9.5c0-3.1 1.6-5.1 4-5.9l.5 1.1c-1.5.7-2.2 1.8-2.3 2.9H13V12H9z"/></svg>BibTeX</a>
       </div>
     </div>
-
-    <div class="sc-hero-scroll-hint">
-      Scroll
-      <i class="fas fa-chevron-down"></i>
+    <figure class="hero-card">
+      <div class="vid">
+        <video id="teaserVideo" autoplay muted loop playsinline preload="auto" poster="static/img/teaser_poster.webp" aria-label="Teaser: each input photograph turns into our complete 3D scene, rendered from the photo camera and then from outside the room">
+          <source src="static/videos/teaser.mp4" type="video/mp4">
+        </video>
+      </div>
+    </figure>
+    <div class="hero-foot">
+      <span>Each photograph becomes a complete 3D scene: rendered from the photo's camera, then from outside the room.</span>
+      <span class="pill-row">
+        <button class="pill play-toggle" data-video="teaserVideo" type="button">❚❚ Pause</button>
+        <a class="pill" href="#idea">▶ Method video</a>
+      </span>
     </div>
-  </section>
+    <a class="scroll-cue" href="#abstract" aria-label="Scroll to the abstract"><span></span></a>
+  </div>
+</section>
 
-  <!-- ============ PIPELINE VIDEO (above TL;DR) ============ -->
-  <section class="section fade-in" style="padding-bottom:0.5rem;">
-    <div class="container is-max-desktop">
-      <video autoplay muted loop playsinline preload="metadata"
-             style="width:100%;border-radius:14px;display:block;">
-        <source src="static/videos/pipeline.mp4" type="video/mp4">
-      </video>
+<main>
+<!-- ═══════════════════════════════ 01 ABSTRACT ═══════════════════════════════ -->
+<section class="section" id="abstract">
+  <div class="wrap">
+    <div class="tldr card reveal">
+      <span class="tldr-tag">TL;DR</span>
+      <p>We turn a single photograph into a complete 3D scene. Instead of asking agents for every number, geometry measures the scene and proposes candidate edits, and agents mainly <b>accept or reject</b> them against the photograph. A layout predictor supervised by point maps poses every object in one floor-aligned frame.</p>
     </div>
-  </section>
-
-  <!-- ============ TL;DR (moved above Pipeline) ============ -->
-  <section class="section fade-in" style="padding-top:1.5rem;padding-bottom:0.5rem;">
-    <div class="container is-max-desktop">
-      <div class="tldr-box">
-        <p>
-          <span class="tldr-tag">TL;DR</span>
-          Our framework performs <strong>single-image 3D scene generation</strong> into three structured stages
-          &mdash; <em>scene initialization</em>, <em>environment construction</em>, and
-          <em>multi-agent refinement</em> &mdash; and introduce a
-          <strong>geometry-aware layout predictor</strong> trained with sparse point-map priors, achieving consistent gains in geometric accuracy and perceptual realism.
-        </p>
+    <h2 class="h2"><span class="num">01</span>Abstract</h2>
+    <div class="prose abstract">
+      <p>Recent agentic scene generation frameworks often rely on holistic pipelines that ask agents to resolve multiple entangled factors at once, which limits their performance in complex real-world environments. We propose a framework that generates <b>a complete 3D scene from a single image</b> in three stages, <i>i.e.</i>, scene initialization, environment construction, and scene refinement. Our key idea, termed <b>selective agentic reasoning</b>, is to compute what can be measured geometrically and to leave agents mainly the decisions that remain ambiguous, most of which are simple accept-or-reject questions about candidates proposed from geometry.</p>
+      <p>During initialization, an inspector agent segments and describes the objects in the image, and a reviewer agent decides which proposed mask merges and deletions to apply before each object is generated and posed. The scene is then brought to metric scale and enclosed by a room fitted to the observed walls, which anchors every later correction. Finally, the reviewer screens geometry-proposed corrections of the arrangement, and a group editor agent locally rearranges only the groups that remain wrong before they are merged back. The output is a complete 3D scene that stays faithful to the input image.</p>
+      <p>To pose objects accurately, we further introduce a <b>geometry-aware layout predictor</b> supervised by the point map estimated from the input image, so it can also be trained on real-world images without 3D annotation. Experiments on synthetic and real-world benchmarks show that our framework achieves <b>the highest perceptual quality</b> among agent-based and generative approaches while ranking first or second on every physical metric, and that its layout predictor remains competitive in geometric accuracy.</p>
+    </div>
+    <div class="ideas">
+      <div class="idea card reveal">
+        <div class="k">Contribution 1</div>
+        <h4>Selective agentic reasoning</h4>
+        <p>Geometry proposes candidate edits; a reviewer agent mainly accepts or rejects them against the photo and never outputs a coordinate.</p>
+      </div>
+      <div class="idea card reveal">
+        <div class="k">Contribution 2</div>
+        <h4>Geometry-aware layout predictor</h4>
+        <p>Poses all objects jointly in one floor-aligned frame, supervised by the point map&nbsp;— trainable on real images without 3D labels.</p>
+      </div>
+      <div class="idea card reveal">
+        <div class="k">Result</div>
+        <h4>A complete Blender scene</h4>
+        <p>Meshes, a metric room, materials and lighting. Best perceptual quality; first or second on every physical metric.</p>
       </div>
     </div>
-  </section>
+    <div class="stats card reveal">
+      <div class="stat"><div class="v">7.35 <small>/</small> 7.47</div><div class="l">VLM score on MIT-67 / COCO&nbsp;— best among agent-based and generative methods</div></div>
+      <div class="stat"><div class="v">2.1<small>%</small> <small>/</small> 3.5<small>%</small></div><div class="l">objects penetrating the room, vs. at least 12.6&nbsp;% for every baseline</div></div>
+      <div class="stat"><div class="v">76.7 <small>→</small> 20.2<small>%</small></div><div class="l">floating objects from Stage&nbsp;1 to Stage&nbsp;3 on MIT-67</div></div>
+      <div class="stat"><div class="v">0.0489</div><div class="l">Chamfer distance of the layout predictor on ScanNet&nbsp;— best on every ScanNet metric</div></div>
+    </div>
+  </div>
+</section>
 
-  <!-- ============ PIPELINE OVERVIEW ============ -->
-  <section class="section hero is-white fade-in">
-    <div class="container is-max-desktop">
-      <h2 class="title is-3 has-text-centered" style="margin-bottom:1.5rem;">Pipeline Overview</h2>
-      <img src="static/figures/pipeline.webp"
-           alt="SceneConductor pipeline overview"
-           style="width:100%;border-radius:14px;box-shadow:0 12px 30px -12px rgba(0,0,0,0.18);"
-           loading="lazy"/>
+<!-- ═══════════════════════════════ 02 KEY IDEA ═══════════════════════════════ -->
+<section class="section tint" id="idea">
+  <div class="wrap">
+    <h2 class="h2"><span class="num">02</span>Selective Agentic Reasoning</h2>
+    <p class="lead"><b>Don't ask for coordinates; ask for a decision.</b> Geometry first measures the scene and enumerates candidate edits; an agent mainly accepts or rejects each of them against the photograph. Candidates are proposed generously so that few correct edits are missed&nbsp;— the agent only needs to reject the wrong ones.</p>
 
-      <!-- (a) (b) (c) stage captions under the figure -->
-      <div class="pipeline-captions">
-        <div class="pipe-cap">
-          <div class="pipe-cap-title"><span class="pipe-cap-tag">(a) Scene Initialization</span></div>
-          <div class="pipe-cap-body">
-            Per-object segmentation masks are lifted to object-level 3D representations, and a
-            <em>geometry-aware layout predictor</em> places them into a coarse initial scene &mdash;
-            <strong>no scene-level layout annotations required</strong>.
+    <figure class="video-card card reveal">
+      <div class="vid">
+        <video id="methodVideo" controls playsinline preload="metadata" poster="static/img/method_poster.webp" aria-label="Method video">
+          <source src="static/videos/method.mp4" type="video/mp4">
+        </video>
+      </div>
+      <figcaption><span><b>Method video</b> (1 min 43 s)</span><span>A real run of our pipeline on one COCO photograph; every decision shown is from its logs.</span></figcaption>
+    </figure>
+
+    <h3 class="sub">Holistic vs. selective</h3>
+    <div class="concept">
+      <div class="lane card reveal">
+        <div class="lane-h"><h4>Holistic agent</h4><span class="badge ill">Illustration</span></div>
+        <div class="ask"><span class="q solid">scale?</span><span class="q solid">yaw?</span><span class="q solid">x, y, z?</span></div>
+        <div class="answer">scale: 1.1 &nbsp;yaw: 35°<br>pos (1.3, 3.2, 0.9)</div>
+        <img src="static/img/concept/holistic_illustration.webp" alt="Illustration: a red high chair placed from free-form numbers floats through the table" loading="lazy">
+        <p class="note">One free-form number off and the chair floats through the table. <span class="muted">(Hand-made illustration of a holistic pose answer, as in Fig.&nbsp;1 of the paper.)</span></p>
+      </div>
+      <div class="lane card reveal">
+        <div class="lane-h"><h4>Selective candidates <span class="muted" style="font-weight:400">(ours)</span></h4><span class="badge ok">Real stage 3</span></div>
+        <div class="ask">
+          <span class="q">resize chair?</span><span class="verdict no"><img src="static/img/icons/robot.webp" alt=""><span class="mark no">✕</span>reject</span>
+          <span class="q">chair on floor?</span><span class="verdict ok"><img src="static/img/icons/robot.webp" alt=""><span class="mark ok">✓</span>accept</span>
+        </div>
+        <div class="answer" style="color:var(--ink-3)">the pose behind each accepted candidate is computed geometrically</div>
+        <img src="static/img/concept/selective_stage3.webp" alt="Our Stage-3 result: the red high chair stands on the floor at the table" loading="lazy">
+        <p class="note">The reviewer never writes a coordinate, yet its commonsense still rejects the candidates that geometry alone cannot rule out.</p>
+      </div>
+    </div>
+
+    <h3 class="sub">Decision explorer <span class="mono">real logs · COCO 000000340175</span></h3>
+    <p class="sub-lead">Every candidate below was proposed by geometry and ruled on by the reviewer agent (Qwen3.8-27B). Blue dashes mark what geometry proposed; the robot stamp is the agent's verdict, quoted from the run's logs. Click the image to step through.</p>
+    <div class="explorer" id="explorer">
+      <div class="ex-stage">
+        <div class="ex-canvas" id="exCanvas">
+          <div class="ex-inner" id="exInner">
+            <img id="exImg" src="static/img/scenes/coco-340175/photo.webp" alt="Input photograph with candidate outlines" width="640" height="394">
+            <img id="exImg2" class="under" src="" alt="" style="opacity:0">
+            <svg id="exSvg" viewBox="0 0 640 394" preserveAspectRatio="none" aria-hidden="true"></svg>
+            <div id="exLabel" class="ex-label"></div>
           </div>
         </div>
-        <div class="pipe-cap">
-          <div class="pipe-cap-title"><span class="pipe-cap-tag">(b) Environment Construction</span></div>
-          <div class="pipe-cap-body">
-            Point-map geometry is fused with the initialization to build the environmental scaffold:
-            <strong>floors, walls, materials, and illumination</strong> are reconstructed and grounded around
-            the placed objects.
+        <div class="ex-toolbar">
+          <div class="seg" id="exView" role="group" aria-label="Background">
+            <button type="button" data-view="photo" aria-pressed="true">Photo</button>
+            <button type="button" data-view="s2" aria-pressed="false">Stage 2</button>
+            <button type="button" data-view="s3" aria-pressed="false">Stage 3</button>
           </div>
-        </div>
-        <div class="pipe-cap">
-          <div class="pipe-cap-title"><span class="pipe-cap-tag">(c) Multi-Agent Refinement</span></div>
-          <div class="pipe-cap-body">
-            A <em>planner agent</em> detects structural and visual inconsistencies, applies simple corrections
-            itself, and dispatches <em>specialist agents</em> for complex localized edits that are reintegrated
-            into the global scene.
-          </div>
+          <span class="mono muted" id="exCount"></span>
         </div>
       </div>
+      <div class="ex-side">
+        <div class="seg ex-tabs" id="exTabs" role="tablist">
+          <button type="button" data-stage="1" aria-pressed="true">Stage 1 · masks</button>
+          <button type="button" data-stage="3" aria-pressed="false">Stage 3 · arrangement</button>
+        </div>
+        <div class="ex-stats" id="exStats"></div>
+        <ul class="ex-list" id="exList"></ul>
+      </div>
+      <div class="ex-detail card" id="exDetail" aria-live="polite"></div>
     </div>
-  </section>
+  </div>
+</section>
 
+<!-- ═══════════════════════════════ 03 METHOD ═══════════════════════════════ -->
+<section class="section" id="method">
+  <div class="wrap">
+    <h2 class="h2"><span class="num">03</span>Method</h2>
+    <p class="lead"><b>Three stages, one floor-aligned frame.</b> Scene initialization turns the image into object masks, meshes and an initial layout; environment construction builds a metric room around them; scene refinement corrects the remaining physical and arrangement errors. Three agent roles: an <b>inspector</b> reads what cannot be measured, a <b>reviewer</b> accepts or rejects candidates, and a <b>group editor</b> rearranges only the groups that remain unresolved.</p>
 
-  <!-- ============ SAMPLE-DRIVEN RESULTS (Three-Stage interactive viewer) ============ -->
-  <section class="section fade-in" id="results-section">
-    <div class="container is-max-desktop">
-      <h2 class="title is-3 has-text-centered">Results</h2>
-      <p class="has-text-centered" style="color:#64748b;margin-bottom:2rem;max-width:780px;margin-left:auto;margin-right:auto;">
-        <strong>Pick a scene</strong> from the gallery below, then toggle through Stage&nbsp;1 &rarr; 2 &rarr; 3
-        to see how SceneConductor reconstructs a complete 3D environment from a single image.
-        All three stages are <strong>interactive</strong>
-      </p>
+    <figure class="figure-card card reveal">
+      <img src="static/img/fig/pipeline.webp" alt="Overview of the three-stage framework" loading="lazy" width="2400" height="823">
+      <figcaption><b>Overview.</b> From a single image, scene initialization (Stage&nbsp;1), environment construction (Stage&nbsp;2) and scene refinement (Stage&nbsp;3) build a complete 3D scene. In Stage&nbsp;1, the geometry-aware layout predictor regresses per-object <i>R</i>, <i>T</i>, <i>S</i> and the floor rotation <i>F</i>.</figcaption>
+    </figure>
 
-      <div class="sample-results">
-        <!-- Top row: input image (left) + interactive 3D output (right) -->
-        <div class="result-row">
-          <div class="result-input-card">
-            <div class="input-label">Input Image</div>
-            <img id="sample-input-img" src="static/data/pipeline/TEASER/input.webp" alt="Selected input image">
-            <div class="input-label" style="margin-top:0.9rem;">Current View &middot; <span id="preview-stage-label">Stage 1</span></div>
-            <img id="sample-preview-img" src="static/data/pipeline/TEASER/stage1_render.webp" alt="Current stage preview"
-                 style="margin-top:0.4rem;">
-          </div>
-
-          <div class="result-output-card">
-            <div class="output-tabs" role="tablist">
-              <button class="is-active" data-stage="1" onclick="selectStage(1)">Stage 1 &middot; Scene Initialization</button>
-              <button data-stage="2" onclick="selectStage(2)">Stage 2 &middot; Environment Construction</button>
-              <button data-stage="3" onclick="selectStage(3)">Stage 3 &middot; Multi-Agent Refinement</button>
-            </div>
-
-            <div class="viewer-stack" id="viewer-stack">
-              <!-- All three stages mounted upfront so they download in parallel and
-                   subsequent stage toggles are instant (no re-fetch / no re-decode). -->
-              <model-viewer id="viewer-stage1" class="is-active"
-                src="static/data/pipeline/TEASER/stage1.glb"
-                alt="Stage 1 result"
-                camera-controls touch-action="pan-y"
-                auto-rotate auto-rotate-delay="3000" rotation-per-second="20deg"
-                interaction-prompt="auto" shadow-intensity="0.6" exposure="1.0"
-                environment-image="neutral">
-                <div slot="progress-bar" class="mv-progress-bar"></div>
-                <div slot="poster" style="background:#f1f5f9;display:flex;align-items:center;justify-content:center;height:100%;color:#64748b;">
-                  <span><i class="fas fa-cube" style="margin-right:0.5rem;"></i>Loading Stage 1...</span>
-                </div>
-              </model-viewer>
-              <model-viewer id="viewer-stage2"
-                src="static/data/pipeline/TEASER/stage2.glb"
-                alt="Stage 2 result"
-                camera-controls touch-action="pan-y"
-                auto-rotate auto-rotate-delay="3000" rotation-per-second="20deg"
-                interaction-prompt="auto" shadow-intensity="0.6" exposure="1.0"
-                environment-image="neutral">
-                <div slot="progress-bar" class="mv-progress-bar"></div>
-                <div slot="poster" style="background:#f1f5f9;display:flex;align-items:center;justify-content:center;height:100%;color:#64748b;">
-                  <span><i class="fas fa-cube" style="margin-right:0.5rem;"></i>Loading Stage 2...</span>
-                </div>
-              </model-viewer>
-              <model-viewer id="viewer-stage3"
-                src="static/data/pipeline/TEASER/stage3.glb"
-                alt="Stage 3 result"
-                camera-controls touch-action="pan-y"
-                auto-rotate auto-rotate-delay="3000" rotation-per-second="20deg"
-                interaction-prompt="auto" shadow-intensity="0.6" exposure="1.0"
-                environment-image="neutral">
-                <div slot="progress-bar" class="mv-progress-bar"></div>
-                <div slot="poster" style="background:#f1f5f9;display:flex;align-items:center;justify-content:center;height:100%;color:#64748b;">
-                  <span><i class="fas fa-cube" style="margin-right:0.5rem;"></i>Loading Stage 3...</span>
-                </div>
-              </model-viewer>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Bottom row: sample picker (horizontal scroll, add more samples by extending SAMPLES) -->
-        <div class="sample-picker">
-          <div class="picker-title"><i class="fas fa-images"></i>&nbsp;&nbsp;Example scenes</div>
-          <div class="sample-thumbs" id="sample-thumbs">
-            <!-- Populated by JS from the SAMPLES array. -->
-          </div>
-        </div>
+    <div class="stages">
+      <div class="stage-card card reveal">
+        <div class="k">STAGE 1</div>
+        <h4>Scene initialization</h4>
+        <p>The inspector names the objects; the reviewer rules on geometry-proposed mask merges, deletions and same-model groups. SAM3D meshes each object and our layout predictor poses them jointly.</p>
+        <div class="chips"><span class="chip"><img src="static/img/icons/robot.webp" alt="">inspector</span><span class="chip"><img src="static/img/icons/robot.webp" alt="">reviewer</span><span class="chip geo">mask candidates</span><span class="chip geo">layout predictor</span></div>
+      </div>
+      <div class="stage-card card reveal">
+        <div class="k">STAGE 2</div>
+        <h4>Environment construction</h4>
+        <p>Metric scale from size priors and the camera height; a floor plan on the wall planes of the point map, drafted by no agent. The inspector only reads colors and lighting.</p>
+        <div class="chips"><span class="chip"><img src="static/img/icons/robot.webp" alt="">inspector</span><span class="chip geo">metric scale</span><span class="chip geo">walls from the point map</span></div>
+      </div>
+      <div class="stage-card card reveal">
+        <div class="k">STAGE 3</div>
+        <h4>Scene refinement</h4>
+        <p>The reviewer rules on geometry-proposed groups and operations (attach to a support or wall, unify sizes). Groups that still fail go to the group editor, then deterministic physical finalization.</p>
+        <div class="chips"><span class="chip"><img src="static/img/icons/robot.webp" alt="">reviewer</span><span class="chip"><img src="static/img/icons/robot.webp" alt="">group editor</span><span class="chip geo">refinement candidates</span><span class="chip geo">physical finalization</span></div>
       </div>
     </div>
-  </section>
 
-  <!-- ============ METHOD - Layout Predictor ============ -->
-  <section class="section hero is-light fade-in" style="padding-bottom:1rem;">
-    <div class="container is-max-desktop">
-      <h2 class="title is-3 has-text-centered">Geometry-Aware Layout Predictor</h2>
-      <p class="has-text-centered" style="color:#64748b;max-width:760px;margin:0 auto 1.5rem auto;">
-        Supervised by <em>sparse geometric priors</em> derived from point maps, enabling training from
-        segmentation-level data without scene-level layout annotations.
-      </p>
-      <img src="static/figures/predictor.webp" alt="Geometry-aware layout predictor"
-           style="width:100%;border-radius:12px;box-shadow:0 8px 20px -10px rgba(0,0,0,0.15);" loading="lazy"/>
+    <h3 class="sub">Stage by stage <span class="mono">every render shares the photo's camera</span></h3>
+    <p class="sub-lead">Pick a scene and a stage, then drag across the image to compare our render with the photograph.</p>
+    <div class="compare" id="compare">
+      <div class="thumbs-row"><div class="thumbs" id="cmpScenes" aria-label="Scenes"></div><span class="thumbs-cap" id="cmpName"></span></div>
+      <div class="cmp-tabs" id="cmpTabs" role="group" aria-label="Stage">
+        <button type="button" class="cmp-tab" data-stage="1" aria-pressed="false"><span class="k">STAGE 1</span><span class="t">Initial layout</span></button>
+        <button type="button" class="cmp-tab" data-stage="2" aria-pressed="false"><span class="k">STAGE 2</span><span class="t">Metric room</span></button>
+        <button type="button" class="cmp-tab" data-stage="3" aria-pressed="true"><span class="k">STAGE 3</span><span class="t">Refined scene</span></button>
+      </div>
+      <div class="cmp" id="cmp">
+        <img class="cmp-b" id="cmpB" alt="Our render from the photo camera">
+        <img class="cmp-a" id="cmpA" alt="Input photograph">
+        <span class="cmp-badge l">Input photo</span><span class="cmp-badge r" id="cmpBadge">Ours · Stage 3</span>
+        <div class="cmp-line"><span class="cmp-handle" id="cmpHandle" tabindex="0" role="slider" aria-label="Compare position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">⟷</span></div>
+      </div>
+      <div class="cmp-foot"><p class="cmp-note" id="cmpNote"></p><span class="cmp-hint">Drag across the image to compare.</span></div>
     </div>
-  </section>
 
-
-
-  <!-- ============ QUALITATIVE COMPARISON (sample-based, baselines + interactive Ours) ============ -->
-  <section class="section hero is-light fade-in" id="comparison-section" style="padding-top:1rem;">
-    <div class="container is-max-desktop">
-      <h2 class="title is-3 has-text-centered">Qualitative Comparison</h2>
-      <p class="has-text-centered" style="color:#64748b;margin-bottom:1.5rem;max-width:780px;margin-left:auto;margin-right:auto;">
-        Same input photo reconstructed by prior methods vs. our Geometry-aware Layout Predictor.
-        <strong>Ours is interactive</strong>
-      </p>
-
-      <div class="sample-results">
-        <!-- Comparison row is rebuilt by JS from sample.comparison (data-driven).
-             Each cell becomes <model-viewer> when its file ends in .glb, otherwise <img>. -->
-        <div class="comparison-row" id="comparison-row"></div>
-
-        <!-- Independent sample picker for the comparison section -->
-        <div class="sample-picker">
-          <div class="picker-title"><i class="fas fa-images"></i>&nbsp;&nbsp;Example scenes</div>
-          <div class="sample-thumbs" id="comparison-thumbs">
-            <!-- Populated by JS, same SAMPLES list as the Results section. -->
-          </div>
+    <h3 class="sub" id="predictor">Geometry-aware layout predictor <span class="mono">Sec. 3.2</span></h3>
+    <div class="two">
+      <div class="prose">
+        <p><b>Layout only.</b> The predictor regresses the poses of all objects at once instead of generating meshes, so global attention spans more objects.</p>
+        <p><b>One floor-aligned frame.</b> All objects share one floor rotation <i>F</i> from the scene frame to the camera, so they stand on a single ground plane.</p>
+      </div>
+      <div class="prose">
+        <div class="eq card">
+          <math display="block"><mrow><msub><mover><mi mathvariant="bold">x</mi><mo>^</mo></mover><mi>k</mi></msub><mo>=</mo><mi>F</mi><mo>(</mo><msub><mi>R</mi><mi>i</mi></msub><mo>(</mo><msub><mi>S</mi><mi>i</mi></msub><mo>⊙</mo><msub><mi mathvariant="bold">x</mi><mi>k</mi></msub><mo>)</mo><mo>+</mo><msub><mi>T</mi><mi>i</mi></msub><mo>)</mo></mrow></math>
+          <span class="eq-cap">a vertex of object i placed in the camera frame</span>
         </div>
+        <p><b>Point-map supervision.</b> Placed meshes are compared directly with the point map of the input image, so the predictor trains on real images without 3D labels.</p>
       </div>
     </div>
-  </section>
 
+    <figure class="figure-card card reveal">
+      <img src="static/img/fig/layout_comparison.webp" alt="Layout prediction compared with 3D-Fixer and SAM3D" loading="lazy" width="2400" height="867">
+      <figcaption><b>Layout prediction vs. 3D-Fixer and SAM3D.</b> 3D-Fixer fuses neighboring objects; SAM3D leaves objects on inconsistent planes. Ours stands every object on one ground plane.</figcaption>
+    </figure>
 
-  <!-- ============ BIBTEX ============ -->
-  <section class="section fade-in" id="BibTeX">
-    <div class="container is-max-desktop content">
-      <div class="bibtex-header">
-        <h2 class="title">BibTeX</h2>
-        <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard">
-          <i class="fas fa-copy"></i>
-          <span class="copy-text">Copy</span>
-        </button>
+    <div class="table-wrap card reveal">
+      <table class="res">
+        <thead>
+          <tr class="group"><th></th><th colspan="3">3D-FUTURE</th><th colspan="3" class="gl">ScanNet</th><th colspan="3" class="gl">SAGE</th></tr>
+          <tr><th>Model</th><th>CD ↓</th><th>F-Score ↑</th><th>mIoU ↑</th><th class="gl">CD ↓</th><th>F-Score ↑</th><th>mIoU ↑</th><th class="gl">CD ↓</th><th>F-Score ↑</th><th>mIoU ↑</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>MIDI</td><td>0.1180</td><td>0.6190</td><td>0.2785</td><td class="gl">0.2088</td><td>0.4460</td><td>0.2313</td><td class="gl">0.1879</td><td>0.4119</td><td>0.0715</td></tr>
+          <tr><td>PartCrafter</td><td>0.2186</td><td>0.4641</td><td>0.1430</td><td class="gl">0.3812</td><td>0.2904</td><td>0.1091</td><td class="gl">0.2096</td><td>0.3932</td><td>0.0363</td></tr>
+          <tr><td>3D-Fixer</td><td>0.0406</td><td>0.8400</td><td>0.4716</td><td class="gl">0.0638</td><td>0.6296</td><td>0.3268</td><td class="gl">0.0239</td><td>0.8439</td><td>0.2823</td></tr>
+          <tr><td>SceneGen</td><td>0.0337</td><td>0.8435</td><td>0.4675</td><td class="gl">0.1532</td><td>0.4897</td><td>0.1807</td><td class="gl">0.1229</td><td>0.4996</td><td>0.0559</td></tr>
+          <tr><td>SAM3D</td><td class="b2">0.0122</td><td class="b2">0.9218</td><td class="b1">0.5904</td><td class="gl b2">0.0499</td><td class="b2">0.6884</td><td class="b2">0.3714</td><td class="gl b1">0.0038</td><td class="b1">0.9643</td><td class="b1">0.4801</td></tr>
+          <tr class="ours"><td>Ours</td><td class="b1">0.0106</td><td class="b1">0.9246</td><td class="b2">0.5820</td><td class="gl b1">0.0489</td><td class="b1">0.6944</td><td class="b1">0.3917</td><td class="gl b2">0.0048</td><td class="b2">0.9511</td><td class="b2">0.4029</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note"><b>Geometric comparison of layout prediction</b> (Table&nbsp;2). Scenes are aligned to the ground truth by one global rigid transform. SAM3D poses each object from its own mask, which suits SAGE's clean synthetic renders. <span class="legend"><span><i style="background:rgba(210,63,49,.18)"></i>best</span><span><i style="background:rgba(232,190,40,.28)"></i>second</span></span></p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ 04 RESULTS ═══════════════════════════════ -->
+<section class="section tint" id="results">
+  <div class="wrap">
+    <h2 class="h2"><span class="num">04</span>Results</h2>
+    <p class="lead"><b>Faithful to the photograph, physically valid.</b> 160 real-world indoor photographs (MIT-67, 85 scenes; COCO, 75 scenes). All agent-based baselines run on the same Qwen3.8-27B; perceptual quality is judged by Qwen3.5-9B (VLM, 0–10) and CLIP similarity on one wide view per method rendered from the photo camera.</p>
+
+    <div class="table-wrap card reveal">
+      <table class="res">
+        <thead>
+          <tr class="group"><th></th><th colspan="6">MIT-67</th><th colspan="6" class="gl">COCO</th></tr>
+          <tr><th>Method</th><th>VLM ↑</th><th>CLIP ↑</th><th>Float ↓</th><th>Coll. ↓</th><th>Wall ↓</th><th>Stable ↑</th><th class="gl">VLM ↑</th><th>CLIP ↑</th><th>Float ↓</th><th>Coll. ↓</th><th>Wall ↓</th><th>Stable ↑</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>SAM3D</td><td>4.32</td><td>0.726</td><td>–</td><td>21.3</td><td>–</td><td>–</td><td class="gl">4.53</td><td>0.673</td><td>–</td><td>15.9</td><td>–</td><td>–</td></tr>
+          <tr><td>VIGA</td><td>5.76</td><td>0.703</td><td>49.0</td><td>38.5</td><td>34.6</td><td>8.6</td><td class="gl">5.77</td><td>0.649</td><td>43.8</td><td>46.0</td><td>40.5</td><td>8.5</td></tr>
+          <tr><td>REST3D</td><td>6.46</td><td>0.696</td><td>71.6</td><td class="b2">5.9</td><td>42.1</td><td class="b1">56.8</td><td class="gl">7.35</td><td>0.664</td><td>70.2</td><td class="b1">5.5</td><td>37.1</td><td class="b2">59.7</td></tr>
+          <tr><td>Code-as-Room</td><td class="b2">6.98</td><td>0.716</td><td class="b2">23.5</td><td>18.5</td><td class="b2">12.6</td><td>15.4</td><td class="gl">7.32</td><td>0.664</td><td class="b1">18.8</td><td>18.9</td><td>14.0</td><td>15.3</td></tr>
+          <tr class="sep"><td>Ours · Stage 1</td><td>5.60</td><td>0.751</td><td>76.7</td><td>20.3</td><td>–</td><td>6.9</td><td class="gl">5.99</td><td>0.701</td><td>72.6</td><td>16.1</td><td>–</td><td>12.5</td></tr>
+          <tr><td>Ours · Stage 2</td><td>6.62</td><td class="b1">0.778</td><td>74.2</td><td>20.6</td><td>13.2</td><td>9.3</td><td class="gl b2">7.43</td><td class="b1">0.724</td><td>72.3</td><td>16.4</td><td class="b2">13.7</td><td>12.2</td></tr>
+          <tr class="ours"><td>Ours · Stage 3</td><td class="b1">7.35</td><td class="b2">0.765</td><td class="b1">20.2</td><td class="b1">5.3</td><td class="b1">2.1</td><td class="b2">56.4</td><td class="gl b1">7.47</td><td class="b2">0.712</td><td class="b2">23.8</td><td class="b2">5.7</td><td class="b1">3.5</td><td class="b1">62.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note"><b>Scene-level comparison</b> (Table&nbsp;1; VLM and CLIP rounded). Float, Coll., Wall: % of objects floating, colliding, penetrating the room; Stable: % that stay in place under rigid-body simulation. REST3D optimizes poses with a physics simulator and is the closest competitor in collision and stability; ours, with geometric rules alone, is on par while staying far more faithful to the image. <span class="legend"><span><i style="background:rgba(210,63,49,.18)"></i>best</span><span><i style="background:rgba(232,190,40,.28)"></i>second</span></span></p>
+
+    <h3 class="sub">Side by side <span class="mono">evaluation renders</span></h3>
+    <p class="sub-lead">The same photograph across scene-generation methods. Pick a scene; each panel is the single view the judge saw (evaluation protocol of Table&nbsp;1), so cameras differ slightly between methods.</p>
+    <div class="gallery" id="gallery">
+      <div class="thumbs-row"><div class="thumbs" id="galScenes" aria-label="Scenes"></div><span class="thumbs-cap" id="galName"></span></div>
+      <div class="gal-grid" id="galGrid"></div>
+    </div>
+
+    <h3 class="sub">Complete scenes <span class="mono">Stage-3 Blender scenes, cut away for viewing</span></h3>
+    <div class="loops" id="loops"></div>
+
+    <h3 class="sub">Explore in 3D <span class="mono">drag to orbit · scroll to zoom · walls facing you are hidden</span></h3>
+    <div class="viewer" id="viewer">
+      <div class="viewer-stage" id="viewerStage">
+        <img class="viewer-poster" id="viewerPoster" alt="">
+        <button type="button" class="btn viewer-load" id="viewerLoad">Load interactive scene</button>
+        <img class="viewer-photo" id="viewerPhoto" alt="input photo">
       </div>
-<pre id="bibtex-code"><code>@article{kim2026sceneconductor,
+      <div class="viewer-side">
+        <div class="seg" id="viewerTabs" role="group" aria-label="Scenes"></div>
+        <p class="table-note" id="viewerNote">Our Stage-3 output exported to glTF (textures downscaled, geometry Draco-compressed). Lighting here is the viewer's neutral environment, not the Blender render.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ 05 CITATION ═══════════════════════════════ -->
+<section class="section" id="citation">
+  <div class="wrap">
+    <h2 class="h2"><span class="num">05</span>Citation</h2>
+    <div class="bib card">
+<pre id="bibtex">@article{kim2026sceneconductor,
   title   = {SceneConductor: 3D Scene Generation from a Single Image with Multi-Agent Orchestration},
   author  = {Kim, Jeonghwan and Lan, Yushi and Chen, Yongwei and Nguyen, Hieu Trung and Pan, Chuanyu and Pan, Xingang},
   journal = {arXiv preprint arXiv:2606.08402},
   year    = {2026}
-}</code></pre>
+}</pre>
+      <button type="button" id="copyBib"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5.25" y="5.25" width="8.5" height="8.5" rx="1.5"/><path d="M10.5 3.25V3a1.25 1.25 0 0 0-1.25-1.25H3A1.25 1.25 0 0 0 1.75 3v6.25A1.25 1.25 0 0 0 3 10.5h.25"/></svg><span>Copy</span></button>
     </div>
-  </section>
+  </div>
+</section>
+</main>
 
-  <!-- ============ FOOTER ============ -->
-  <footer class="footer">
-    <div class="container">
-      <div class="columns is-centered">
-        <div class="column is-8">
-          <div class="content has-text-centered">
-            <p>
-              This page was built using the
-              <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>,
-              adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
-              Licensed under
-              <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </footer>
+<footer>
+  <a class="home" href="https://jhkim0759.github.io/">← Jeonghwan Kim</a>
+  <div class="credit">Page design draws on the <a href="https://mundo-world-model.github.io/">Mundo</a>, <a href="https://atfortes.github.io/projects/thinkdrag/">ThinkDrag</a> and <a href="https://atfortes.github.io/projects/bokeh-diffusion/">Bokeh Diffusion</a> project pages.</div>
+</footer>
 
-  </main>
-
-  <!-- ============ PAGE SCRIPTS ============ -->
-  <script>
-    // ===========================================================================
-    // SAMPLES — add more entries here to extend the example gallery.
-    // For each new sample:
-    //   1. Drop the input photo into  static/images/inputs/<id>.png
-    //   2. Export 3 .glb files into   static/models/<id>-stage{1,2,3}.glb
-    //   3. Append a new object below.
-    // ===========================================================================
-    var SAMPLES = [
-      // ── 직접 지정 (수동 목록) ───────────────────────────────────────────
-      // GitHub Pages 는 디렉터리 목록을 제공하지 않으므로(=자동 탐색이 동작하지
-      // 않으므로) 보여줄 scene 을 아래에 직접 나열합니다.
-      //
-      // 각 entry 의 섹션은 manifest.json 목록으로 결정됩니다(HEAD 추측 요청 없음):
-      //   - static/data/pipeline/manifest.json 에 id 포함   → Results 섹션에 등장
-      //   - static/data/comparison/manifest.json 에 id 포함 → Comparison 섹션에 등장
-      //   (폴더 추가/삭제 후 tasks/generate_manifest.py 로 manifest 재생성)
-      //
-      // pipeline 폴더와 comparison 폴더 이름이 다른 scene 은
-      // comparisonFolder / pipelineFolder 를 직접 지정해 짝지을 수 있습니다.
-      // 새 scene 추가: 폴더를 만들고 아래에 한 줄(entry) 추가하면 됩니다.
-
-      // ── pipeline (Results 섹션) ──
-      // TEASER 는 비교 폴더명이 다르므로(teaser_compare) 짝지어 두 섹션 모두에 표시.
-      { id: 'TEASER', name: 'Teaser' },
-      { id: 'bedroom_b1',                     name: 'Bedroom' },
-      { id: 'gameroom_at_04_04_2000_36_l',    name: 'Game Room 1' },
-      { id: 'gameroom_ho_06_03_3000_63_l',    name: 'Game Room 2' },
-      { id: 'hairsalon_1870565281_d339778e97', name: 'Hair Salon' },
-      { id: 'nursery_modern_fish',            name: 'Nursery' },
-
-      // ── comparison (Qualitative Comparison 섹션) ──
-      { id: 'sample2',              name: 'Sample 2' },
-      { id: 'sample3',              name: 'Sample 3' },
-      { id: '0000963',              name: 'Scene 0963' },
-      { id: '0002204',              name: 'Scene 2204' },
-      { id: '0002267',              name: 'Scene 2267' },
-      { id: 'children_room_kids2_46', name: "Children's Room" },
-    ];
-
-    var currentResultsSampleId = null;
-    var currentComparisonSampleId = null;
-    var currentStage = 1;
-
-    // ── scene discovery: list folder ids under static/data/<src>/ ─────────────
-    // For each source ('pipeline' / 'comparison'):
-    //   1) static/data/<src>/manifest.json  →  ["TEASER", "bedroom_b1", ...]   (GitHub Pages)
-    //   2) <src>/ directory listing (python http.server returns HTML with <a>'s) (local dev)
-    // Section membership (Results vs Comparison) is then taken from which manifest
-    // each id appears in — see discoverSamples(). Regenerate the manifests with
-    // tasks/generate_manifest.py after adding/removing scene folders.
-
-    function defaultSample(id, displayName) {
-      return {
-        id: id,
-        name: displayName || id,
-        hasPipeline: false,
-        hasComparison: false,
-        pipelineFolder: 'static/data/pipeline/' + id,
-        comparisonFolder: 'static/data/comparison/' + id,
-        comparison: [
-          { name: 'SAM3D',                 file: 'sam3d.glb' },
-          { name: 'SceneGen',              file: 'scenegen.glb' },
-          // Ours is authored facing opposite the baselines → rotate 180° in yaw (about up-axis) for all scenes.
-          { name: 'Ours (SceneConductor)', file: 'ours.glb', isOurs: true, orientation: '0deg 0deg 180deg' }
-        ]
-      };
-    }
-    function fillDefaults(s) {
-      var d = defaultSample(s.id, s.name);
-      for (var k in d) if (s[k] === undefined) s[k] = d[k];
-      return s;
-    }
-
-    // Try to list folder names under static/data/<source>/.
-    function listSampleIds(source) {
-      var base = 'static/data/' + source + '/';
-      // 1) manifest.json
-      return fetch(base + 'manifest.json').then(function (r) {
-        if (r.ok) return r.json();
-        throw 0;
-      }).catch(function () {
-        // 2) directory listing (python http.server)
-        return fetch(base).then(function (r) {
-          if (!r.ok) return [];
-          return r.text().then(function (html) {
-            var ids = [];
-            var re = /<a\s+href="([^"?#]+)"/gi;
-            var m;
-            while ((m = re.exec(html)) !== null) {
-              var href = decodeURIComponent(m[1].replace(/\/$/, ''));
-              if (!href || href === '..' || href === '.' || href.indexOf('/') >= 0) continue;
-              if (/\.[a-z0-9]+$/i.test(href)) continue;       // skip files
-              ids.push(href);
-            }
-            return ids;
-          });
-        }).catch(function () { return []; });
-      });
-    }
-
-    function discoverSamples() {
-      // Remember the order the author wrote SAMPLES in — those entries should
-      // always come first in the gallery, in the order written.
-      var explicitOrder = {};
-      SAMPLES.forEach(function (s, i) { explicitOrder[s.id] = i; });
-
-      var byId = {};
-      SAMPLES.forEach(function (s) { byId[s.id] = fillDefaults(s); });
-
-      return Promise.all([listSampleIds('pipeline'), listSampleIds('comparison')])
-        .then(function (lists) {
-          var pipeIds = lists[0] || [];
-          var compIds = lists[1] || [];
-
-          // Any manifest id not already hand-written in SAMPLES gets a default entry.
-          pipeIds.concat(compIds).forEach(function (id) {
-            if (!byId[id]) {
-              byId[id] = defaultSample(id);
-              SAMPLES.push(byId[id]);
-            }
-          });
-
-          // Section membership comes straight from the manifests — no per-file
-          // HEAD probing, so a scene that lives in only one section no longer
-          // triggers a 404 for the other (and no sample1..N guessing at all).
-          var inPipe = {}; pipeIds.forEach(function (id) { inPipe[id] = true; });
-          var inComp = {}; compIds.forEach(function (id) { inComp[id] = true; });
-          SAMPLES.forEach(function (s) {
-            s.hasPipeline = !!inPipe[s.id];
-            s.hasComparison = !!inComp[s.id];
-          });
-
-          // Drop entries with no data on either side.
-          for (var i = SAMPLES.length - 1; i >= 0; i--) {
-            var s = SAMPLES[i];
-            if (!s.hasPipeline && !s.hasComparison) SAMPLES.splice(i, 1);
-          }
-          // Order: SAMPLES-array order first (as the author wrote them),
-          //        then any manifest-only ids alphabetically/numerically.
-          SAMPLES.sort(function (a, b) {
-            var ea = explicitOrder[a.id];
-            var eb = explicitOrder[b.id];
-            if (ea !== undefined && eb !== undefined) return ea - eb;
-            if (ea !== undefined) return -1;
-            if (eb !== undefined) return 1;
-            return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
-          });
-        });
-    }
-
-    function getResultsSample() {
-      return SAMPLES.find(function (s) { return s.id === currentResultsSampleId; })
-          || SAMPLES.find(function (s) { return s.hasPipeline; });
-    }
-    function getComparisonSample() {
-      return SAMPLES.find(function (s) { return s.id === currentComparisonSampleId; })
-          || SAMPLES.find(function (s) { return s.hasComparison; });
-    }
-
-    // --- path helpers --------------------------------------------------------
-    function samplePath(sample, kind, stage) {
-      switch (kind) {
-        case 'input':   return sample.pipelineFolder + '/input.webp';
-        case 'preview': return sample.pipelineFolder + '/stage' + stage + '_render.webp';
-        case 'glb':     return sample.pipelineFolder + '/stage' + stage + '.glb';
-      }
-    }
-    function thumbInput(sample, source) {
-      var folder = (source === 'comparison') ? sample.comparisonFolder : sample.pipelineFolder;
-      return folder + '/input.webp';
-    }
-
-    function renderThumbs(hostId, source, onclickFactory) {
-      var host = document.getElementById(hostId);
-      if (!host) return;
-      host.innerHTML = '';
-      var activeId = (source === 'comparison') ? currentComparisonSampleId : currentResultsSampleId;
-      SAMPLES.forEach(function (s) {
-        // Only show in this gallery if the matching folder actually has data.
-        if (source === 'pipeline'   && !s.hasPipeline)   return;
-        if (source === 'comparison' && !s.hasComparison) return;
-        var btn = document.createElement('button');
-        btn.className = 'sample-thumb' + (s.id === activeId ? ' is-active' : '');
-        btn.dataset.id = s.id;
-        btn.onclick = onclickFactory(s.id);
-        btn.innerHTML =
-          '<img src="' + thumbInput(s, source) + '" alt="' + s.name + '" loading="lazy" title="' + s.name + '">';
-        host.appendChild(btn);
-      });
-    }
-
-    function updateResultsView() {
-      var sample = getResultsSample();
-      if (!sample) return;
-      var inputImg = document.getElementById('sample-input-img');
-      var previewImg = document.getElementById('sample-preview-img');
-      var previewLabel = document.getElementById('preview-stage-label');
-
-      if (inputImg) inputImg.src = samplePath(sample, 'input');
-      if (previewImg) previewImg.src = samplePath(sample, 'preview', currentStage);
-      if (previewLabel) previewLabel.textContent = 'Stage ' + currentStage;
-
-      for (var s = 1; s <= 3; s++) {
-        var v = document.getElementById('viewer-stage' + s);
-        if (!v) continue;
-        var nextSrc = samplePath(sample, 'glb', s);
-        if (v.getAttribute('src') !== nextSrc) v.setAttribute('src', nextSrc);
-        v.classList.toggle('is-active', s === currentStage);
-      }
-
-      document.querySelectorAll('.result-output-card .output-tabs button').forEach(function (b) {
-        b.classList.toggle('is-active', parseInt(b.dataset.stage, 10) === currentStage);
-      });
-    }
-
-    function buildCompCard(spec, folder) {
-      var card = document.createElement('div');
-      card.className = 'comp-card' + (spec.isInput ? ' is-input' : '') + (spec.isOurs ? ' is-ours' : '');
-
-      var head = document.createElement('div');
-      head.className = 'comp-card-head';
-      head.textContent = spec.name;
-      card.appendChild(head);
-
-      var body = document.createElement('div');
-      body.className = 'comp-body';
-      var fullPath = folder + '/' + spec.file;
-      var isGlb = /\.glb$/i.test(spec.file);
-
-      if (isGlb) {
-        var mv = document.createElement('model-viewer');
-        mv.setAttribute('src', fullPath);
-        mv.setAttribute('alt', spec.name);
-        // Only fetch/decode the .glb when the card scrolls near the viewport,
-        // so off-screen comparison models don't block initial page load.
-        mv.setAttribute('loading', 'lazy');
-        mv.setAttribute('reveal', 'auto');
-        mv.setAttribute('camera-controls', '');
-        mv.setAttribute('touch-action', 'pan-y');
-        mv.setAttribute('auto-rotate', '');
-        mv.setAttribute('auto-rotate-delay', '3000');
-        mv.setAttribute('rotation-per-second', '20deg');
-        mv.setAttribute('interaction-prompt', 'auto');
-        mv.setAttribute('shadow-intensity', '0.6');
-        mv.setAttribute('exposure', '1.0');
-        mv.setAttribute('environment-image', 'neutral');
-        // Per-spec orientation override (roll pitch yaw), e.g. fix a baseline's up-axis/facing.
-        if (spec.orientation) mv.setAttribute('orientation', spec.orientation);
-        var pb = document.createElement('div');
-        pb.setAttribute('slot', 'progress-bar');
-        pb.className = 'mv-progress-bar';
-        mv.appendChild(pb);
-        body.appendChild(mv);
-      } else {
-        var img = document.createElement('img');
-        img.src = fullPath;
-        img.alt = spec.name;
-        img.loading = 'lazy';
-        body.appendChild(img);
-        if (!spec.isInput) {
-          var tag = document.createElement('div');
-          tag.className = 'comp-static-tag';
-          tag.textContent = 'Static render';
-          body.appendChild(tag);
-        }
-      }
-
-      card.appendChild(body);
-      return card;
-    }
-
-    function updateComparison() {
-      var sample = getComparisonSample();
-      if (!sample) return;
-      var row = document.getElementById('comparison-row');
-      if (!row) return;
-      row.innerHTML = '';
-      row.appendChild(buildCompCard({ name: 'Input', file: 'input.webp', isInput: true }, sample.comparisonFolder));
-      (sample.comparison || []).forEach(function (spec) {
-        row.appendChild(buildCompCard(spec, sample.comparisonFolder));
-      });
-    }
-
-    function selectResultsSample(id) {
-      currentResultsSampleId = id;
-      updateResultsView();
-      renderThumbs('sample-thumbs', 'pipeline', function (id) { return function () { selectResultsSample(id); }; });
-    }
-    function selectComparisonSample(id) {
-      currentComparisonSampleId = id;
-      updateComparison();
-      renderThumbs('comparison-thumbs', 'comparison', function (id) { return function () { selectComparisonSample(id); }; });
-    }
-    function selectStage(n) {
-      currentStage = n;
-      updateResultsView();
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-      discoverSamples().then(function () {
-        var firstPipe = SAMPLES.find(function (s) { return s.hasPipeline; });
-        var firstComp = SAMPLES.find(function (s) { return s.hasComparison; });
-        if (firstPipe) currentResultsSampleId = firstPipe.id;
-        if (firstComp) currentComparisonSampleId = firstComp.id;
-        renderThumbs('sample-thumbs', 'pipeline',
-          function (id) { return function () { selectResultsSample(id); }; });
-        renderThumbs('comparison-thumbs', 'comparison',
-          function (id) { return function () { selectComparisonSample(id); }; });
-        updateResultsView();
-        updateComparison();
-      });
-    });
-
-    // Comparison grid synchronized view switch
-    function showCompView(view) {
-      document.querySelectorAll('#comp-grid img').forEach(function (img) {
-        var baseline = img.dataset.baseline;
-        img.src = 'static/images/comparison/' + baseline + '/' + view + '.png';
-      });
-      document.querySelectorAll('#comp-view-switch .view-btn').forEach(function (btn) {
-        btn.classList.toggle('is-active', btn.dataset.view === view);
-      });
-    }
-
-    // Scroll to top
-    function scrollToTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Copy BibTeX
-    function copyBibTeX() {
-      var code = document.getElementById('bibtex-code').innerText;
-      navigator.clipboard.writeText(code).then(function () {
-        var btn = document.querySelector('.copy-bibtex-btn .copy-text');
-        if (!btn) return;
-        var orig = btn.innerText;
-        btn.innerText = 'Copied!';
-        setTimeout(function () { btn.innerText = orig; }, 1500);
-      });
-    }
-
-    // Hero: the teaser plays first with the text hidden; the title/authors fade
-    // up ~20s in (one full teaser pass) OR as soon as the user scrolls down —
-    // whichever comes first — while the video keeps looping. Scroll also drives
-    // title gradient / overlay / hint.
-    (function () {
-      var title   = document.querySelector('.sc-hero-title');
-      var content = document.querySelector('.sc-hero-content');
-      var overlay = document.querySelector('.sc-hero-overlay');
-      var hint    = document.querySelector('.sc-hero-scroll-hint');
-      var video   = document.querySelector('.sc-hero-video video');
-      if (!title && !content) return;
-
-      var revealed = false;
-      function reveal() {
-        if (revealed) return;
-        revealed = true;
-        if (content) content.classList.add('is-revealed');
-        // Fade the dark overlay in along with the text (raw video until now).
-        if (overlay) overlay.style.opacity = '0.5';
-      }
-
-      // How long the teaser plays before the text appears.
-      var REVEAL_DELAY_MS = 20000;
-
-      if (video) {
-        // 'loop' attribute was removed so we re-loop manually on 'ended' — this
-        // keeps the teaser playing continuously after the first pass.
-        video.loop = false;
-        video.addEventListener('ended', function () {
-          try {
-            video.currentTime = 0;
-            var pr = video.play();
-            if (pr && pr.catch) pr.catch(function () {});
-          } catch (e) {}
-        });
-      }
-      // Reveal after the delay (or near-immediately for reduced-motion users).
-      // A plain timer also covers the autoplay-blocked case (text never stuck).
-      var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      setTimeout(reveal, reduced ? 400 : REVEAL_DELAY_MS);
-
-      var ticking = false;
-      function update() {
-        var hero = document.querySelector('.sc-hero');
-        var hH   = hero ? hero.offsetHeight : window.innerHeight;
-        var y    = window.scrollY;
-
-        // Scrolling down reveals the text immediately (no need to wait out the timer).
-        if (y > 40) reveal();
-
-        // Title gradient sweep over the first 1.5x hero height.
-        if (title) {
-          var p = Math.min(100, Math.max(0, (y / (hH * 1.5)) * 100));
-          title.style.backgroundPosition = p + '% 50%';
-        }
-
-        // Overlay stays off until the text is revealed (raw video shows first);
-        // after reveal it darkens a little more as you scroll. Hint fades out.
-        var r = Math.min(1, Math.max(0, y / (hH * 0.5)));
-        if (overlay) overlay.style.opacity = revealed ? (0.5 + 0.35 * r).toFixed(3) : '0';
-        if (hint)    hint.style.opacity = (1 - r).toFixed(3);
-
-        ticking = false;
-      }
-      window.addEventListener('scroll', function () {
-        if (!ticking) { requestAnimationFrame(update); ticking = true; }
-      }, { passive: true });
-      window.addEventListener('resize', update, { passive: true });
-      update();
-    })();
-
-    // Scroll-triggered fade-in for each .fade-in section
-    (function () {
-      var els = document.querySelectorAll('.fade-in');
-      if (!('IntersectionObserver' in window)) {
-        els.forEach(function (el) { el.classList.add('is-visible'); });
-        return;
-      }
-      var obs = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            obs.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-      els.forEach(function (el) { obs.observe(el); });
-    })();
-  </script>
+<script src="static/js/site.js" defer></script>
 </body>
 </html>
