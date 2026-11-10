@@ -1,0 +1,691 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style><meta name="robots" content="noindex,nofollow"><title>Indoor Scene Study</title></head><body><title>Indoor Scene Study</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: the input photo sits left of a 2x2 board of the four candidate scenes; the answer bar runs under both and stays
+   pinned to the bottom on short screens. Below 700px everything stacks (photo, board, questions). Images always sit on
+   the same light grey stage in both themes, so every participant judges them on the same ground. */
+:root{
+  --bg:#f1f3f2;
+  --surface:#ffffff;
+  --fg:#1a1f1d;
+  --muted:#58625e;
+  --line:#d2d8d5;
+  --accent:#28577f;
+  --accent-fg:#ffffff;
+  --accent-soft:#e1eaf3;
+  --warn:#8a5300;
+  --warn-soft:#faf0dc;
+  --ok:#1f7a4d;
+  /* image ground and the marks drawn on it: identical in both themes */
+  --stage:#e8e9e6;
+  --stage-edge:#cdd0cb;
+  --badge-bg:#1a1f1d;
+  --badge-fg:#ffffff;
+  --pick-bg:#28577f;
+  --pick-fg:#ffffff;
+  --font-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131615;--surface:#1b1f1e;--fg:#e3e8e5;--muted:#9ba5a0;--line:#323937;
+    --accent:#8ab6df;--accent-fg:#0c1722;--accent-soft:#1d2b38;--warn:#e2a84e;--warn-soft:#2d2313;--ok:#5cc08a;
+    --stage-edge:#454c49;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131615;--surface:#1b1f1e;--fg:#e3e8e5;--muted:#9ba5a0;--line:#323937;
+  --accent:#8ab6df;--accent-fg:#0c1722;--accent-soft:#1d2b38;--warn:#e2a84e;--warn-soft:#2d2313;--ok:#5cc08a;
+  --stage-edge:#454c49;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+kbd{font-family:var(--font-mono);font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--surface)}
+
+/* top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar-in,.banner-in,.wrap{max-width:1680px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar-in{display:flex;align-items:center;gap:16px;min-height:48px;flex-wrap:wrap}
+.brand{font-family:var(--font-mono);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.prog{display:flex;align-items:center;gap:10px;margin-left:auto;font-family:var(--font-mono);font-size:13px;font-variant-numeric:tabular-nums}
+.segs{display:flex;gap:3px;width:clamp(120px,24vw,300px)}
+.segs i{flex:1;height:9px;border-radius:2px;background:var(--line)}
+.segs i.done{background:var(--accent)}
+.segs i.cur{background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.left{color:var(--muted)}
+.save{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.save.bad{color:var(--warn)}
+#prog[hidden] + .save{margin-left:auto}
+.submit{margin:0;font-weight:600;font-size:16px}
+.submit.ok{color:var(--ok)}
+.submit.bad{color:var(--warn)}
+.copybox{display:grid;gap:12px}
+.banner{background:var(--warn-soft);color:var(--warn);border-bottom:1px solid var(--line);font-size:13px}
+.banner-in{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding-block:6px}
+.banner button{border:1px solid currentColor;background:transparent;border-radius:5px;padding:2px 10px;font-size:12.5px;font-weight:600}
+.wrap{padding-block:20px 40px}
+
+/* intro */
+.intro{max-width:860px;margin:0 auto;display:grid;gap:20px}
+.intro h1{font-size:clamp(26px,3.2vw,34px);line-height:1.15;margin:8px 0 0;font-weight:600;text-wrap:balance}
+.lede p{margin:0;max-width:68ch}
+.qcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:6px;align-content:start}
+.qcard h2{font-size:16px;margin:0;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.qcard p{margin:0}
+.look{font-size:13.5px;color:var(--muted)}
+.qn{font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--accent-fg);background:var(--accent);border-radius:4px;padding:1px 6px;align-self:center}
+.facts{margin:0;padding-left:20px;display:grid;gap:4px;font-size:14.5px}
+.len{display:flex;gap:10px 18px;flex-wrap:wrap;align-items:baseline;margin:0;font-size:15px}
+.len b{font-family:var(--font-mono);font-size:22px;font-weight:600}
+.start{display:grid;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{font-weight:600;padding:10px 18px;border-radius:6px;border:1px solid var(--line);background:var(--surface)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.note{font-size:13px;color:var(--muted);margin:0}
+.resume{background:var(--accent-soft);border:1px solid var(--line);border-radius:8px;padding:12px 16px;display:grid;gap:10px}
+.resume p{margin:0}
+
+/* trial: photo | 2x2 board on one row, the answer bar under both. On short screens the bar stays pinned to the bottom. */
+.trial{display:grid;gap:14px;grid-template-columns:minmax(0,1fr);grid-template-areas:"photo" "board" "qs"}
+/* board column: at most 68 % of the width, and short enough that the answer bar fits under it on laptop screens
+   (renders are 3:2, so board height = 2 x (w/2) x 2/3 + gap); whatever is left goes to the photo */
+@media (min-width:700px){
+  .trial{grid-template-columns:minmax(0,1fr) min(68%,max(520px,calc((100vh - 300px) * 3 / 2 + 12px)));grid-template-areas:"photo board" "qs qs";align-items:start}
+  .photo .stage{max-height:calc(100vh - 300px)}
+}
+.photo{grid-area:photo;margin:0}
+.board{grid-area:board;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0;width:100%}
+.qs{grid-area:qs;display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:700px) and (min-height:560px){.qs{position:sticky;bottom:0;z-index:3;background:var(--bg);padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}}
+@media (min-width:1000px){.qs{grid-template-columns:minmax(0,1fr) auto;align-items:stretch}}
+.cap{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.stage{display:block;width:100%;padding:0;border:1px solid var(--stage-edge);border-radius:6px;background:var(--stage);overflow:hidden;position:relative;max-width:100%}
+.cand .stage{cursor:pointer}
+.cand .stage:hover{border-color:var(--accent)}
+.stage img{display:block;width:100%;height:100%;object-fit:contain}
+.photo .stage{aspect-ratio:4/3}
+.cand{margin:0;position:relative;min-width:0}
+.cand .stage{aspect-ratio:3/2}
+.badge{position:absolute;top:8px;left:8px;font-family:var(--font-mono);font-weight:600;font-size:15px;line-height:1;padding:6px 9px;border-radius:5px;background:var(--badge-bg);color:var(--badge-fg);pointer-events:none}
+.picks{position:absolute;left:8px;bottom:8px;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
+.pick{font-family:var(--font-mono);font-size:11px;font-weight:600;padding:3px 7px;border-radius:4px;background:var(--pick-bg);color:var(--pick-fg)}
+.cand.sel .stage{border-color:var(--pick-bg);box-shadow:0 0 0 2px var(--pick-bg)}
+.q{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:10px 14px;display:grid;gap:8px 14px;grid-template-columns:minmax(0,1fr);align-items:center;min-width:0}
+@media (min-width:900px){.q{grid-template-columns:minmax(0,1fr) auto}}
+.q.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.qtext{display:grid;gap:2px;min-width:0}
+.q h2{margin:0;font-size:15px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.qt{margin:0;font-size:14px}
+.opts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+@media (min-width:900px){.opts{grid-template-columns:repeat(4,56px)}}
+.opt{font-family:var(--font-mono);font-weight:600;font-size:17px;padding:8px 0;border-radius:6px;border:1px solid var(--line);background:var(--bg)}
+.opt[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.nextcol{display:flex;flex-direction:column;justify-content:center;align-items:flex-end;gap:6px;min-width:0}
+.hint{font-size:12.5px;color:var(--muted);text-align:right;max-width:24ch}
+@media (max-width:999px){.nextcol{flex-direction:row;justify-content:flex-end;flex-wrap:wrap;align-items:center}.hint{max-width:none;margin-right:auto;text-align:left}}
+.imgerr{grid-column:1/-1;margin:0;padding:8px 12px;border-radius:6px;background:var(--warn-soft);color:var(--warn);font-size:13.5px}
+
+/* done */
+.done{max-width:760px;margin:0 auto;display:grid;gap:16px}
+.done h1{font-size:clamp(24px,3vw,30px);margin:8px 0 0;font-weight:600}
+.done p{margin:0}
+.code{font-family:var(--font-mono);font-size:22px;font-weight:600;letter-spacing:.06em;background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:10px 14px;justify-self:start;user-select:all}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.done details{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.done summary{cursor:pointer;font-weight:600}
+.done textarea{width:100%;min-height:220px;margin-top:10px;font-family:var(--font-mono);font-size:12px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:10px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<header class="bar">
+  <div class="bar-in">
+    <span class="brand">Indoor Scene Study</span>
+    <span class="prog" id="prog" hidden><span id="progTxt">Scene 1 of 20</span><span class="segs" id="segs" aria-hidden="true"></span><span class="left" id="leftTxt">20 left</span></span>
+    <span class="save" id="saveTxt" aria-live="polite"></span>
+  </div>
+</header>
+<div class="banner" id="previewBanner" hidden>
+  <div class="banner-in"><span>Preview: answers are not saved.</span><button type="button" id="skipBtn" hidden>Skip this scene</button></div>
+</div>
+
+<main class="wrap">
+  <section class="intro" id="vIntro">
+    <h1>Indoor Scene Study</h1>
+    <p class="len" id="lenLine"><span><b id="lenN">20</b> scenes</span><span>one choice per scene</span><span>about 5–10 minutes</span></p>
+    <div class="lede">
+      <p>Each screen shows one photo of a room and four 3D scenes, <b>A</b> to <b>D</b>, built from that photo by different methods. Every scene is rendered from the camera position of the photo, so you can compare it with the photo directly.</p>
+    </div>
+    <div class="qcards">
+      <div class="qcard">
+        <h2>Your task: pick the best scene</h2>
+        <p>Which 3D scene best matches the photo and is the best-built room?</p>
+        <p class="look">Judge both together. The scene should contain the objects in the photo, arranged as in the photo, and it should be a convincing room: objects rest on the floor or a support, and nothing floats or cuts through other objects or the walls.</p>
+      </div>
+    </div>
+    <ul class="facts">
+      <li>Pick exactly one of A–D on every screen. If two look equally good, choose the one you lean toward.</li>
+      <li>Click a scene, or press its key, to choose it. The study then moves to the next scene by itself. The top bar shows how many scenes are left.</li>
+      <li>Keys: <kbd>1</kbd>–<kbd>4</kbd> choose A–D, <b>Back</b> returns to the previous scene, where you can change your answer.</li>
+    </ul>
+    <div class="resume" id="resumeBox" hidden>
+      <p id="resumeTxt"></p>
+      <div class="row"><button type="button" class="btn primary" id="resumeBtn">Continue</button><button type="button" class="btn" id="resetBtn">Start over</button></div>
+    </div>
+    <div class="start" id="startBox">
+      <div class="row"><button type="button" class="btn primary" id="startBtn">Start the study</button></div>
+      <p class="note" id="saveNote">Your answers are kept in this browser after every scene, so you can close the page and continue later.</p>
+    </div>
+  </section>
+
+  <section id="vTrial" hidden>
+    <div class="trial">
+      <figure class="photo">
+        <figcaption class="cap">Input photo</figcaption>
+        <div class="stage" id="stP"></div>
+      </figure>
+      <div class="board" role="group" aria-label="Candidate scenes A to D">
+        <figure class="cand" id="candA"><button type="button" class="stage" id="stA" aria-label="Choose scene A"></button><span class="badge">A</span><span class="picks"></span></figure>
+        <figure class="cand" id="candB"><button type="button" class="stage" id="stB" aria-label="Choose scene B"></button><span class="badge">B</span><span class="picks"></span></figure>
+        <figure class="cand" id="candC"><button type="button" class="stage" id="stC" aria-label="Choose scene C"></button><span class="badge">C</span><span class="picks"></span></figure>
+        <figure class="cand" id="candD"><button type="button" class="stage" id="stD" aria-label="Choose scene D"></button><span class="badge">D</span><span class="picks"></span></figure>
+      </div>
+      <div class="qs">
+        <section class="q" id="q_best" role="group" aria-labelledby="qh_best">
+          <div class="qtext">
+            <h2 id="qh_best">Best scene</h2>
+            <p class="qt">Which 3D scene best matches the photo and is the best-built room?</p>
+          </div>
+          <div class="opts"><button type="button" class="opt" data-l="A">A</button><button type="button" class="opt" data-l="B">B</button><button type="button" class="opt" data-l="C">C</button><button type="button" class="opt" data-l="D">D</button></div>
+        </section>
+        <div class="nextcol"><span class="hint" id="nextHint" aria-live="polite"></span><button type="button" class="btn" id="backBtn" disabled>Back</button><button type="button" class="btn primary" id="nextBtn" disabled>Next scene</button></div>
+      </div>
+      <p class="imgerr" id="imgErr" hidden>An image did not load. Reload the page; your answers to earlier scenes are kept.</p>
+    </div>
+  </section>
+
+  <section class="done" id="vDone" hidden>
+    <h1>Thank you</h1>
+    <p>You answered all <b id="doneN">20</b> scenes.</p>
+    <p class="submit" id="submitTxt" role="status">Submitting your answers…</p>
+    <p>Completion code</p>
+    <div class="code" id="doneCode"></div>
+    <div class="copybox" id="copyBox" hidden>
+      <p class="note" id="saveInfo"></p>
+      <p style="margin:0">Result code</p>
+      <div class="code" id="resCode" style="font-size:15px;letter-spacing:.02em;word-break:break-all"></div>
+      <div class="actions"><button type="button" class="btn primary" id="codeBtn">Copy result code</button><span class="note" id="codeMsg" aria-live="polite"></span></div>
+      <div class="actions"><button type="button" class="btn" id="copyBtn">Copy full results</button><button type="button" class="btn" id="dlBtn">Download results (JSON)</button><span class="note" id="copyMsg" aria-live="polite"></span></div>
+      <details id="resultDet"><summary>Show results text</summary><textarea id="resultTxt" readonly aria-label="Results as text"></textarea></details>
+    </div>
+  </section>
+</main>
+
+<script id="studydata">window.STUDY = {"kit_id":"370ff393f5c3","n_forms":8,"forms":[[{"s":"sc177225e","p":"2d95cafda1c7","o":["8e0bdd9aba5e","f729dc2b71c2","32e2223c27d3","f8f358583db6"]},{"s":"s048db5bc","p":"9669b1c49314","o":["23a9b26e0517","57682477d654","3ae4ff6711ab","a5cfb403d457"]},{"s":"s48ca22db","p":"6218e3ef98d0","o":["dd32559b376d","16fa370f576a","3a2103225638","8a6ed6f2cecd"]},{"s":"s5e68333a","p":"c1c05a5ed4fb","o":["39cb8aee7cb9","b6f3b90e6af3","6c592636d811","df52572b9b4f"]},{"s":"s167f1729","p":"2a5f16413e18","o":["de575b7ab0ae","7c9dd38a7552","ad440009abd9","a48c4566d9d7"]},{"s":"sa64b19d2","p":"e580f859059c","o":["753a08f32551","3dd1c6cd51a9","fdc956fb547d","bd81a6c3f9d5"]},{"s":"s69e8a4e9","p":"a503ba95f11b","o":["cfa619a81537","668d43d89f14","728e9342ceed","6f57efdbaaff"]},{"s":"s4fa15b0a","p":"ed8a8c390c18","o":["5211149107d9","1f75bec977f1","790067ed74c9","5582a7583eb2"]},{"s":"s9c34f87c","p":"bb640996a30b","o":["c67603941c3b","f38c012f134e","53739160dbff","eb29375a2124"]},{"s":"seadeab42","p":"c31559bae772","o":["4791723c241d","4209784059fa","41731bfaeb9f","10d543f0489d"]},{"s":"s04cea8cb","p":"0c91cb096244","o":["a1626b4138b3","e7b20b494767","1c8c26e545f5","faf5f3219345"]},{"s":"sc2bf1401","p":"9955ad6f9305","o":["987a025b0790","d5637cf4df38","a87038447705","009d41b36635"]},{"s":"s70dfba59","p":"84c9d997dc24","o":["416a717d984a","f58f28ba6b47","f5e35d2522f4","e0bd340d9fb4"]},{"s":"sa0a704d0","p":"cdb4a1fe7d81","o":["591270096287","465e8aab390d","59be74fd2933","dedc6084a54d"]},{"s":"s5568340c","p":"80e8c795c54d","o":["752a560eb0c1","aa53ef2b7797","92553269c1b4","87bef191f0b1"]},{"s":"sc2c7f109","p":"a8533681af4d","o":["7380b8d82524","45022f3fb4b8","623a2997a4e9","17144569acd7"]},{"s":"sc82cc7ff","p":"12956e9d191d","o":["28949822cb60","578afd381b6c","26ed23997b33","dbc1e0850044"]},{"s":"se53823e3","p":"0ebf2cb54f99","o":["11faba329eb3","fcedfe8aab8e","366b0b00d90c","2029660dd977"]},{"s":"s30a14c97","p":"25d823aba21b","o":["7328bd12f1e2","abffb69b8c23","0372aca69a14","21993e2786fa"]},{"s":"s3db3a10d","p":"95e06c8fa7e4","o":["222e6c69bb95","fde35c2d8eb5","16e384070afd","b4c6c8802962"]}],[{"s":"s3db3a10d","p":"95e06c8fa7e4","o":["b4c6c8802962","fde35c2d8eb5","16e384070afd","222e6c69bb95"]},{"s":"s167f1729","p":"2a5f16413e18","o":["a48c4566d9d7","ad440009abd9","de575b7ab0ae","7c9dd38a7552"]},{"s":"sc2c7f109","p":"a8533681af4d","o":["17144569acd7","623a2997a4e9","7380b8d82524","45022f3fb4b8"]},{"s":"sc177225e","p":"2d95cafda1c7","o":["f8f358583db6","f729dc2b71c2","8e0bdd9aba5e","32e2223c27d3"]},{"s":"s70dfba59","p":"84c9d997dc24","o":["e0bd340d9fb4","416a717d984a","f5e35d2522f4","f58f28ba6b47"]},{"s":"s5e68333a","p":"c1c05a5ed4fb","o":["39cb8aee7cb9","6c592636d811","b6f3b90e6af3","df52572b9b4f"]},{"s":"s04cea8cb","p":"0c91cb096244","o":["faf5f3219345","e7b20b494767","1c8c26e545f5","a1626b4138b3"]},{"s":"sc2bf1401","p":"9955ad6f9305","o":["d5637cf4df38","a87038447705","987a025b0790","009d41b36635"]},{"s":"s5568340c","p":"80e8c795c54d","o":["752a560eb0c1","92553269c1b4","aa53ef2b7797","87bef191f0b1"]},{"s":"se53823e3","p":"0ebf2cb54f99","o":["11faba329eb3","366b0b00d90c","2029660dd977","fcedfe8aab8e"]},{"s":"s4fa15b0a","p":"ed8a8c390c18","o":["1f75bec977f1","5211149107d9","790067ed74c9","5582a7583eb2"]},{"s":"s30a14c97","p":"25d823aba21b","o":["abffb69b8c23","7328bd12f1e2","0372aca69a14","21993e2786fa"]},{"s":"sa64b19d2","p":"e580f859059c","o":["fdc956fb547d","3dd1c6cd51a9","bd81a6c3f9d5","753a08f32551"]},{"s":"sa0a704d0","p":"cdb4a1fe7d81","o":["465e8aab390d","59be74fd2933","591270096287","dedc6084a54d"]},{"s":"s9c34f87c","p":"bb640996a30b","o":["f38c012f134e","53739160dbff","c67603941c3b","eb29375a2124"]},{"s":"sc82cc7ff","p":"12956e9d191d","o":["26ed23997b33","28949822cb60","578afd381b6c","dbc1e0850044"]},{"s":"s48ca22db","p":"6218e3ef98d0","o":["8a6ed6f2cecd","16fa370f576a","dd32559b376d","3a2103225638"]},{"s":"s69e8a4e9","p":"a503ba95f11b","o":["668d43d89f14","6f57efdbaaff","728e9342ceed","cfa619a81537"]},{"s":"seadeab42","p":"c31559bae772","o":["41731bfaeb9f","4791723c241d","4209784059fa","10d543f0489d"]},{"s":"s048db5bc","p":"9669b1c49314","o":["a5cfb403d457","23a9b26e0517","3ae4ff6711ab","57682477d654"]}],[{"s":"se53823e3","p":"0ebf2cb54f99","o":["11faba329eb3","366b0b00d90c","fcedfe8aab8e","2029660dd977"]},{"s":"s4fa15b0a","p":"ed8a8c390c18","o":["5582a7583eb2","1f75bec977f1","5211149107d9","790067ed74c9"]},{"s":"sc2c7f109","p":"a8533681af4d","o":["17144569acd7","45022f3fb4b8","7380b8d82524","623a2997a4e9"]},{"s":"s5e68333a","p":"c1c05a5ed4fb","o":["39cb8aee7cb9","6c592636d811","b6f3b90e6af3","df52572b9b4f"]},{"s":"s30a14c97","p":"25d823aba21b","o":["7328bd12f1e2","0372aca69a14","abffb69b8c23","21993e2786fa"]},{"s":"sc2bf1401","p":"9955ad6f9305","o":["987a025b0790","a87038447705","d5637cf4df38","009d41b36635"]},{"s":"sa64b19d2","p":"e580f859059c","o":["753a08f32551","fdc956fb547d","3dd1c6cd51a9","bd81a6c3f9d5"]},{"s":"s3db3a10d","p":"95e06c8fa7e4","o":["fde35c2d8eb5","b4c6c8802962","16e384070afd","222e6c69bb95"]},{"s":"s167f1729","p":"2a5f16413e18","o":["a48c4566d9d7","7c9dd38a7552","de575b7ab0ae","ad440009abd9"]},{"s":"sa0a704d0","p":"cdb4a1fe7d81","o":["dedc6084a54d","465e8aab390d","591270096287","59be74fd2933"]},{"s":"s048db5bc","p":"9669b1c49314","o":["3ae4ff6711ab","23a9b26e0517","a5cfb403d457","57682477d654"]},{"s":"sc82cc7ff","p":"12956e9d191d","o":["dbc1e0850044","578afd381b6c","28949822cb60","26ed23997b33"]},{"s":"sc177225e","p":"2d95cafda1c7","o":["32e2223c27d3","8e0bdd9aba5e","f8f358583db6","f729dc2b71c2"]},{"s":"s04cea8cb","p":"0c91cb096244","o":["1c8c26e545f5","a1626b4138b3","faf5f3219345","e7b20b494767"]},{"s":"s69e8a4e9","p":"a503ba95f11b","o":["cfa619a81537","728e9342ceed","668d43d89f14","6f57efdbaaff"]},{"s":"s70dfba59","p":"84c9d997dc24","o":["e0bd340d9fb4","f58f28ba6b47","416a717d984a","f5e35d2522f4"]},{"s":"s48ca22db","p":"6218e3ef98d0","o":["dd32559b376d","3a2103225638","16fa370f576a","8a6ed6f2cecd"]},{"s":"s5568340c","p":"80e8c795c54d","o":["752a560eb0c1","92553269c1b4","aa53ef2b7797","87bef191f0b1"]},{"s":"s9c34f87c","p":"bb640996a30b","o":["f38c012f134e","eb29375a2124","53739160dbff","c67603941c3b"]},{"s":"seadeab42","p":"c31559bae772","o":["41731bfaeb9f","4791723c241d","10d543f0489d","4209784059fa"]}],[{"s":"sc82cc7ff","p":"12956e9d191d","o":["578afd381b6c","26ed23997b33","dbc1e0850044","28949822cb60"]},{"s":"s167f1729","p":"2a5f16413e18","o":["a48c4566d9d7","7c9dd38a7552","de575b7ab0ae","ad440009abd9"]},{"s":"s3db3a10d","p":"95e06c8fa7e4","o":["16e384070afd","b4c6c8802962","222e6c69bb95","fde35c2d8eb5"]},{"s":"s04cea8cb","p":"0c91cb096244","o":["a1626b4138b3","1c8c26e545f5","e7b20b494767","faf5f3219345"]},{"s":"s5e68333a","p":"c1c05a5ed4fb","o":["df52572b9b4f","6c592636d811","b6f3b90e6af3","39cb8aee7cb9"]},{"s":"s70dfba59","p":"84c9d997dc24","o":["f5e35d2522f4","416a717d984a","e0bd340d9fb4","f58f28ba6b47"]},{"s":"seadeab42","p":"c31559bae772","o":["4209784059fa","41731bfaeb9f","10d543f0489d","4791723c241d"]},{"s":"s69e8a4e9","p":"a503ba95f11b","o":["728e9342ceed","cfa619a81537","668d43d89f14","6f57efdbaaff"]},{"s":"sc2c7f109","p":"a8533681af4d","o":["623a2997a4e9","7380b8d82524","45022f3fb4b8","17144569acd7"]},{"s":"sa0a704d0","p":"cdb4a1fe7d81","o":["465e8aab390d","591270096287","dedc6084a54d","59be74fd2933"]},{"s":"se53823e3","p":"0ebf2cb54f99","o":["2029660dd977","11faba329eb3","fcedfe8aab8e","366b0b00d90c"]},{"s":"s48ca22db","p":"6218e3ef98d0","o":["8a6ed6f2cecd","dd32559b376d","16fa370f576a","3a2103225638"]},{"s":"s30a14c97","p":"25d823aba21b","o":["abffb69b8c23","21993e2786fa","0372aca69a14","7328bd12f1e2"]},{"s":"s048db5bc","p":"9669b1c49314","o":["a5cfb403d457","3ae4ff6711ab","57682477d654","23a9b26e0517"]},{"s":"sc2bf1401","p":"9955ad6f9305","o":["d5637cf4df38","987a025b0790","009d41b36635","a87038447705"]},{"s":"s4fa15b0a","p":"ed8a8c390c18","o":["790067ed74c9","1f75bec977f1","5211149107d9","5582a7583eb2"]},{"s":"s5568340c","p":"80e8c795c54d","o":["92553269c1b4","752a560eb0c1","87bef191f0b1","aa53ef2b7797"]},{"s":"sa64b19d2","p":"e580f859059c","o":["3dd1c6cd51a9","bd81a6c3f9d5","753a08f32551","fdc956fb547d"]},{"s":"sc177225e","p":"2d95cafda1c7","o":["8e0bdd9aba5e","32e2223c27d3","f8f358583db6","f729dc2b71c2"]},{"s":"s9c34f87c","p":"bb640996a30b","o":["eb29375a2124","f38c012f134e","53739160dbff","c67603941c3b"]}],[{"s":"s4fa15b0a","p":"ed8a8c390c18","o":["5211149107d9","1f75bec977f1","790067ed74c9","5582a7583eb2"]},{"s":"seadeab42","p":"c31559bae772","o":["10d543f0489d","4791723c241d","4209784059fa","41731bfaeb9f"]},{"s":"sa64b19d2","p":"e580f859059c","o":["bd81a6c3f9d5","753a08f32551","3dd1c6cd51a9","fdc956fb547d"]},{"s":"sc2bf1401","p":"9955ad6f9305","o":["a87038447705","009d41b36635","987a025b0790","d5637cf4df38"]},{"s":"s3db3a10d","p":"95e06c8fa7e4","o":["b4c6c8802962","222e6c69bb95","fde35c2d8eb5","16e384070afd"]},{"s":"s30a14c97","p":"25d823aba21b","o":["abffb69b8c23","0372aca69a14","21993e2786fa","7328bd12f1e2"]},{"s":"s167f1729","p":"2a5f16413e18","o":["ad440009abd9","a48c4566d9d7","de575b7ab0ae","7c9dd38a7552"]},{"s":"s70dfba59","p":"84c9d997dc24","o":["f5e35d2522f4","e0bd340d9fb4","416a717d984a","f58f28ba6b47"]},{"s":"s04cea8cb","p":"0c91cb096244","o":["1c8c26e545f5","faf5f3219345","a1626b4138b3","e7b20b494767"]},{"s":"sc177225e","p":"2d95cafda1c7","o":["32e2223c27d3","f8f358583db6","8e0bdd9aba5e","f729dc2b71c2"]},{"s":"s5568340c","p":"80e8c795c54d","o":["92553269c1b4","87bef191f0b1","752a560eb0c1","aa53ef2b7797"]},{"s":"sc82cc7ff","p":"12956e9d191d","o":["26ed23997b33","dbc1e0850044","28949822cb60","578afd381b6c"]},{"s":"s048db5bc","p":"9669b1c49314","o":["23a9b26e0517","57682477d654","3ae4ff6711ab","a5cfb403d457"]},{"s":"se53823e3","p":"0ebf2cb54f99","o":["366b0b00d90c","2029660dd977","11faba329eb3","fcedfe8aab8e"]},{"s":"sa0a704d0","p":"cdb4a1fe7d81","o":["dedc6084a54d","591270096287","465e8aab390d","59be74fd2933"]},{"s":"s48ca22db","p":"6218e3ef98d0","o":["16fa370f576a","3a2103225638","8a6ed6f2cecd","dd32559b376d"]},{"s":"s69e8a4e9","p":"a503ba95f11b","o":["cfa619a81537","668d43d89f14","728e9342ceed","6f57efdbaaff"]},{"s":"sc2c7f109","p":"a8533681af4d","o":["7380b8d82524","45022f3fb4b8","623a2997a4e9","17144569acd7"]},{"s":"s9c34f87c","p":"bb640996a30b","o":["53739160dbff","eb29375a2124","c67603941c3b","f38c012f134e"]},{"s":"s5e68333a","p":"c1c05a5ed4fb","o":["39cb8aee7cb9","b6f3b90e6af3","6c592636d811","df52572b9b4f"]}],[{"s":"s04cea8cb","p":"0c91cb096244","o":["faf5f3219345","a1626b4138b3","1c8c26e545f5","e7b20b494767"]},{"s":"sc2c7f109","p":"a8533681af4d","o":["17144569acd7","623a2997a4e9","7380b8d82524","45022f3fb4b8"]},{"s":"s5568340c","p":"80e8c795c54d","o":["87bef191f0b1","752a560eb0c1","aa53ef2b7797","92553269c1b4"]},{"s":"s9c34f87c","p":"bb640996a30b","o":["eb29375a2124","c67603941c3b","53739160dbff","f38c012f134e"]},{"s":"s70dfba59","p":"84c9d997dc24","o":["f5e35d2522f4","f58f28ba6b47","e0bd340d9fb4","416a717d984a"]},{"s":"sc2bf1401","p":"9955ad6f9305","o":["d5637cf4df38","a87038447705","009d41b36635","987a025b0790"]},{"s":"se53823e3","p":"0ebf2cb54f99","o":["2029660dd977","366b0b00d90c","fcedfe8aab8e","11faba329eb3"]},{"s":"sa64b19d2","p":"e580f859059c","o":["3dd1c6cd51a9","fdc956fb547d","753a08f32551","bd81a6c3f9d5"]},{"s":"sa0a704d0","p":"cdb4a1fe7d81","o":["591270096287","dedc6084a54d","465e8aab390d","59be74fd2933"]},{"s":"seadeab42","p":"c31559bae772","o":["4209784059fa","4791723c241d","10d543f0489d","41731bfaeb9f"]},{"s":"sc177225e","p":"2d95cafda1c7","o":["f729dc2b71c2","8e0bdd9aba5e","32e2223c27d3","f8f358583db6"]},{"s":"s167f1729","p":"2a5f16413e18","o":["de575b7ab0ae","7c9dd38a7552","ad440009abd9","a48c4566d9d7"]},{"s":"s30a14c97","p":"25d823aba21b","o":["7328bd12f1e2","abffb69b8c23","21993e2786fa","0372aca69a14"]},{"s":"s3db3a10d","p":"95e06c8fa7e4","o":["16e384070afd","fde35c2d8eb5","222e6c69bb95","b4c6c8802962"]},{"s":"sc82cc7ff","p":"12956e9d191d","o":["26ed23997b33","dbc1e0850044","578afd381b6c","28949822cb60"]},{"s":"s048db5bc","p":"9669b1c49314","o":["a5cfb403d457","23a9b26e0517","57682477d654","3ae4ff6711ab"]},{"s":"s5e68333a","p":"c1c05a5ed4fb","o":["39cb8aee7cb9","df52572b9b4f","6c592636d811","b6f3b90e6af3"]},{"s":"s69e8a4e9","p":"a503ba95f11b","o":["cfa619a81537","668d43d89f14","728e9342ceed","6f57efdbaaff"]},{"s":"s4fa15b0a","p":"ed8a8c390c18","o":["5582a7583eb2","790067ed74c9","1f75bec977f1","5211149107d9"]},{"s":"s48ca22db","p":"6218e3ef98d0","o":["16fa370f576a","dd32559b376d","3a2103225638","8a6ed6f2cecd"]}],[{"s":"s4fa15b0a","p":"ed8a8c390c18","o":["1f75bec977f1","5582a7583eb2","5211149107d9","790067ed74c9"]},{"s":"sc2c7f109","p":"a8533681af4d","o":["45022f3fb4b8","623a2997a4e9","7380b8d82524","17144569acd7"]},{"s":"s70dfba59","p":"84c9d997dc24","o":["416a717d984a","f58f28ba6b47","e0bd340d9fb4","f5e35d2522f4"]},{"s":"s5e68333a","p":"c1c05a5ed4fb","o":["6c592636d811","39cb8aee7cb9","b6f3b90e6af3","df52572b9b4f"]},{"s":"sa0a704d0","p":"cdb4a1fe7d81","o":["465e8aab390d","591270096287","59be74fd2933","dedc6084a54d"]},{"s":"sc177225e","p":"2d95cafda1c7","o":["8e0bdd9aba5e","32e2223c27d3","f729dc2b71c2","f8f358583db6"]},{"s":"s3db3a10d","p":"95e06c8fa7e4","o":["fde35c2d8eb5","222e6c69bb95","16e384070afd","b4c6c8802962"]},{"s":"s9c34f87c","p":"bb640996a30b","o":["f38c012f134e","c67603941c3b","53739160dbff","eb29375a2124"]},{"s":"s048db5bc","p":"9669b1c49314","o":["57682477d654","a5cfb403d457","3ae4ff6711ab","23a9b26e0517"]},{"s":"s167f1729","p":"2a5f16413e18","o":["7c9dd38a7552","ad440009abd9","de575b7ab0ae","a48c4566d9d7"]},{"s":"sc82cc7ff","p":"12956e9d191d","o":["578afd381b6c","26ed23997b33","28949822cb60","dbc1e0850044"]},{"s":"s48ca22db","p":"6218e3ef98d0","o":["16fa370f576a","8a6ed6f2cecd","dd32559b376d","3a2103225638"]},{"s":"seadeab42","p":"c31559bae772","o":["4791723c241d","10d543f0489d","4209784059fa","41731bfaeb9f"]},{"s":"s30a14c97","p":"25d823aba21b","o":["0372aca69a14","abffb69b8c23","21993e2786fa","7328bd12f1e2"]},{"s":"s5568340c","p":"80e8c795c54d","o":["aa53ef2b7797","87bef191f0b1","92553269c1b4","752a560eb0c1"]},{"s":"s04cea8cb","p":"0c91cb096244","o":["faf5f3219345","e7b20b494767","a1626b4138b3","1c8c26e545f5"]},{"s":"s69e8a4e9","p":"a503ba95f11b","o":["6f57efdbaaff","668d43d89f14","728e9342ceed","cfa619a81537"]},{"s":"sa64b19d2","p":"e580f859059c","o":["753a08f32551","3dd1c6cd51a9","bd81a6c3f9d5","fdc956fb547d"]},{"s":"se53823e3","p":"0ebf2cb54f99","o":["fcedfe8aab8e","2029660dd977","11faba329eb3","366b0b00d90c"]},{"s":"sc2bf1401","p":"9955ad6f9305","o":["009d41b36635","d5637cf4df38","987a025b0790","a87038447705"]}],[{"s":"s4fa15b0a","p":"ed8a8c390c18","o":["790067ed74c9","5582a7583eb2","1f75bec977f1","5211149107d9"]},{"s":"sc82cc7ff","p":"12956e9d191d","o":["dbc1e0850044","26ed23997b33","28949822cb60","578afd381b6c"]},{"s":"s5568340c","p":"80e8c795c54d","o":["87bef191f0b1","752a560eb0c1","92553269c1b4","aa53ef2b7797"]},{"s":"s9c34f87c","p":"bb640996a30b","o":["eb29375a2124","f38c012f134e","53739160dbff","c67603941c3b"]},{"s":"s167f1729","p":"2a5f16413e18","o":["7c9dd38a7552","a48c4566d9d7","ad440009abd9","de575b7ab0ae"]},{"s":"s04cea8cb","p":"0c91cb096244","o":["a1626b4138b3","faf5f3219345","e7b20b494767","1c8c26e545f5"]},{"s":"s048db5bc","p":"9669b1c49314","o":["a5cfb403d457","23a9b26e0517","3ae4ff6711ab","57682477d654"]},{"s":"sc2bf1401","p":"9955ad6f9305","o":["009d41b36635","d5637cf4df38","a87038447705","987a025b0790"]},{"s":"s5e68333a","p":"c1c05a5ed4fb","o":["39cb8aee7cb9","6c592636d811","b6f3b90e6af3","df52572b9b4f"]},{"s":"sa64b19d2","p":"e580f859059c","o":["bd81a6c3f9d5","753a08f32551","fdc956fb547d","3dd1c6cd51a9"]},{"s":"sc177225e","p":"2d95cafda1c7","o":["8e0bdd9aba5e","32e2223c27d3","f8f358583db6","f729dc2b71c2"]},{"s":"s48ca22db","p":"6218e3ef98d0","o":["16fa370f576a","dd32559b376d","3a2103225638","8a6ed6f2cecd"]},{"s":"seadeab42","p":"c31559bae772","o":["4209784059fa","10d543f0489d","41731bfaeb9f","4791723c241d"]},{"s":"s70dfba59","p":"84c9d997dc24","o":["e0bd340d9fb4","416a717d984a","f5e35d2522f4","f58f28ba6b47"]},{"s":"s3db3a10d","p":"95e06c8fa7e4","o":["b4c6c8802962","fde35c2d8eb5","16e384070afd","222e6c69bb95"]},{"s":"sc2c7f109","p":"a8533681af4d","o":["17144569acd7","623a2997a4e9","7380b8d82524","45022f3fb4b8"]},{"s":"s69e8a4e9","p":"a503ba95f11b","o":["728e9342ceed","cfa619a81537","668d43d89f14","6f57efdbaaff"]},{"s":"se53823e3","p":"0ebf2cb54f99","o":["2029660dd977","fcedfe8aab8e","11faba329eb3","366b0b00d90c"]},{"s":"sa0a704d0","p":"cdb4a1fe7d81","o":["59be74fd2933","591270096287","dedc6084a54d","465e8aab390d"]},{"s":"s30a14c97","p":"25d823aba21b","o":["abffb69b8c23","7328bd12f1e2","0372aca69a14","21993e2786fa"]}]],"endpoint":"https://script.google.com/macros/s/AKfycbztcrUnJNek8kvPX9Y9XGQU2gP6mUfX0Y1wINyfvqBufw9AhwJ8cfwuYZPC3rYbxUpjOA/exec"};</script>
+<script id="app">
+(function () {
+  "use strict";
+  var S = window.STUDY;
+  var $ = function (id) { return document.getElementById(id); };
+  if (!S || !S.forms || !S.forms.length) { document.body.textContent = "Study data missing."; return; }
+  var LET = ["A", "B", "C", "D"];
+  var QS = ["best"];
+  var N = S.forms[0].length;
+  var PREVIEW = location.hash === "#preview";
+  var PFX = "us4:" + S.kit_id + ":";
+  var AUTO = !/[?&]manual=1/.test(location.search), AUTO_MS = 450, autoTimer = null;
+  // Standalone hosting (GitHub Pages): the finished session is POSTed once to a Google Apps Script web app that appends a row to
+  // the organizer's sheet (user 11-10: "git으로 페이지만들것 구글 스프레드시트로 자동 수집"). The address comes from the build (S.endpoint);
+  // on 127.0.0.1 / localhost a test may point it elsewhere with ?ep_test=<url>.
+  var ENDPOINT = (function () {
+    var m = /[?&]ep_test=([^&#]+)/.exec(location.search);
+    if (m && /^(127\.0\.0\.1|localhost)$/.test(location.hostname)) return m[1] === "off" ? "" : decodeURIComponent(m[1]);
+    return (S && typeof S.endpoint === "string") ? S.endpoint : "";
+  })();
+  var RM = { state: "idle", tries: 0 };   // idle | sending | ok | unconfirmed | failed
+  var MAX_KEEP = 12;   // sessions kept in one participant's document (older unfinished ones are dropped first)
+
+  // cyrb53 (public domain, bryc), first half: 32-bit hash for the completion code.
+  function hash32(str) {
+    var h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for (var i = 0; i < str.length; i++) {
+      var ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+    h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    return h1 >>> 0;
+  }
+  function rbytes(nb) {
+    var a = new Uint8Array(nb), i;
+    try { crypto.getRandomValues(a); } catch (e) { for (i = 0; i < nb; i++) a[i] = Math.floor(Math.random() * 256); }
+    return a;
+  }
+  function rhex(nb) { return Array.prototype.map.call(rbytes(nb), function (b) { return ("0" + b.toString(16)).slice(-2); }).join(""); }
+  // No participant ID: every new session draws one of the balanced forms at random (each form puts every method on each letter 5 times).
+  function pickForm() { var b = rbytes(4); return ((b[0] << 24 | b[1] << 16 | b[2] << 8 | b[3]) >>> 0) % S.forms.length; }
+  function isoNow() { return new Date().toISOString(); }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function withTimeout(p, ms) {
+    return new Promise(function (res, rej) {
+      var over = false, tm = setTimeout(function () { if (!over) { over = true; rej({ code: "timeout" }); } }, ms);
+      Promise.resolve(p).then(function (v) { if (!over) { over = true; clearTimeout(tm); res(v); } },
+        function (e) { if (!over) { over = true; clearTimeout(tm); rej(e); } });
+    });
+  }
+  function errCode(e) { return (e && typeof e.code === "string") ? e.code : "unavailable"; }
+  function transient(c) { return c === "unavailable" || c === "timeout" || c === "resource_exhausted"; }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  var local = {
+    get: function (k) { try { var v = localStorage.getItem(PFX + k); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
+    set: function (k, v) { if (PREVIEW) return true; try { localStorage.setItem(PFX + k, JSON.stringify(v)); return true; } catch (e) { return false; } },
+    del: function (k) { try { localStorage.removeItem(PFX + k); } catch (e) { /* storage blocked */ } }
+  };
+  function env() {
+    var tz = ""; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) { tz = ""; }
+    return { ua: navigator.userAgent, lang: navigator.language || "", screen: [screen.width, screen.height], dpr: window.devicePixelRatio || 1,
+      viewport: [window.innerWidth, window.innerHeight], tz: tz, protocol: location.protocol };
+  }
+
+  // ------------------------------------------------------------------ where answers go
+  // mode: checking | db (this study's response store: responses/<account id>) | local (this browser only; copy at the end) | preview
+  var SV = { mode: PREVIEW ? "preview" : "checking", inViewer: false, db: null, uid: null, sessions: {}, writing: false, dirty: false,
+             lastOk: null, failed: false, reason: "" };
+  var st = null, cur = null, onDone = false, waiters = [];
+  function docPath() { return "responses/" + SV.uid; }
+
+  var ready = (async function detect() {
+    if (PREVIEW) { renderSave(); return; }
+    var C = null;
+    try { C = (typeof claude !== "undefined" && claude && typeof claude.use === "function") ? claude : null; } catch (e) { C = null; }
+    SV.inViewer = !!C;
+    if (!C) { SV.mode = ENDPOINT ? "remote" : "local"; SV.reason = "no_runtime"; renderSave(); return; }
+    var user = null, db = null, uid = null, canWrite = null;
+    try { user = await withTimeout(C.use("user"), 12000); } catch (e) { user = null; }
+    try { db = await withTimeout(C.use("db"), 12000); } catch (e) { db = null; }
+    if (user) {
+      try { uid = await withTimeout(user.id(), 8000); } catch (e) { uid = null; }
+      try { canWrite = await withTimeout(user.can("data.write"), 8000); } catch (e) { canWrite = null; }
+    }
+    if (!db || !uid || canWrite === false) { SV.mode = "local"; SV.reason = !db ? "no_db" : (!uid ? "no_id" : "no_write"); renderSave(); return; }
+    SV.db = db; SV.uid = uid;
+    for (var i = 0; i < 3; i++) {
+      try {
+        var snap = await withTimeout(db.doc(docPath()).get(), 10000);
+        var d = (snap && snap.exists) ? (snap.data() || {}) : {};
+        SV.sessions = clone(d.sessions || {});   // snapshots are frozen: keep our own copy
+        SV.mode = "db"; renderSave(); return;
+      } catch (e) {
+        var c = errCode(e);
+        if (i < 2 && transient(c)) { await sleep(800 * (i + 1)); continue; }
+        SV.mode = "local"; SV.reason = "read_" + c; renderSave(); return;
+      }
+    }
+  })();
+
+  function trimSessions() {
+    var ids = Object.keys(SV.sessions);
+    if (ids.length <= MAX_KEEP) return;
+    ids.filter(function (k) { return !SV.sessions[k].finished && k !== (st && st.session_id); })
+      .sort(function (a, b) { return String(SV.sessions[a].started).localeCompare(String(SV.sessions[b].started)); })
+      .slice(0, ids.length - MAX_KEEP).forEach(function (k) { delete SV.sessions[k]; });
+  }
+  // every change of the session is saved: in this browser always, and in the response store when it is available
+  function persist() {
+    if (!st || SV.mode === "preview") return;
+    st.store = SV.mode;
+    local.set("session", st);
+    if (SV.mode !== "db") return;
+    SV.sessions[st.session_id] = clone(st);
+    trimSessions();
+    SV.dirty = true;
+    if (!SV.writing) flush();
+  }
+  // one write at a time to the participant's document; transient failures wait and retry; a refusal switches to the copy route
+  async function flush() {
+    SV.writing = true; renderSave();
+    while (SV.dirty && SV.mode === "db") {
+      SV.dirty = false;
+      var body = { kit_id: S.kit_id, updated: isoNow(), sessions: clone(SV.sessions) }, ok = false;
+      for (var i = 0; i < 5; i++) {
+        try { await withTimeout(SV.db.doc(docPath()).set(body), 15000); ok = true; break; }
+        catch (e) {
+          var c = errCode(e); SV.reason = "write_" + c;
+          if (i < 4 && transient(c)) { await sleep(600 * Math.pow(2, i) * (0.75 + Math.random() * 0.5)); continue; }
+          break;
+        }
+      }
+      if (!ok) { SV.mode = "local"; SV.failed = true; SV.dirty = false; if (st) { st.store = "local"; local.set("session", st); } break; }
+      SV.lastOk = isoNow();
+    }
+    SV.writing = false; renderSave();
+    var w = waiters; waiters = []; w.forEach(function (f) { f(); });
+    if (onDone) renderDone();
+  }
+  function settled() { return new Promise(function (r) { if (!SV.writing && !SV.dirty) r(); else waiters.push(r); }); }
+
+  function renderSave() {
+    var t = "";
+    if (SV.mode === "preview") t = "Preview: not saved";
+    else if (SV.mode === "checking") t = "Connecting…";
+    else if (SV.mode === "db") t = SV.writing ? "Saving…" : (SV.lastOk ? "All answers saved" : "Answers save automatically");
+    else if (SV.mode === "remote") t = RM.state === "sending" ? "Submitting…" : (RM.state === "ok" ? "Answers submitted" : "Answers are sent when you finish");
+    else t = SV.inViewer ? "Not saving automatically" : "Saved in this browser only";
+    $("saveTxt").textContent = t;
+    $("saveTxt").className = "save" + ((SV.mode === "local" && SV.inViewer) ? " bad" : "");
+    var note = $("saveNote");
+    if (SV.mode === "preview") note.textContent = "Preview: nothing is saved. Use Skip this scene to move on without answering.";
+    else if (SV.mode === "checking") note.textContent = "Checking where your answers will be saved…";
+    else if (SV.mode === "db") note.textContent = "Your answers are saved to this study after every scene, so you can close the page and continue later.";
+    else if (SV.inViewer) note.textContent = "Automatic saving is not available for your account. At the end, copy your results and send them to the organizer.";
+    else if (SV.mode === "remote") note.textContent = "Your answers are kept in this browser while you work and are sent to the organizer when you finish. Please take part only once.";
+    else note.textContent = "Your answers are kept in this browser. At the end, download or copy your results and send them to the organizer.";
+    $("startBtn").disabled = SV.mode === "checking";
+    $("startBtn").textContent = SV.mode === "checking" ? "Getting ready…" : "Start the study";
+  }
+
+  function show(v) {
+    $("vIntro").hidden = v !== "intro"; $("vTrial").hidden = v !== "trial"; $("vDone").hidden = v !== "done";
+    $("prog").hidden = v === "intro"; $("skipBtn").hidden = !(PREVIEW && v === "trial");
+  }
+  function newSession() {
+    var f = pickForm();
+    return { format: "us4-v5", client: "e53-web-7", kit_id: S.kit_id, participant: "P-" + rhex(4).toUpperCase(), form: f,
+      session_id: rhex(8), started: isoNow(), finished: null, preview: PREVIEW, resumes: 0, env: env(),
+      order: S.forms[f].map(function (x) { return x.s; }), trials: [], completion_code: null, store: SV.mode };
+  }
+  // the session to offer: in the response store the participant's newest session of this kit, else this browser's copy
+  function existingSession() {
+    if (SV.mode === "db") {
+      var mine = Object.keys(SV.sessions).map(function (k) { return SV.sessions[k]; }).filter(function (x) { return x && x.kit_id === S.kit_id; });
+      var fin = mine.filter(function (x) { return x.finished; }).sort(function (a, b) { return String(a.finished).localeCompare(String(b.finished)); });
+      if (fin.length) return fin[0];
+      var open = mine.sort(function (a, b) { return String(b.started).localeCompare(String(a.started)); });
+      if (open.length) return open[0];
+    }
+    var s = PREVIEW ? null : local.get("session");
+    return (s && s.kit_id === S.kit_id) ? s : null;
+  }
+
+  async function initIntro() {
+    show("intro");
+    $("lenN").textContent = String(N);
+    if (PREVIEW) $("previewBanner").hidden = false;
+    renderSave();
+    await ready;
+    var s = existingSession();
+    if (s) {
+      $("resumeBox").hidden = false; $("startBox").hidden = true;
+      $("resumeTxt").textContent = s.finished ? "You have completed this study. Thank you."
+        : "You have an unfinished session: " + s.trials.length + " of " + N + " scenes answered.";
+      $("resumeBtn").textContent = s.finished ? "Show completion code" : "Continue";
+      $("resumeBtn").onclick = function () { begin(s); };
+    }
+  }
+  var resetArmed = false;
+  $("resetBtn").onclick = function () {
+    if (!resetArmed) {
+      resetArmed = true;
+      $("resetBtn").textContent = SV.mode === "db" ? "Start a new session (earlier answers stay saved)" : "Delete my saved answers";
+      return;
+    }
+    local.del("session");
+    resetArmed = false; $("resetBtn").textContent = "Start over";
+    $("resumeBox").hidden = true; $("startBox").hidden = false;
+    begin(null);
+  };
+  $("startBtn").onclick = function () { ready.then(function () { begin(null); }); };
+
+  function begin(s) {
+    if (s && s.kit_id === S.kit_id) { st = clone(s); st.resumes = (st.resumes || 0) + 1; st.last_resume = isoNow(); }
+    else st = newSession();
+    if (st.finished || st.trials.length >= N) { finish(); return; }
+    persist();
+    showTrial(st.trials.length);
+  }
+
+  function putImg(stageId, tok, alt, c) {
+    var img = new Image();
+    img.alt = alt; img.decoding = "async";
+    img.onload = function () { if (c !== cur) return; c.loaded++; if (c.loaded === 5) ready5(c); refresh(); };
+    img.onerror = function () { if (c !== cur) return; c.rec.img_error = true; c.loaded++; $("imgErr").hidden = false; if (c.loaded === 5) ready5(c); refresh(); };
+    img.src = "img/" + tok + ".jpg";
+    $(stageId).replaceChildren(img);
+  }
+  function ready5(c) { if (c.revisit) return; c.rec.t_ready = isoNow(); c.rec.rt_ready_ms = Date.now() - c.t0; }
+  function preload(i) {
+    if (i >= N) return;
+    var it = S.forms[st.form][i];
+    [it.p].concat(it.o).forEach(function (t) { var im = new Image(); im.src = "img/" + t + ".jpg"; });
+  }
+
+  // i = index of the scene on screen (N = finished). "left" counts the scenes still to answer, this one included.
+  function drawProgress(i) {
+    var segs = $("segs");
+    if (segs.children.length !== N) { segs.replaceChildren(); for (var k = 0; k < N; k++) segs.appendChild(document.createElement("i")); }
+    Array.prototype.forEach.call(segs.children, function (el, k) { el.className = k < i ? "done" : (k === i ? "cur" : ""); });
+    $("progTxt").textContent = i >= N ? "All " + N + " scenes done" : "Scene " + (i + 1) + " of " + N;
+    $("leftTxt").textContent = i >= N ? "" : (N - i) + " left";
+  }
+  function showTrial(i) {
+    var item = S.forms[st.form][i], t0 = Date.now();
+    // a scene reached again with Back keeps its record: the answer is shown and can be changed, time adds up, visits are counted
+    var old = st.trials[i] ? clone(st.trials[i]) : null;
+    cur = { i: i, item: item, loaded: 0, active: 0, t0: t0, done: false, revisit: !!old,
+      rec: old || { pos: i + 1, scene: item.s, photo: item.p, shown: { A: item.o[0], B: item.o[1], C: item.o[2], D: item.o[3] },
+        answers: { best: null }, changes: { best: 0 }, visits: 0,
+        t_shown: new Date(t0).toISOString(), t_ready: null, t_next: null, rt_ms: null, rt_ready_ms: null, img_error: false } };
+    cur.rec.visits = (cur.rec.visits || (old ? 1 : 0)) + 1;
+    show("trial");
+    $("imgErr").hidden = true;
+    drawProgress(i);
+    putImg("stP", item.p, "Input photo", cur);
+    LET.forEach(function (L, k) { putImg("st" + L, item.o[k], "Scene " + L, cur); });
+    $("nextBtn").textContent = (i + 1 === N) ? "Finish and submit" : "Next scene";
+    refresh();
+    window.scrollTo(0, 0);
+    preload(i + 1);
+  }
+
+  function canNext() { return !!cur && !cur.done && cur.loaded >= 5 && !!cur.rec.answers.best; }
+  function refresh() {
+    if (!cur) return;
+    var a = cur.rec.answers;
+    QS.forEach(function (q, qi) {
+      var box = $("q_" + q);
+      box.classList.toggle("active", cur.active === qi);
+      Array.prototype.forEach.call(box.querySelectorAll(".opt"), function (b) { b.setAttribute("aria-pressed", String(b.dataset.l === a[q])); });
+    });
+    LET.forEach(function (L) {
+      var card = $("cand" + L), tags = [];
+      if (a.best === L) tags.push("selected");
+      card.querySelector(".picks").replaceChildren.apply(card.querySelector(".picks"), tags.map(function (t) {
+        var s = document.createElement("span"); s.className = "pick"; s.textContent = t; return s;
+      }));
+      card.classList.toggle("sel", tags.length > 0);
+    });
+    $("nextBtn").disabled = !canNext();
+    $("backBtn").disabled = !(cur.i > 0 && !cur.done && !!st.trials[cur.i - 1]);
+    $("vTrial").dataset.ready = cur.loaded >= 5 ? "1" : "0";
+    $("nextHint").textContent = cur.loaded < 5 ? "Loading images…" : !a.best ? "Choose one scene to continue." : "";
+  }
+  function choose(qi, L) {
+    if (!cur || cur.done) return;
+    var q = QS[qi], a = cur.rec.answers;
+    if (a[q] && a[q] !== L) cur.rec.changes[q]++;
+    a[q] = L;
+    cur.active = 0;
+    refresh();
+    // auto-advance (user 11-10: "클릭했을때 다음 장으로 자동으로 넘어가게"): a choice moves on after a short pause that shows the
+    // selection. Not on the last scene (Finish and submit stays a deliberate click). Back undoes a slip. ?manual=1 switches it off.
+    if (AUTO && cur.i + 1 < N) {
+      var c = cur;
+      clearTimeout(autoTimer);
+      autoTimer = setTimeout(function () { if (cur === c && !c.done && canNext()) { c.rec.auto = true; next(false); } }, AUTO_MS);
+    }
+  }
+  function next(skip) {
+    if (!cur || cur.done) return;
+    if (!skip && !canNext()) return;
+    cur.done = true;
+    if (!skip) {
+      var t = Date.now();
+      cur.rec.t_next = new Date(t).toISOString();
+      if (cur.revisit) { cur.rec.rt_ms = (cur.rec.rt_ms || 0) + (t - cur.t0); st.trials[cur.i] = cur.rec; }
+      else { cur.rec.rt_first_ms = t - cur.t0; cur.rec.rt_ms = t - cur.t0; st.trials.push(cur.rec); }
+      persist();
+    }
+    var i = cur.i + 1;
+    if (i >= N) finish(); else showTrial(i);
+  }
+  // Back: leave this scene without recording a new answer for it (an answer already recorded for it stays) and reopen the previous one
+  function back() {
+    if (!cur || cur.done || cur.i <= 0 || !st.trials[cur.i - 1]) return;
+    clearTimeout(autoTimer);
+    cur.done = true;
+    st.backs = (st.backs || 0) + 1;
+    showTrial(cur.i - 1);
+  }
+  function finish() {
+    if (!st.finished) {
+      st.finished = isoNow();
+      st.completion_code = "US4-" + hash32(st.kit_id + "|" + st.participant + "|" + st.session_id + "|" + st.trials.length).toString(36).toUpperCase();
+      persist();
+    }
+    cur = null; onDone = true;
+    if (SV.mode === "remote") remoteSubmit();
+    show("done");
+    drawProgress(N);
+    $("doneN").textContent = String(st.trials.length);
+    $("doneCode").textContent = st.completion_code;
+    $("resultTxt").value = JSON.stringify(st, null, 1);
+    renderDone();
+    window.scrollTo(0, 0);
+    if (SV.mode === "db") settled().then(renderDone);
+  }
+  // Short result code for participants whose answers cannot be saved to the study (view-only or outside accounts): one line that
+  // carries the kit, the form, the chosen letter of every scene in the order shown, the median and total answer time and a checksum.
+  //   R5.<kit 6>.<form>.<letters>.<median s x10, base36>.<total s, base36>.<backs>.<checksum base36>
+  function resultCode() {
+    var tr = st.trials, rts = tr.map(function (t) { return t.rt_ms || 0; }).sort(function (a, b) { return a - b; });
+    var med = rts.length ? (rts.length % 2 ? rts[(rts.length - 1) / 2] : (rts[rts.length / 2 - 1] + rts[rts.length / 2]) / 2) : 0;
+    var tot = rts.reduce(function (a, b) { return a + b; }, 0);
+    var body = ["R5", String(st.kit_id).slice(0, 6), st.form, tr.map(function (t) { return t.answers.best; }).join(""),
+      Math.round(med / 100).toString(36), Math.round(tot / 1000).toString(36), st.backs || 0].join(".");
+    return body + "." + hash32(body + "|" + st.participant).toString(36) + "." + String(st.participant).slice(2);
+  }
+  function remotePayload() {
+    var rts = st.trials.map(function (t) { return t.rt_ms || 0; }), tot = rts.reduce(function (a, b) { return a + b; }, 0);
+    return { v: "us4-sheet-1", kit_id: st.kit_id, participant: st.participant, session_id: st.session_id, form: st.form,
+      started: st.started, finished: st.finished, n: st.trials.length, letters: st.trials.map(function (t) { return t.answers.best; }).join(""),
+      code: resultCode(), total_s: Math.round(tot / 1000), backs: st.backs || 0, ua: navigator.userAgent, lang: navigator.language || "",
+      screen: screen.width + "x" + screen.height, session: JSON.stringify(st) };
+  }
+  // one POST (text/plain = no preflight). A readable {ok:true} answer = confirmed. If the answer cannot be read (cross-origin
+  // redirect of the script host), one more attempt goes out as an opaque request and counts as "unconfirmed": the result code is
+  // then shown too, so nothing is lost either way.
+  async function remoteSubmit() {
+    if (SV.mode !== "remote" || !st || !st.finished || RM.state === "sending" || RM.state === "ok") return;
+    if (local.get("sent") === st.session_id) { RM.state = "ok"; renderSave(); renderDone(); return; }
+    RM.state = "sending"; renderSave(); renderDone();
+    var body = JSON.stringify(remotePayload()), ok = false;
+    for (var i = 0; i < 3 && !ok; i++) {
+      RM.tries++;
+      try {
+        var r = await withTimeout(fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: body, redirect: "follow" }), 20000);
+        var j = null; try { j = await r.json(); } catch (e) { j = null; }
+        if (r.ok && j && j.ok === true) ok = true; else await sleep(800 * (i + 1));
+      } catch (e) { await sleep(800 * (i + 1)); }
+    }
+    if (ok) { RM.state = "ok"; local.set("sent", st.session_id); }
+    else {
+      try { await withTimeout(fetch(ENDPOINT, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: body }), 20000); RM.state = "unconfirmed"; }
+      catch (e) { RM.state = "failed"; }
+    }
+    renderSave(); renderDone();
+  }
+  function renderDone() {
+    if (!st || !st.finished) return;
+    var sub = $("submitTxt"), box = $("copyBox");
+    if (SV.mode === "preview") { sub.textContent = "Preview: nothing was saved."; sub.className = "submit"; box.hidden = true; return; }
+    if (SV.mode === "db" && (SV.writing || SV.dirty)) { sub.textContent = "Submitting your answers…"; sub.className = "submit"; box.hidden = true; return; }
+    if (SV.mode === "db") {
+      sub.textContent = "Your answers have been submitted. Thank you, you can close this page."; sub.className = "submit ok"; box.hidden = true; return;
+    }
+    if (SV.mode === "remote" && (RM.state === "idle" || RM.state === "sending")) { sub.textContent = "Submitting your answers…"; sub.className = "submit"; box.hidden = true; return; }
+    if (SV.mode === "remote" && RM.state === "ok") {
+      sub.textContent = "Your answers have been submitted. Thank you, you can close this page."; sub.className = "submit ok"; box.hidden = true; return;
+    }
+    if (SV.mode === "remote") {
+      box.hidden = false; $("resCode").textContent = resultCode(); $("dlBtn").hidden = true;
+      sub.textContent = RM.state === "unconfirmed" ? "Your answers were sent, but the confirmation did not come back." : "Your answers could not be sent automatically.";
+      sub.className = "submit bad";
+      $("saveInfo").textContent = "To be safe, copy the result code below and send it to the organizer (by message or email).";
+      return;
+    }
+    box.hidden = false;
+    $("resCode").textContent = resultCode();
+    $("dlBtn").hidden = SV.inViewer;   // downloads do not work inside the viewer
+    if (SV.inViewer) {
+      sub.textContent = "Your answers could not be submitted automatically."; sub.className = "submit bad";
+      $("saveInfo").textContent = "Copy the result code below and send it to the organizer (by message or email). Nothing else is needed.";
+    } else {
+      sub.textContent = "Your answers are saved in this browser only."; sub.className = "submit";
+      $("saveInfo").textContent = "Copy the result code below and send it to the organizer (by message or email).";
+    }
+  }
+
+  $("dlBtn").onclick = function () {
+    var blob = new Blob([$("resultTxt").value], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "us4_" + S.kit_id + "_" + String(st.participant).replace(/[^A-Za-z0-9_-]/g, "_") + ".json";
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  };
+  $("codeBtn").onclick = function () {
+    var t = $("resCode").textContent, done = function (ok) { $("codeMsg").textContent = ok ? "Copied." : "Select the code above and copy it."; };
+    try { navigator.clipboard.writeText(t).then(function () { done(true); }, function () { done(false); }); } catch (e) { done(false); }
+  };
+  $("copyBtn").onclick = function () {
+    var txt = $("resultTxt").value;
+    var fallback = function () { $("copyMsg").textContent = "Select the text below and copy it."; $("resultDet").open = true; $("resultTxt").focus(); $("resultTxt").select(); };
+    try { navigator.clipboard.writeText(txt).then(function () { $("copyMsg").textContent = "Copied."; }, fallback); } catch (e) { fallback(); }
+  };
+
+  QS.forEach(function (q, qi) {
+    var box = $("q_" + q);
+    Array.prototype.forEach.call(box.querySelectorAll(".opt"), function (b) { b.onclick = function () { choose(qi, b.dataset.l); }; });
+  });
+  $("nextBtn").onclick = function () { next(false); };
+  $("backBtn").onclick = function () { back(); };
+  $("skipBtn").onclick = function () { if (PREVIEW && cur) next(true); };
+  // clicking a candidate scene chooses it (user 11-10 12시대: "이미지 눌렀을때 확대하지말고 선택되게")
+  LET.forEach(function (L) { $("st" + L).onclick = function () { choose(0, L); }; });
+
+  function keyIdx(k) { var m = { "1": 0, "2": 1, "3": 2, "4": 3, a: 0, b: 1, c: 2, d: 3 }; k = String(k).toLowerCase(); return Object.prototype.hasOwnProperty.call(m, k) ? m[k] : -1; }
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    var t = e.target || {}, tag = t.tagName || "";
+    if (tag === "INPUT" || tag === "TEXTAREA") return;
+    if ($("vTrial").hidden || !cur) return;
+    var k = keyIdx(e.key);
+    if (k >= 0) { choose(0, LET[k]); e.preventDefault(); return; }
+    if (e.key === "Enter" && t.id !== "nextBtn") { e.preventDefault(); next(false); }
+  });
+
+  // opening #preview on an already open tab only changes the hash; reload so the mode is read again
+  window.addEventListener("hashchange", function () { if ((location.hash === "#preview") !== PREVIEW) location.reload(); });
+  initIntro();
+})();
+</script>
+</body></html>
