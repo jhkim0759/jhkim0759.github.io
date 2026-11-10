@@ -174,7 +174,7 @@ kbd{font-family:var(--font-mono);font-size:12px;border:1px solid var(--line);bor
     </div>
     <ul class="facts">
       <li>Pick exactly one of A–D on every screen. If two look equally good, choose the one you lean toward.</li>
-      <li>Click a scene, or press its key, to choose it. The study then moves to the next scene by itself. The top bar shows how many scenes are left.</li>
+      <li>Click a scene, or press its key, to choose it. The study then moves to the next scene by itself, and your answers are submitted right after the last scene. The top bar shows how many scenes are left.</li>
       <li>Keys: <kbd>1</kbd>–<kbd>4</kbd> choose A–D, <b>Back</b> returns to the previous scene, where you can change your answer.</li>
     </ul>
     <div class="resume" id="resumeBox" hidden>
@@ -242,7 +242,7 @@ kbd{font-family:var(--font-mono);font-size:12px;border:1px solid var(--line);bor
   var N = S.forms[0].length;
   var PREVIEW = location.hash === "#preview";
   var PFX = "us4:" + S.kit_id + ":";
-  var AUTO = !/[?&]manual=1/.test(location.search), AUTO_MS = 450, autoTimer = null;
+  var AUTO = !/[?&]manual=1/.test(location.search), AUTO_MS = 450, AUTO_LAST_MS = 1200, autoTimer = null;
   // Standalone hosting (GitHub Pages): the finished session is POSTed once to a Google Apps Script web app that appends a row to
   // the organizer's sheet (user 11-10: "git으로 페이지만들것 구글 스프레드시트로 자동 수집"). The address comes from the build (S.endpoint);
   // on 127.0.0.1 / localhost a test may point it elsewhere with ?ep_test=<url>.
@@ -526,11 +526,12 @@ kbd{font-family:var(--font-mono);font-size:12px;border:1px solid var(--line);bor
     cur.active = 0;
     refresh();
     // auto-advance (user 11-10: "클릭했을때 다음 장으로 자동으로 넘어가게"): a choice moves on after a short pause that shows the
-    // selection. Not on the last scene (Finish and submit stays a deliberate click). Back undoes a slip. ?manual=1 switches it off.
-    if (AUTO && cur.i + 1 < N) {
+    // selection. The last scene too: choosing there finishes and submits (user 11-10 23:1x: "마지막 이미지 선택하면 자동으로 제출");
+    // its pause is longer so a slip can still be corrected by choosing again. Back undoes a slip elsewhere. ?manual=1 switches it off.
+    if (AUTO) {
       var c = cur;
       clearTimeout(autoTimer);
-      autoTimer = setTimeout(function () { if (cur === c && !c.done && canNext()) { c.rec.auto = true; next(false); } }, AUTO_MS);
+      autoTimer = setTimeout(function () { if (cur === c && !c.done && canNext()) { c.rec.auto = true; next(false); } }, cur.i + 1 < N ? AUTO_MS : AUTO_LAST_MS);
     }
   }
   function next(skip) {
