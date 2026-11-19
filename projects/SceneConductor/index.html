@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Don't Ask Agents to Do Everything: Selective Agentic Reasoning for Single Image to 3D Scene Generation</title>
-  <meta name="description" content="A framework that generates a complete 3D scene from a single image. Geometry measures the scene and proposes candidate edits; agents mainly accept or reject them against the photograph. With a geometry-aware layout predictor supervised by point maps.">
-  <meta name="keywords" content="single image to 3D scene, 3D scene generation, agents, VLM, selective agentic reasoning, layout prediction, point map, indoor scene, Blender">
+  <title>Don't Ask Agents to Do Everything: Selective Agentic Reasoning for Single-Image 3D Indoor Scene Generation</title>
+  <meta name="description" content="A framework for single-image 3D indoor scene generation that builds a complete 3D scene from one photograph. Geometry measures the scene and proposes candidate edits; agents mainly accept or reject them against the photograph. With a geometry-aware layout predictor supervised by point maps.">
+  <meta name="keywords" content="single-image 3D indoor scene generation, single image to 3D scene, 3D scene generation, agents, VLM, selective agentic reasoning, layout prediction, point map, indoor scene, Blender">
   <meta name="author" content="Jeonghwan Kim, Yushi Lan, Yongwei Chen, Hieu Trung Nguyen, Chuanyu Pan, Yuanming Hu, Xingang Pan">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://jhkim0759.github.io/projects/SceneConductor/">
@@ -13,12 +13,12 @@
 
   <meta property="og:type" content="article">
   <meta property="og:title" content="Don't Ask Agents to Do Everything">
-  <meta property="og:description" content="Selective agentic reasoning for single image to 3D scene generation: geometry proposes, agents accept or reject.">
+  <meta property="og:description" content="Selective agentic reasoning for single-image 3D indoor scene generation: geometry proposes, agents accept or reject.">
   <meta property="og:url" content="https://jhkim0759.github.io/projects/SceneConductor/">
   <meta property="og:image" content="https://jhkim0759.github.io/projects/SceneConductor/static/img/og.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Don't Ask Agents to Do Everything">
-  <meta name="twitter:description" content="Selective agentic reasoning for single image to 3D scene generation.">
+  <meta name="twitter:description" content="Selective agentic reasoning for single-image 3D indoor scene generation.">
   <meta name="twitter:image" content="https://jhkim0759.github.io/projects/SceneConductor/static/img/og.jpg">
 
   <meta name="citation_title" content="SceneConductor: 3D Scene Generation from a Single Image with Multi-Agent Orchestration">
@@ -68,9 +68,9 @@
   </svg>
   <div class="hero-inner">
     <div class="hero-text">
-      <div class="eyebrow">Single-image 3D scene generation · Agentic reasoning</div>
+      <div class="eyebrow">Single-image 3D indoor scene generation · Agentic reasoning</div>
       <h1 class="title">Don't Ask Agents<br>to Do Everything</h1>
-      <p class="subtitle"><span class="cand" id="titleCand">Selective Agentic Reasoning<svg class="cand-box" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="10"/></svg><span class="cand-stamp" aria-hidden="true"><img src="static/img/icons/robot.webp" alt=""><span class="mark ok">✓</span></span></span> for Single Image to 3D&nbsp;Scene Generation</p>
+      <p class="subtitle"><span class="cand" id="titleCand">Selective Agentic Reasoning<svg class="cand-box" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="10"/></svg><span class="cand-stamp" aria-hidden="true"><img src="static/img/icons/robot.webp" alt=""><span class="mark ok">✓</span></span></span> for Single-Image 3D Indoor Scene&nbsp;Generation</p>
       <div class="authors">
         <a href="https://jhkim0759.github.io/">Jeonghwan Kim</a><sup>1</sup>&ensp;
         <a href="https://nirvanalan.github.io/">Yushi Lan</a><sup>2</sup>&ensp;
@@ -118,13 +118,13 @@
   <div class="wrap">
     <div class="tldr card reveal">
       <span class="tldr-tag">TL;DR</span>
-      <p>We turn a single photograph into a complete 3D scene. Instead of asking agents for every number, geometry measures the scene and proposes candidate edits, and agents mainly <b>accept or reject</b> them against the photograph. A layout predictor supervised by point maps poses every object in one floor-aligned frame.</p>
+      <p>We turn a single indoor photograph into a complete 3D scene. Instead of asking agents for every number, geometry measures the scene and proposes candidate edits, and agents mainly <b>accept or reject</b> them against the photograph. A layout predictor supervised by point maps poses every object in one floor-aligned frame.</p>
     </div>
     <h2 class="h2"><span class="num">01</span>Abstract</h2>
     <div class="prose abstract">
-      <p>Recent agentic scene generation frameworks often rely on holistic pipelines that ask agents to resolve multiple entangled factors at once, which limits their performance in complex real-world environments. We propose a framework that generates <b>a complete 3D scene from a single image</b> in three stages, <i>i.e.</i>, scene initialization, environment construction, and scene refinement. Our key idea, termed <b>selective agentic reasoning</b>, is to compute what can be measured geometrically and to leave agents mainly the decisions that remain ambiguous, most of which are simple accept-or-reject questions about candidates proposed from geometry.</p>
+      <p>Recent agentic scene generation frameworks often rely on holistic pipelines that ask agents to resolve multiple entangled factors at once, which limits their performance in complex real-world environments. We propose a framework for single-image 3D indoor scene generation that builds <b>a complete 3D scene</b> in three stages, <i>i.e.</i>, scene initialization, environment construction, and scene refinement. Our key idea, termed <b>selective agentic reasoning</b>, is to compute what can be measured geometrically and to leave agents mainly the decisions that remain ambiguous, most of which are simple accept-or-reject questions about candidates proposed from geometry.</p>
       <p>During initialization, an inspector agent segments and describes the objects in the image, and a reviewer agent decides which proposed mask merges and deletions to apply before each object is generated and posed. The scene is then brought to metric scale and enclosed by a room fitted to the observed walls, which anchors every later correction. Finally, the reviewer screens geometry-proposed corrections of the arrangement, and a group editor agent locally rearranges only the groups that remain wrong before they are merged back. The output is a complete 3D scene that stays faithful to the input image.</p>
-      <p>To pose objects accurately, we further introduce a <b>geometry-aware layout predictor</b> supervised by the point map estimated from the input image, so it can also be trained on real-world images without 3D annotation. Experiments on synthetic and real-world benchmarks show that our framework achieves <b>the highest perceptual quality</b> among agent-based and generative approaches while ranking first or second on every physical metric, and that its layout predictor remains competitive in geometric accuracy.</p>
+      <p>To pose all objects jointly in one floor-aligned frame, we further introduce a <b>geometry-aware layout predictor</b> supervised by the point map estimated from the input image, so it can also be trained on real-world images without 3D annotation. Experiments on synthetic and real-world benchmarks show that our framework achieves <b>the highest perceptual quality</b> among agent-based and generative approaches while ranking first or second on every physical metric, and that its layout predictor remains competitive per object with the strongest baseline.</p>
     </div>
     <div class="ideas">
       <div class="idea card reveal">
@@ -135,16 +135,16 @@
       <div class="idea card reveal">
         <div class="k">Contribution 2</div>
         <h4>Geometry-aware layout predictor</h4>
-        <p>Poses all objects jointly in one floor-aligned frame, supervised by the point map&nbsp;— trainable on real images without 3D labels.</p>
+        <p>Poses all objects jointly in one floor-aligned frame, supervised by the point map&nbsp;— trainable on real images without 3D labels, and competitive per object with the strongest baseline.</p>
       </div>
       <div class="idea card reveal">
         <div class="k">Result</div>
         <h4>A complete Blender scene</h4>
-        <p>Meshes, a metric room, materials and lighting. Best perceptual quality; first or second on every physical metric.</p>
+        <p>Meshes, a metric room, materials and lighting. Preferred by three VLM judges and by human raters; first or second on every physical metric.</p>
       </div>
     </div>
     <div class="stats card reveal">
-      <div class="stat"><div class="v">7.35 <small>/</small> 7.47</div><div class="l">VLM score on MIT-67 / COCO&nbsp;— best among agent-based and generative methods</div></div>
+      <div class="stat"><div class="v">6.62 <small>/</small> 6.81</div><div class="l">VLM score on MIT-67 / COCO, mean of three judges&nbsp;— above every agent-based and generative baseline</div></div>
       <div class="stat"><div class="v">2.1<small>%</small> <small>/</small> 3.5<small>%</small></div><div class="l">objects penetrating the room, vs. at least 12.6&nbsp;% for every baseline</div></div>
       <div class="stat"><div class="v">76.7 <small>→</small> 20.2<small>%</small></div><div class="l">floating objects from Stage&nbsp;1 to Stage&nbsp;3 on MIT-67</div></div>
       <div class="stat"><div class="v">0.0489</div><div class="l">Chamfer distance of the layout predictor on ScanNet&nbsp;— best on every ScanNet metric</div></div>
@@ -295,20 +295,20 @@
     <div class="table-wrap card reveal">
       <table class="res">
         <thead>
-          <tr class="group"><th></th><th colspan="3">3D-FUTURE</th><th colspan="3" class="gl">ScanNet</th><th colspan="3" class="gl">SAGE</th></tr>
-          <tr><th>Model</th><th>CD ↓</th><th>F-Score ↑</th><th>mIoU ↑</th><th class="gl">CD ↓</th><th>F-Score ↑</th><th>mIoU ↑</th><th class="gl">CD ↓</th><th>F-Score ↑</th><th>mIoU ↑</th></tr>
+          <tr class="group"><th></th><th colspan="4">3D-FUTURE</th><th colspan="4" class="gl">ScanNet</th><th colspan="4" class="gl">SAGE</th></tr>
+          <tr><th>Model</th><th>CD ↓</th><th>F-Score ↑</th><th>mIoU ↑</th><th>Qwen ↑</th><th class="gl">CD ↓</th><th>F-Score ↑</th><th>mIoU ↑</th><th>Qwen ↑</th><th class="gl">CD ↓</th><th>F-Score ↑</th><th>mIoU ↑</th><th>Qwen ↑</th></tr>
         </thead>
         <tbody>
-          <tr><td>MIDI</td><td>0.1180</td><td>0.6190</td><td>0.2785</td><td class="gl">0.2088</td><td>0.4460</td><td>0.2313</td><td class="gl">0.1879</td><td>0.4119</td><td>0.0715</td></tr>
-          <tr><td>PartCrafter</td><td>0.2186</td><td>0.4641</td><td>0.1430</td><td class="gl">0.3812</td><td>0.2904</td><td>0.1091</td><td class="gl">0.2096</td><td>0.3932</td><td>0.0363</td></tr>
-          <tr><td>3D-Fixer</td><td>0.0406</td><td>0.8400</td><td>0.4716</td><td class="gl">0.0638</td><td>0.6296</td><td>0.3268</td><td class="gl">0.0239</td><td>0.8439</td><td>0.2823</td></tr>
-          <tr><td>SceneGen</td><td>0.0337</td><td>0.8435</td><td>0.4675</td><td class="gl">0.1532</td><td>0.4897</td><td>0.1807</td><td class="gl">0.1229</td><td>0.4996</td><td>0.0559</td></tr>
-          <tr><td>SAM3D</td><td class="b2">0.0122</td><td class="b2">0.9218</td><td class="b1">0.5904</td><td class="gl b2">0.0499</td><td class="b2">0.6884</td><td class="b2">0.3714</td><td class="gl b1">0.0038</td><td class="b1">0.9643</td><td class="b1">0.4801</td></tr>
-          <tr class="ours"><td>Ours</td><td class="b1">0.0106</td><td class="b1">0.9246</td><td class="b2">0.5820</td><td class="gl b1">0.0489</td><td class="b1">0.6944</td><td class="b1">0.3917</td><td class="gl b2">0.0048</td><td class="b2">0.9511</td><td class="b2">0.4029</td></tr>
+          <tr><td>MIDI</td><td>0.1180</td><td>0.6190</td><td>0.2785</td><td>6.1400</td><td class="gl">0.2088</td><td>0.4460</td><td>0.2313</td><td>1.5063</td><td class="gl">0.1879</td><td>0.4119</td><td>0.0715</td><td>2.7929</td></tr>
+          <tr><td>PartCrafter</td><td>0.2186</td><td>0.4641</td><td>0.1430</td><td>2.5850</td><td class="gl">0.3812</td><td>0.2904</td><td>0.1091</td><td>1.3642</td><td class="gl">0.2096</td><td>0.3932</td><td>0.0363</td><td>2.4350</td></tr>
+          <tr><td>3D-Fixer</td><td>0.0406</td><td>0.8400</td><td>0.4716</td><td>4.3475</td><td class="gl">0.0638</td><td>0.6296</td><td>0.3268</td><td>1.3521</td><td class="gl">0.0239</td><td>0.8439</td><td>0.2823</td><td>2.6925</td></tr>
+          <tr><td>SceneGen</td><td>0.0337</td><td>0.8435</td><td>0.4675</td><td>5.4875</td><td class="gl">0.1532</td><td>0.4897</td><td>0.1807</td><td>1.9110</td><td class="gl">0.1229</td><td>0.4996</td><td>0.0559</td><td>1.9975</td></tr>
+          <tr><td>SAM3D</td><td class="b2">0.0122</td><td class="b2">0.9218</td><td class="b1">0.5904</td><td class="b2">6.2000</td><td class="gl b2">0.0499</td><td class="b2">0.6884</td><td class="b2">0.3714</td><td class="b2">2.3583</td><td class="gl b1">0.0038</td><td class="b1">0.9643</td><td class="b1">0.4801</td><td class="b2">4.6300</td></tr>
+          <tr class="ours"><td>Ours</td><td class="b1">0.0106</td><td class="b1">0.9246</td><td class="b2">0.5820</td><td class="b1">6.5425</td><td class="gl b1">0.0489</td><td class="b1">0.6944</td><td class="b1">0.3917</td><td class="b1">3.2958</td><td class="gl b2">0.0048</td><td class="b2">0.9511</td><td class="b2">0.4029</td><td class="b1">4.8500</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="table-note"><b>Geometric comparison of layout prediction</b> (Table&nbsp;2). Scenes are aligned to the ground truth by one global rigid transform. SAM3D poses each object from its own mask, which suits SAGE's clean synthetic renders. <span class="legend"><span><i style="background:rgba(210,63,49,.18)"></i>best</span><span><i style="background:rgba(232,190,40,.28)"></i>second</span></span></p>
+    <p class="table-note"><b>Geometric comparison of layout prediction</b> (Table&nbsp;2). Scenes are aligned to the ground truth by one global rigid transform; Qwen is the judge score of four views around each aligned scene (3D-FUTURE: 100 test scenes). Per object, ours and SAM3D are competitive, with SAM3D ahead on SAGE's clean synthetic renders, but its objects tilt far more at the scene level on ScanNet and SAGE. <span class="legend"><span><i style="background:rgba(210,63,49,.18)"></i>best</span><span><i style="background:rgba(232,190,40,.28)"></i>second</span></span></p>
   </div>
 </section>
 
@@ -316,7 +316,7 @@
 <section class="section tint" id="results">
   <div class="wrap">
     <h2 class="h2"><span class="num">04</span>Results</h2>
-    <p class="lead"><b>Faithful to the photograph, physically valid.</b> 160 real-world indoor photographs (MIT-67, 85 scenes; COCO, 75 scenes). All agent-based baselines run on the same Qwen3.8-27B; perceptual quality is judged by Qwen3.5-9B (VLM, 0–10) and CLIP similarity on one wide view per method rendered from the photo camera.</p>
+    <p class="lead"><b>Faithful to the photograph, physically valid.</b> 160 real-world indoor photographs (MIT-67, 85 scenes; COCO, 75 scenes). All agent-based baselines run on the same Qwen3.8-27B; perceptual quality is the mean of three VLM judges (Qwen3.5-9B, GLM-4.1V-9B-Thinking and Claude Sonnet&nbsp;5.5; 0–10) and CLIP similarity on one wide view per method rendered from the photo camera.</p>
 
     <div class="table-wrap card reveal">
       <table class="res">
@@ -325,17 +325,17 @@
           <tr><th>Method</th><th>VLM ↑</th><th>CLIP ↑</th><th>Float ↓</th><th>Coll. ↓</th><th>Wall ↓</th><th>Stable ↑</th><th class="gl">VLM ↑</th><th>CLIP ↑</th><th>Float ↓</th><th>Coll. ↓</th><th>Wall ↓</th><th>Stable ↑</th></tr>
         </thead>
         <tbody>
-          <tr><td>SAM3D</td><td>4.32</td><td>0.726</td><td>–</td><td>21.3</td><td>–</td><td>–</td><td class="gl">4.53</td><td>0.673</td><td>–</td><td>15.9</td><td>–</td><td>–</td></tr>
-          <tr><td>VIGA</td><td>5.76</td><td>0.703</td><td>49.0</td><td>38.5</td><td>34.6</td><td>8.6</td><td class="gl">5.77</td><td>0.649</td><td>43.8</td><td>46.0</td><td>40.5</td><td>8.5</td></tr>
-          <tr><td>REST3D</td><td>6.46</td><td>0.696</td><td>71.6</td><td class="b2">5.9</td><td>42.1</td><td class="b1">56.8</td><td class="gl">7.35</td><td>0.664</td><td>70.2</td><td class="b1">5.5</td><td>37.1</td><td class="b2">59.7</td></tr>
-          <tr><td>Code-as-Room</td><td class="b2">6.98</td><td>0.716</td><td class="b2">23.5</td><td>18.5</td><td class="b2">12.6</td><td>15.4</td><td class="gl">7.32</td><td>0.664</td><td class="b1">18.8</td><td>18.9</td><td>14.0</td><td>15.3</td></tr>
-          <tr class="sep"><td>Ours · Stage 1</td><td>5.60</td><td>0.751</td><td>76.7</td><td>20.3</td><td>–</td><td>6.9</td><td class="gl">5.99</td><td>0.701</td><td>72.6</td><td>16.1</td><td>–</td><td>12.5</td></tr>
-          <tr><td>Ours · Stage 2</td><td>6.62</td><td class="b1">0.778</td><td>74.2</td><td>20.6</td><td>13.2</td><td>9.3</td><td class="gl b2">7.43</td><td class="b1">0.724</td><td>72.3</td><td>16.4</td><td class="b2">13.7</td><td>12.2</td></tr>
-          <tr class="ours"><td>Ours · Stage 3</td><td class="b1">7.35</td><td class="b2">0.765</td><td class="b1">20.2</td><td class="b1">5.3</td><td class="b1">2.1</td><td class="b2">56.4</td><td class="gl b1">7.47</td><td class="b2">0.712</td><td class="b2">23.8</td><td class="b2">5.7</td><td class="b1">3.5</td><td class="b1">62.0</td></tr>
+          <tr><td>SAM3D</td><td>4.79</td><td>0.726</td><td>–</td><td>21.3</td><td>–</td><td>–</td><td class="gl">4.56</td><td>0.673</td><td>–</td><td>15.9</td><td>–</td><td>–</td></tr>
+          <tr><td>VIGA</td><td>5.42</td><td>0.703</td><td>49.0</td><td>38.5</td><td>34.6</td><td>8.6</td><td class="gl">5.14</td><td>0.649</td><td>43.8</td><td>46.0</td><td>40.5</td><td>8.5</td></tr>
+          <tr><td>REST3D</td><td>5.93</td><td>0.696</td><td>71.6</td><td class="b2">5.9</td><td>42.1</td><td class="b1">56.8</td><td class="gl">6.66</td><td>0.664</td><td>70.2</td><td class="b1">5.5</td><td>37.1</td><td class="b2">59.7</td></tr>
+          <tr><td>Code-as-Room</td><td>6.18</td><td>0.716</td><td class="b2">23.5</td><td>18.5</td><td class="b2">12.6</td><td>15.4</td><td class="gl">6.49</td><td>0.664</td><td class="b1">18.8</td><td>18.9</td><td>14.0</td><td>15.3</td></tr>
+          <tr class="sep"><td>Ours · Stage 1</td><td>5.75</td><td>0.751</td><td>76.7</td><td>20.3</td><td>–</td><td>6.9</td><td class="gl">6.14</td><td>0.701</td><td>72.6</td><td>16.1</td><td>–</td><td>12.5</td></tr>
+          <tr><td>Ours · Stage 2</td><td class="b2">6.35</td><td class="b1">0.778</td><td>74.2</td><td>20.6</td><td>13.2</td><td>9.3</td><td class="gl b1">6.87</td><td class="b1">0.724</td><td>72.3</td><td>16.4</td><td class="b2">13.7</td><td>12.2</td></tr>
+          <tr class="ours"><td>Ours · Stage 3</td><td class="b1">6.62</td><td class="b2">0.765</td><td class="b1">20.2</td><td class="b1">5.3</td><td class="b1">2.1</td><td class="b2">56.4</td><td class="gl b2">6.81</td><td class="b2">0.712</td><td class="b2">23.8</td><td class="b2">5.7</td><td class="b1">3.5</td><td class="b1">62.0</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="table-note"><b>Scene-level comparison</b> (Table&nbsp;1; VLM and CLIP rounded). Float, Coll., Wall: % of objects floating, colliding, penetrating the room; Stable: % that stay in place under rigid-body simulation. REST3D optimizes poses with a physics simulator and is the closest competitor in collision and stability; ours, with geometric rules alone, is on par while staying far more faithful to the image. <span class="legend"><span><i style="background:rgba(210,63,49,.18)"></i>best</span><span><i style="background:rgba(232,190,40,.28)"></i>second</span></span></p>
+    <p class="table-note"><b>Scene-level comparison</b> (Table&nbsp;1; VLM and CLIP rounded). VLM: mean of the three judges. Float, Coll., Wall: % of objects floating, colliding, penetrating the room; Stable: % that stay in place under rigid-body simulation. REST3D optimizes poses with a physics simulator and is the closest competitor in collision and stability; ours is on par while agreeing better with the photograph. <span class="legend"><span><i style="background:rgba(210,63,49,.18)"></i>best</span><span><i style="background:rgba(232,190,40,.28)"></i>second</span></span></p>
 
     <h3 class="sub">Side by side <span class="mono">paper Fig.&nbsp;3</span></h3>
     <p class="sub-lead">The same photograph across scene-generation methods, as in Fig.&nbsp;3 of the paper. Pick a scene.</p>
