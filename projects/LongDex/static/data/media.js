@@ -1159,80 +1159,27 @@ window.MEDIA = {
    "family": "compare",
    "clip_id": "oi2L_9b00499d20",
    "kind": "quad",
-   "state": "file",
-   "src": "static/videos/compare/oi2L_9b00499d20__2x2__2x.mp4",
+   "state": "hidden",
+   "src": null,
    "window": null,
    "expect": null,
-   "poster": "static/img/posters/auto/compare-oi2L_9b00499d20.jpg",
-   "w": 1920,
-   "h": 1080,
-   "speed": 2,
-   "lead_in_s": 0.6,
-   "clip_start_s": 0.0,
-   "clip_len_s": 65.63,
-   "burned": {
-    "clock": true,
-    "speed": true,
-    "labels": true,
-    "failbox": true,
-    "ref_inset": null
-   },
+   "poster": null,
+   "w": null,
+   "h": null,
+   "speed": null,
+   "lead_in_s": null,
+   "clip_start_s": null,
+   "clip_len_s": null,
+   "burned": null,
    "chapters": null,
    "provenance": null,
-   "extra_seed": false,
+   "extra_seed": null,
    "aria": "Synchronized views of the same one-minute clip, showing the human demonstration, SPIDER, CHORD and LongDex.",
    "poster_alt": "Synchronized views of the same one-minute clip, showing the human demonstration, SPIDER, CHORD and LongDex.",
    "film_at": null,
-   "poster_at": 14.16,
+   "poster_at": null,
    "has_audio": false,
-   "tiles": [
-    {
-     "key": "reference",
-     "label": "Human Demo",
-     "sub": "Reference",
-     "x": 0.0,
-     "y": 0.0,
-     "w": 0.49792,
-     "h": 0.4963,
-     "scored": false
-    },
-    {
-     "key": "spider",
-     "label": "SPIDER",
-     "sub": "XHand",
-     "x": 0.50208,
-     "y": 0.0,
-     "w": 0.49792,
-     "h": 0.4963,
-     "scored": true,
-     "fail_at_s": null,
-     "sr": "pass"
-    },
-    {
-     "key": "chord",
-     "label": "CHORD",
-     "sub": "Sharpa Wave",
-     "x": 0.0,
-     "y": 0.5037,
-     "w": 0.49792,
-     "h": 0.4963,
-     "scored": true,
-     "fail_at_s": 14.733,
-     "sr": "fail"
-    },
-    {
-     "key": "ours",
-     "label": "LongDex",
-     "sub": "XHand",
-     "x": 0.50208,
-     "y": 0.5037,
-     "w": 0.49792,
-     "h": 0.4963,
-     "scored": true,
-     "fail_at_s": null,
-     "sr": "pass"
-    }
-   ]
+   "tiles": null
   },
   "compare:oi2L_24d76506f0": {
    "id": "compare:oi2L_24d76506f0",
@@ -1435,8 +1382,7 @@ window.MEDIA = {
    "compare:P0017_6e3c944c",
    "compare:P0002_9e1a9528",
    "compare:oi2L_b29ee6fc3a",
-   "compare:oi2L_b5736ef0a8",
-   "compare:oi2L_9b00499d20"
+   "compare:oi2L_b5736ef0a8"
   ],
   "hands": [
    "hands:P0013_6836c65f"
