@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html lang="en" data-variant="public">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LongDex: Learning Multi-Object Bimanual Dexterous Manipulation from Long-Horizon Human Demonstrations</title>
+  <meta name="description" content="LongDex learns one bimanual dexterous policy per minute-long, multi-object human demonstration and succeeds in 62.3 % of rollouts on 20 one-minute clips.">
+  <meta name="theme-color" content="#f5f4f0">
+
+  <meta name="robots" content="index, follow">
+  <meta name="keywords" content="dexterous manipulation, bimanual manipulation, long-horizon demonstration, physics-based tracking, reinforcement learning, policy distillation, residual policy, model predictive control, HOT3D, OakInk2">
+  <link rel="canonical" href="https://jhkim0759.github.io/projects/LongDex/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="LongDex">
+  <meta property="og:description" content="LongDex learns one bimanual dexterous policy per minute-long, multi-object human demonstration and succeeds in 62.3 % of rollouts on 20 one-minute clips.">
+  <meta property="og:url" content="https://jhkim0759.github.io/projects/LongDex/">
+  <meta property="og:image" content="https://jhkim0759.github.io/projects/LongDex/static/img/og.jpg">
+  <meta property="og:image:alt" content="Frames from LongDex rollouts on different one-minute clips.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LongDex">
+  <meta name="twitter:description" content="LongDex learns one bimanual dexterous policy per minute-long, multi-object human demonstration and succeeds in 62.3 % of rollouts on 20 one-minute clips.">
+  <meta name="twitter:image" content="https://jhkim0759.github.io/projects/LongDex/static/img/og.jpg">
+  <meta name="citation_title" content="LongDex: Learning Multi-Object Bimanual Dexterous Manipulation from Long-Horizon Human Demonstrations">
+  <meta name="citation_author" content="Kim, Jeonghwan">
+  <meta name="citation_author" content="Lan, Yushi">
+  <meta name="citation_author" content="Wang, Yanrong">
+  <meta name="citation_author" content="Chen, Yongwei">
+  <meta name="citation_author" content="Pan, Xingang">
+  <link rel="icon" type="image/svg+xml" href="static/img/icons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="static/img/icons/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="static/img/icons/apple-touch-icon.png">
+  <link rel="preload" href="static/fonts/geist-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="static/fonts/google-sans-flex-latin.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="static/css/site.css">
+  <script>document.documentElement.classList.add('js');setTimeout(function(){if(!window.LDX)document.documentElement.classList.add('reveal-off')},2500)</script>
+</head>
+<body>
+
+<a class="skip" href="#overview">Skip to content</a>
+
+<header class="topbar" id="topbar">
+  <a class="brand" href="#top"><svg class="brand-mark" width="16" height="16" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#161615"/><g fill="none" stroke="#f5f4f0" stroke-width="5.5"><path d="M33.83 17.60A17.5 17.5 0 0 1 49.23 38.06"/><path d="M48.22 41.57A17.5 17.5 0 0 1 30.22 52.41"/><path d="M26.64 51.66A17.5 17.5 0 0 1 16.22 42.57"/><path d="M14.99 39.13A17.5 17.5 0 0 1 17.82 24.75"/><path d="M20.26 22.02A17.5 17.5 0 0 1 30.17 17.60"/></g><rect x="28.5" y="8.0" width="7.0" height="5.0" rx="1.6" fill="#f5f4f0"/><path d="M32.0 35.0V23.5" stroke="#f5f4f0" stroke-width="4.2" stroke-linecap="round"/><circle cx="32.0" cy="35.0" r="3.2" fill="#f5f4f0"/></svg><span>LongDex</span></a>
+  <nav class="chapters" id="chapters" aria-label="Contents">
+
+    <a href="#method">Method</a>
+
+    <a href="#comparison">Comparison</a>
+
+    <a href="#citation">Citation</a>
+
+  </nav>
+  <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="chapters">Contents</button>
+  <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-head">
+        <p class="eyebrow"><span class="eb">Bimanual dexterous manipulation</span><span class="eb-sep" aria-hidden="true"> · </span><span class="eb">Minute-long human demonstrations</span></p>
+        <h1 class="title">LongDex</h1>
+        <svg class="seam-ruler" width="360" height="14" viewBox="0 0 606 14" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line class="sr-tick10" x1="0.5" y1="8" x2="0.5" y2="14"/><line class="sr-tick" x1="10.5" y1="11" x2="10.5" y2="14"/><line class="sr-tick" x1="20.5" y1="11" x2="20.5" y2="14"/><line class="sr-tick" x1="30.5" y1="11" x2="30.5" y2="14"/><line class="sr-tick" x1="40.5" y1="11" x2="40.5" y2="14"/><line class="sr-tick" x1="50.5" y1="11" x2="50.5" y2="14"/><line class="sr-tick" x1="60.5" y1="11" x2="60.5" y2="14"/><line class="sr-tick" x1="70.5" y1="11" x2="70.5" y2="14"/><line class="sr-tick" x1="80.5" y1="11" x2="80.5" y2="14"/><line class="sr-tick" x1="90.5" y1="11" x2="90.5" y2="14"/><line class="sr-tick10" x1="100.5" y1="8" x2="100.5" y2="14"/><line class="sr-tick" x1="110.5" y1="11" x2="110.5" y2="14"/><line class="sr-tick" x1="120.5" y1="11" x2="120.5" y2="14"/><line class="sr-tick" x1="130.5" y1="11" x2="130.5" y2="14"/><line class="sr-tick" x1="140.5" y1="11" x2="140.5" y2="14"/><line class="sr-tick" x1="150.5" y1="11" x2="150.5" y2="14"/><line class="sr-tick" x1="160.5" y1="11" x2="160.5" y2="14"/><line class="sr-tick" x1="170.5" y1="11" x2="170.5" y2="14"/><line class="sr-tick" x1="180.5" y1="11" x2="180.5" y2="14"/><line class="sr-tick" x1="190.5" y1="11" x2="190.5" y2="14"/><line class="sr-tick10" x1="200.5" y1="8" x2="200.5" y2="14"/><line class="sr-tick" x1="210.5" y1="11" x2="210.5" y2="14"/><line class="sr-tick" x1="220.5" y1="11" x2="220.5" y2="14"/><line class="sr-tick" x1="230.5" y1="11" x2="230.5" y2="14"/><line class="sr-tick" x1="240.5" y1="11" x2="240.5" y2="14"/><line class="sr-tick" x1="250.5" y1="11" x2="250.5" y2="14"/><line class="sr-tick" x1="260.5" y1="11" x2="260.5" y2="14"/><line class="sr-tick" x1="270.5" y1="11" x2="270.5" y2="14"/><line class="sr-tick" x1="280.5" y1="11" x2="280.5" y2="14"/><line class="sr-tick" x1="290.5" y1="11" x2="290.5" y2="14"/><line class="sr-tick10" x1="300.5" y1="8" x2="300.5" y2="14"/><line class="sr-tick" x1="310.5" y1="11" x2="310.5" y2="14"/><line class="sr-tick" x1="320.5" y1="11" x2="320.5" y2="14"/><line class="sr-tick" x1="330.5" y1="11" x2="330.5" y2="14"/><line class="sr-tick" x1="340.5" y1="11" x2="340.5" y2="14"/><line class="sr-tick" x1="350.5" y1="11" x2="350.5" y2="14"/><line class="sr-tick" x1="360.5" y1="11" x2="360.5" y2="14"/><line class="sr-tick" x1="370.5" y1="11" x2="370.5" y2="14"/><line class="sr-tick" x1="380.5" y1="11" x2="380.5" y2="14"/><line class="sr-tick" x1="390.5" y1="11" x2="390.5" y2="14"/><line class="sr-tick10" x1="400.5" y1="8" x2="400.5" y2="14"/><line class="sr-tick" x1="410.5" y1="11" x2="410.5" y2="14"/><line class="sr-tick" x1="420.5" y1="11" x2="420.5" y2="14"/><line class="sr-tick" x1="430.5" y1="11" x2="430.5" y2="14"/><line class="sr-tick" x1="440.5" y1="11" x2="440.5" y2="14"/><line class="sr-tick" x1="450.5" y1="11" x2="450.5" y2="14"/><line class="sr-tick" x1="460.5" y1="11" x2="460.5" y2="14"/><line class="sr-tick" x1="470.5" y1="11" x2="470.5" y2="14"/><line class="sr-tick" x1="480.5" y1="11" x2="480.5" y2="14"/><line class="sr-tick" x1="490.5" y1="11" x2="490.5" y2="14"/><line class="sr-tick10" x1="500.5" y1="8" x2="500.5" y2="14"/><line class="sr-tick" x1="510.5" y1="11" x2="510.5" y2="14"/><line class="sr-tick" x1="520.5" y1="11" x2="520.5" y2="14"/><line class="sr-tick" x1="530.5" y1="11" x2="530.5" y2="14"/><line class="sr-tick" x1="540.5" y1="11" x2="540.5" y2="14"/><line class="sr-tick" x1="550.5" y1="11" x2="550.5" y2="14"/><line class="sr-tick" x1="560.5" y1="11" x2="560.5" y2="14"/><line class="sr-tick" x1="570.5" y1="11" x2="570.5" y2="14"/><line class="sr-tick" x1="580.5" y1="11" x2="580.5" y2="14"/><line class="sr-tick" x1="590.5" y1="11" x2="590.5" y2="14"/><line class="sr-tick10" x1="600.5" y1="8" x2="600.5" y2="14"/><rect class="sr-bar" x="0" y="5" width="187" height="3" style="--i:0"/><rect class="sr-bar" x="193" y="5" width="143" height="3" style="--i:1"/><rect class="sr-bar" x="342" y="5" width="88" height="3" style="--i:2"/><rect class="sr-bar" x="436" y="5" width="94" height="3" style="--i:3"/><rect class="sr-bar" x="536" y="5" width="70" height="3" style="--i:4"/><path class="sr-cut" d="M187 0h6l-3 5z" style="--i:0"/><path class="sr-cut" d="M336 0h6l-3 5z" style="--i:1"/><path class="sr-cut" d="M430 0h6l-3 5z" style="--i:2"/><path class="sr-cut" d="M530 0h6l-3 5z" style="--i:3"/><line class="sr-line" x1="0" y1="6.5" x2="606" y2="6.5" pathLength="1"/></svg>
+        <p class="subtitle">Learning Multi-Object Bimanual Dexterous Manipulation from Long-Horizon Human Demonstrations</p>
+        <div class="byline">
+          <p class="authors"><a href="https://jhkim0759.github.io/">Jeonghwan Kim</a><sup>1</sup>&ensp; <a href="https://nirvanalan.github.io/">Yushi Lan</a><sup>2</sup>&ensp; Yanrong Wang<sup>3</sup>&ensp; <a href="https://cyw-3d.github.io/">Yongwei Chen</a><sup>1</sup>&ensp; <a href="https://xingangpan.github.io/">Xingang Pan</a><sup>1</sup></p>
+<p class="affil mono"><sup>1</sup>Nanyang Technological University &nbsp;·&nbsp; <sup>2</sup>University of Oxford &nbsp;·&nbsp; <sup>3</sup>National University of Singapore</p>
+        </div>
+      </div>
+
+      <div class="facts">
+        <div class="fact"><span class="v">20</span><span class="l">one-minute clips</span></div>
+<div class="fact"><span class="v">2–7</span><span class="l">objects moved per clip</span></div>
+<div class="fact"><span class="v">4</span><span class="l">robot hand types</span></div>
+<div class="fact"><span class="v">1</span><span class="l">policy per clip</span></div>
+      </div>
+
+      <div class="buttons">
+        <a class="btn ghost" href="#citation"><svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3 9.5C3 6.4 4.6 4.4 7 3.6l.5 1.1C6 5.4 5.3 6.5 5.2 7.6H7V12H3zM9 9.5c0-3.1 1.6-5.1 4-5.9l.5 1.1c-1.5.7-2.2 1.8-2.3 2.9H13V12H9z"/></svg>BibTeX</a>
+<span class="links-pending mono">Paper, arXiv and Code coming soon</span>
+      </div>
+    </div>
+    <div class="hero-media">
+      <figure class="hero-card">
+        <figure class="slot" data-slot="hero" data-kind="loop" data-state="file" data-l-play="Play" data-l-error="Your browser cannot play this video.">
+          <div class="player" tabindex="-1" role="group" aria-label="Montage of LongDex rollouts in which two robot hands carry household objects through one-minute demonstrations.">
+            <div class="media" style="aspect-ratio:1280/720">
+              <div class="zoom">
+                <img class="poster" src="static/img/posters/auto/hero.jpg" alt="Twelve frames from different LongDex rollouts in which robot hands handle household objects on a table." fetchpriority="high" width="1280" height="720">
+                <div class="overlays"></div>
+              </div>
+            </div>
+          </div>
+        </figure>
+      </figure>
+      <div class="hero-foot">
+        <span class="hero-cap">Each rollout comes from a single LongDex policy trained for its whole one-minute clip and plays at 2× speed with the clip time shown.</span>
+        <button type="button" class="pill play-toggle" data-l-pause="Pause" data-l-play="Play" hidden>Pause</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main id="main" data-l-scroll="Scroll sideways">
+
+<section class="section" id="overview">
+  <div class="wrap">
+    <div class="tldr card reveal">
+      <span class="tldr-tag">TL;DR</span>
+
+      <p>LongDex turns one minute-long, multi-object human demonstration into <b>one dexterous bimanual robot policy</b> by learning the skills on short segments and the transitions with a residual policy. On 20 one-minute clips from HOT3D and OakInk2, it succeeds in <b>62.3 %</b> of the rollouts, about three times as often as the best prior method.</p>
+
+    </div>
+    <h2 class="h2"><span class="num">01</span>Overview</h2>
+
+    <div class="stats card reveal">
+      <div class="stat"><div class="v">62.3 %</div><div class="l">Success rate over 20 clips</div><div class="src mono">Abstract · paper Table 2</div></div>
+      <div class="stat"><div class="v">≈3×</div><div class="l">SR relative to the best prior method</div><div class="src mono">Abstract · paper Table 1</div></div>
+      <div class="stat"><div class="v">13 / 20</div><div class="l">Clips completed with the XHand</div><div class="src mono">paper Section 4.2</div></div>
+      <div class="stat"><div class="v">4</div><div class="l">Robot hands, one recipe</div><div class="src mono">paper Table 1 · Figure 6</div></div>
+    </div>
+    <p class="table-note">SR is the share of rollouts in which every object stays within 3 cm and 30° of its reference on average over the clip, and a clip counts as completed when at least 32 of its 256 rollouts succeed on average over two training seeds. The success rate, its ratio to the best prior method and the completed clips above are all measured with the XHand.</p>
+
+    <details class="abstract card">
+
+      <summary>Abstract</summary>
+      <div class="prose">
+        <p>Dexterous hand policies can track short human demonstrations in physics simulation, but they struggle with minute-long ones that involve several objects. A single policy must learn every contact-rich skill of such a clip at once, and its errors build up as the clip goes on. Policies trained on short pieces, in contrast, learn the skills more easily but fail at the transitions when chained. We therefore present LongDex, which learns one policy per demonstration by learning the skills and the transitions separately.</p>
+<p>For the skills, we cut the clip where neither hand touches an object and train a teacher policy on each segment. When a teacher fails on its segment, fine-grained fragment policy learning (FFPL) splits the segment into shorter fragments, and if a fragment still fails, it re-plans only the hand path with sampling-based model predictive control while the object reference stays fixed. For the transitions, we distill all teachers into a single student and train a residual policy with reinforcement learning on the states that the resulting policy itself reaches, so that the residual learns the transitions that no teacher has seen. On 20 one-minute clips from HOT3D and OakInk2 moving up to seven objects, LongDex reaches a success rate of 62.3 %, about three times that of the best prior method, whereas chaining the same teachers fails.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="section" id="method">
+  <div class="wrap">
+    <h2 class="h2"><span class="num">02</span>Method</h2>
+
+    <p class="lead"><b>Learn the skills and the transitions separately.</b> Teachers learn the skills on short segments of the clip, FFPL repairs the teachers that fail, and a residual policy on a student distilled from all teachers learns the transitions over the whole clip.</p>
+
+    <figure class="figure-card card reveal wide-fig" id="fig-overview">
+      <div class="figure-scroll"><img src="static/img/fig/pipeline_2col.webp" alt="Pipeline diagram in which a human demonstration is retargeted to robot hands and split into segments with one teacher each, a failing segment is split into shorter fragments, the teachers pass a precision stage, their rollouts are distilled into a frozen student, and a PPO residual on the student gives the final policy." loading="lazy" width="2400" height="492"></div>
+      <p class="scroll-hint mono">Scroll sideways · <a href="static/img/fig/pipeline_2col.webp">Open full size</a></p>
+      <figcaption><span class="fig-label mono">paper Figure 2</span> <b>Overview of LongDex.</b> A teacher is trained on each segment of the retargeted demonstration with FFPL and a precision stage. The teachers are distilled into a single student via behavior cloning, and a PPO residual trained on the frozen student yields the final policy. <span class="fig-legend">Green marks teacher training, purple FFPL, blue distillation and orange the student residual.</span></figcaption>
+    </figure>
+    <div class="stages">
+      <div class="stage-card card reveal">
+        <div class="k"><i class="lchip teacher" aria-hidden="true"></i>Skills</div>
+        <h4>Teachers on segments</h4>
+
+        <p>We cut the clip where neither hand touches an object and train one PPO teacher on each segment.</p>
+
+      </div>
+      <div class="stage-card card reveal">
+        <div class="k"><i class="lchip ffpl" aria-hidden="true"></i>Repair</div>
+        <h4>FFPL with hand-path re-planning</h4>
+
+        <p>A failing segment is split into fragments of at most 3 s, and a fragment that still fails gets its hand path re-planned with MPPI while the object reference stays fixed.</p>
+
+      </div>
+      <div class="stage-card card reveal">
+        <div class="k"><i class="lchip distill" aria-hidden="true"></i><i class="lchip residual" aria-hidden="true"></i>Transitions</div>
+        <h4>Student plus residual</h4>
+
+        <p>All teachers are distilled into one frozen student, and a residual policy trained with PPO over the whole clip learns to cross the hand-overs between teachers.</p>
+
+      </div>
+    </div>
+    <figure class="figure-card card reveal" id="fig-ffpl">
+      <img src="static/img/fig/pipeline_1col.webp" alt="A failing segment is split into short fragments with their own teachers, some of which still fail, and for those MPPI re-plans the hand path around a bowl, which a new PPO teacher then follows successfully." loading="lazy" width="1400" height="763">
+      <figcaption><span class="fig-label mono">paper Figure 4</span> <b>Illustration of Fine-Grained Fragment Policy Learning.</b> A failing segment of another clip is split into fragments of at most 3 s with their own teachers, and for a fragment that still fails, MPPI re-plans the hand path, which a new PPO teacher then uses as its reference. <span class="fig-legend">Red dashed boxes and crosses mark failing teachers, and green circles mark successful ones.</span></figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section class="section" id="comparison">
+  <div class="wrap">
+
+    <h2 class="h2"><span class="num">03</span>Side by side</h2>
+
+    <p class="sub-lead">The viewer plays the human demonstration and the rollouts of SPIDER, CHORD and LongDex in sync at 2× speed on 13 clips that LongDex completes with the XHand, so the same moment can be compared across methods. A red dashed frame marks a rollout from the moment it fails SR, which LongDex passes on every clip shown, SPIDER on six and CHORD on one.</p>
+  </div>
+
+  <div class="wrap wide">
+    <div class="compare-viewer" id="compareViewer">
+      <div class="picker" role="group" aria-label="Choose a clip">
+        <button type="button" class="thumb" data-slot="compare:P0018_15ad9743" aria-current="true"><span class="thumb-im"><img src="static/img/posters/auto/compare-P0018_15ad9743.jpg" alt="" loading="lazy" width="1280" height="720"></span><span class="thumb-t">Milk and juice cartons</span><span class="thumb-ds mono">HOT3D</span></button>
+<button type="button" class="thumb" data-slot="compare:oi2L_99369773ed"><span class="thumb-im"><img src="static/img/posters/auto/compare-oi2L_99369773ed.jpg" alt="" loading="lazy" width="1280" height="720"></span><span class="thumb-t">Tongs, right hand only</span><span class="thumb-ds mono">OakInk2</span></button>
+<button type="button" class="thumb" data-slot="compare:oi2L_b29ee6fc3a"><span class="thumb-im"><img src="static/img/posters/auto/compare-oi2L_b29ee6fc3a.jpg" alt="" loading="lazy" width="1280" height="720"></span><span class="thumb-t">Spoon and mug pouring</span><span class="thumb-ds mono">OakInk2</span></button>
+<button type="button" class="thumb" data-slot="compare:P0003_20a97e64"><span class="thumb-im"><img src="static/img/posters/auto/compare-P0003_20a97e64.jpg" alt="" loading="lazy" width="1280" height="720"></span><span class="thumb-t">Bowl and potato masher</span><span class="thumb-ds mono">HOT3D</span></button>
+<button type="button" class="thumb" data-slot="compare:oi2L_b5736ef0a8"><span class="thumb-im"><img src="static/img/posters/auto/compare-oi2L_b5736ef0a8.jpg" alt="" loading="lazy" width="1280" height="720"></span><span class="thumb-t">Laptop</span><span class="thumb-ds mono">OakInk2</span></button>
+<button type="button" class="thumb" data-slot="compare:P0003_01e416d3"><span class="thumb-im"><img src="static/img/posters/auto/compare-P0003_01e416d3.jpg" alt="" loading="lazy" width="1280" height="720"></span><span class="thumb-t">Dumbbell and puzzle toy</span><span class="thumb-ds mono">HOT3D</span></button>
+<button type="button" class="thumb" data-slot="compare:P0013_6836c65f"><span class="thumb-im"><img src="static/img/posters/auto/compare-P0013_6836c65f.jpg" alt="" loading="lazy" width="1280" height="720"></span><span class="thumb-t">Coffee pot</span><span class="thumb-ds mono">HOT3D</span></button>
+<button type="button" class="thumb" data-slot="compare:P0017_6e3c944c"><span class="thumb-im"><img src="static/img/posters/auto/compare-P0017_6e3c944c.jpg" alt="" loading="lazy" width="1280" height="720"></span><span class="thumb-t">Bowl and wooden spoon</span><span class="thumb-ds mono">HOT3D</span></button>
+<button type="button" class="thumb" data-slot="compare:P0002_9e1a9528"><span class="thumb-im"><img src="static/img/posters/auto/compare-P0002_9e1a9528.jpg" alt="" loading="lazy" width="1280" height="720"></span><span class="thumb-t">Mug and two holders</span><span class="thumb-ds mono">HOT3D</span></button>
+<button type="button" class="thumb" data-slot="compare:P0011_ff7cfc3a"><span class="thumb-im"><img src="static/img/posters/auto/compare-P0011_ff7cfc3a.jpg" alt="" loading="lazy" width="1280" height="720"></span><span class="thumb-t">Bamboo plate and bowl</span><span class="thumb-ds mono">HOT3D</span></button>
+<button type="button" class="thumb" data-slot="compare:oi2L_9b00499d20"><span class="thumb-im"><img src="static/img/posters/auto/compare-oi2L_9b00499d20.jpg" alt="" loading="lazy" width="1280" height="720"></span><span class="thumb-t">Tongs, two hands</span><span class="thumb-ds mono">OakInk2</span></button>
+<button type="button" class="thumb" data-slot="compare:P0018_a06fdd96"><span class="thumb-im"><img src="static/img/posters/auto/compare-P0018_a06fdd96.jpg" alt="" loading="lazy" width="1280" height="720"></span><span class="thumb-t">Spoon and spatula</span><span class="thumb-ds mono">HOT3D</span></button>
+<button type="button" class="thumb" data-slot="compare:oi2L_24d76506f0"><span class="thumb-im"><img src="static/img/posters/auto/compare-oi2L_24d76506f0.jpg" alt="" loading="lazy" width="1280" height="720"></span><span class="thumb-t">Toothpaste and toothbrush</span><span class="thumb-ds mono">OakInk2</span></button>
+      </div>
+      <figure class="slot" data-slot="compare:P0018_15ad9743" data-kind="quad" data-state="file" data-l-error="Your browser cannot play this video." data-l-legend="A red dashed frame marks a rollout that has failed SR, from the moment its mean object error leaves the 3 cm and 30° bounds.">
+        <div class="player" tabindex="0" role="group" aria-label="Synchronized views of the same one-minute clip, showing the human demonstration, SPIDER, CHORD and LongDex.">
+          <div class="media" style="aspect-ratio:1920/1080">
+            <div class="zoom">
+              <img class="poster" src="static/img/posters/auto/compare-P0018_15ad9743.jpg" alt="Synchronized views of the same one-minute clip, showing the human demonstration, SPIDER, CHORD and LongDex." loading="lazy" width="1280" height="720">
+              <div class="overlays"></div>
+            </div>
+            <span class="chip still">Still frame</span>
+          </div>
+          <div class="pbar" hidden>
+            <button type="button" class="pb-play" aria-label="Play" data-l-play="Play" data-l-pause="Pause" data-l-replay="Replay"></button>
+            <input type="range" class="pb-scrub" min="0" max="1000" step="1" value="0" aria-label="Video position" data-l-value="{t} of {total}">
+            <span class="pb-time mono" hidden></span>
+            <div class="seg pb-speed" role="group" aria-label="Playback speed" hidden><button type="button" data-rate="1" aria-pressed="true">2×</button><button type="button" data-rate="0.5" aria-pressed="false">1× real time</button></div>
+            <div class="seg pb-focus" role="group" aria-label="Enlarge one panel" data-l-all="All four" hidden></div>
+            <button type="button" class="pb-fs" aria-label="Full screen"></button>
+          </div>
+          <div class="lanes" hidden data-l-ref="recorded demonstration" data-l-pass="passes SR" data-l-fail="fails SR at"></div>
+        </div>
+        <figcaption>
+          <div class="legend4">
+            <div class="lg"><p class="lg-label ref">Human Demo</p><p class="lg-sub mono">Reference</p><p class="lg-text">Shows the recorded human hand and object motion that every method is asked to reproduce in simulation.</p></div>
+            <div class="lg"><p class="lg-label">SPIDER</p><p class="lg-sub mono">Sampling-based MPC · XHand</p><p class="lg-text">Plans again from the current state at every step, so after a loss its hands keep following the reference, and it is scored on one planned trajectory per clip and seed.</p></div>
+            <div class="lg"><p class="lg-label">CHORD</p><p class="lg-sub mono">Single learned policy · Sharpa Wave</p><p class="lg-text">Runs with its authors' code, simulator and robot hand as one policy for the whole clip, retrained here with multi-point contact and recorded with contact settings that reduce the trembling of resting objects, and its errors build up as the clip goes on.</p></div>
+            <div class="lg"><p class="lg-label">LongDex</p><p class="lg-sub mono">Ours · XHand</p><p class="lg-text">Learns one policy for the whole clip (a residual on a frozen student) and on this clip keeps every object on track to the end.</p></div>
+          </div>
+          <p class="cap cap-var" data-cap-still="The panels show the human demonstration and the rollouts of SPIDER, CHORD and LongDex at the same moment, and only LongDex tracks the clip to the end." data-cap-play="The human demonstration and the rollouts of SPIDER, CHORD and LongDex play in sync, and LongDex tracks the clip to the end."><b>Side-by-Side Comparison on One Clip.</b> <span class="cap-rest">The human demonstration and the rollouts of SPIDER, CHORD and LongDex play in sync, and LongDex tracks the clip to the end.</span></p>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+
+</section>
+
+<section class="section" id="citation">
+  <div class="wrap">
+    <h2 class="h2"><span class="num">04</span>Citation</h2>
+    <div class="bib card">
+      <pre id="bibtex">@misc{kim2026longdex,
+  title  = {LongDex: Learning Multi-Object Bimanual Dexterous Manipulation from Long-Horizon Human Demonstrations},
+  author = {Kim, Jeonghwan and Lan, Yushi and Wang, Yanrong and Chen, Yongwei and Pan, Xingang},
+  year   = {2026}
+}</pre><button type="button" id="copyBib" class="copy-bib" data-l-done="Copied"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5.25" y="5.25" width="8.5" height="8.5" rx="1.5"/><path d="M10.5 3.25V3a1.25 1.25 0 0 0-1.25-1.25H3A1.25 1.25 0 0 0 1.75 3v6.25A1.25 1.25 0 0 0 3 10.5h.25"/></svg><span>Copy</span></button>
+    </div>
+    
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <a class="home" href="https://jhkim0759.github.io/">← Home</a>
+  <p class="credit">Page design follows the <a href="../SceneConductor/">SceneConductor project page</a>, which draws on the <a href="https://mundo-world-model.github.io/">Mundo project page</a>.</p>
+</footer>
+
+<script src="static/data/media.js" defer></script>
+<script src="static/data/clips.js" defer></script>
+<script src="static/js/site.js" defer></script>
+</body>
+</html>
