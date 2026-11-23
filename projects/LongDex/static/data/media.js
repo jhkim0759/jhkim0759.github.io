@@ -6,7 +6,7 @@ window.MEDIA = {
   "src": "static/videos/film/longdex_supp__1080p.mp4",
   "poster": "static/img/posters/auto/film.jpg",
   "duration_s": 134.67,
-  "mb": 30.6,
+  "mb": 30.7,
   "has_audio": false,
   "chapters": [
    {
