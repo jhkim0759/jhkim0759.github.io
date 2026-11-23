@@ -413,6 +413,10 @@ table.res.perclip th:last-child,table.res.perclip td:last-child{position:sticky;
 .picker{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;margin:0 0 4px;scroll-snap-type:x proximity;scrollbar-width:thin}
 @media (min-width:720px){.picker{flex-wrap:wrap;overflow-x:visible;row-gap:4px}.picker .thumb{max-width:250px}}
 .slides .picker{flex-wrap:nowrap;overflow-x:auto;scroll-behavior:smooth}
+/* 11-23 user request (side by side, four clips per row): on the public page the clip picker is a grid of equal columns, four per row from
+   1000 px, two per row from 720 px; narrower screens keep the horizontal strip above */
+@media (min-width:720px){[data-variant=public] .compare-viewer>.picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 8px;overflow-x:visible}[data-variant=public] .compare-viewer>.picker .thumb{max-width:none;width:100%;min-width:0}}
+@media (min-width:1000px){[data-variant=public] .compare-viewer>.picker{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .slide-count{max-width:var(--maxw);margin:0 auto 6px;font-size:12px;letter-spacing:.02em;color:var(--ink-3)}
 .slide-btn{position:absolute;top:50%;z-index:6;display:grid;place-items:center;width:42px;height:42px;margin-top:-21px;border-radius:50%;background:var(--scrim);color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.22);transition:background-color .2s,transform .15s}
 .slide-btn.prev{left:12px}
