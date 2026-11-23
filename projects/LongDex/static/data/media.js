@@ -420,72 +420,6 @@ window.MEDIA = {
    "has_audio": false,
    "tiles": null
   },
-  "gallery:P0003_47c5f35c": {
-   "id": "gallery:P0003_47c5f35c",
-   "family": "gallery",
-   "clip_id": "P0003_47c5f35c",
-   "kind": "take",
-   "state": "file",
-   "src": "static/videos/gallery/P0003_47c5f35c__xhand__2x.mp4",
-   "window": null,
-   "expect": null,
-   "poster": "static/img/posters/auto/gallery-P0003_47c5f35c.jpg",
-   "w": 960,
-   "h": 540,
-   "speed": 2,
-   "lead_in_s": 0.0,
-   "clip_start_s": 0.0,
-   "clip_len_s": 65.2,
-   "burned": {
-    "clock": false,
-    "speed": false,
-    "labels": false,
-    "failbox": false,
-    "ref_inset": null
-   },
-   "chapters": null,
-   "provenance": null,
-   "extra_seed": false,
-   "aria": "Robot hands moving two mugs, a black holder, a tomato sauce can and a birdhouse toy next to a red spatula.",
-   "poster_alt": "Robot hands moving two mugs, a black holder, a tomato sauce can and a birdhouse toy next to a red spatula.",
-   "film_at": null,
-   "poster_at": 13.052,
-   "has_audio": false,
-   "tiles": null
-  },
-  "gallery:P0001_4bf4e21a_scan": {
-   "id": "gallery:P0001_4bf4e21a_scan",
-   "family": "gallery",
-   "clip_id": "P0001_4bf4e21a_scan",
-   "kind": "take",
-   "state": "file",
-   "src": "static/videos/gallery/P0001_4bf4e21a_scan__xhand__2x.mp4",
-   "window": null,
-   "expect": null,
-   "poster": "static/img/posters/auto/gallery-P0001_4bf4e21a_scan.jpg",
-   "w": 960,
-   "h": 540,
-   "speed": 2,
-   "lead_in_s": 0.0,
-   "clip_start_s": 0.0,
-   "clip_len_s": 60.73,
-   "burned": {
-    "clock": false,
-    "speed": false,
-    "labels": false,
-    "failbox": false,
-    "ref_inset": null
-   },
-   "chapters": null,
-   "provenance": null,
-   "extra_seed": false,
-   "aria": "Robot hands moving glasses, a puzzle toy and a toy food box between two small tables and the floor.",
-   "poster_alt": "Robot hands moving glasses, a puzzle toy and a toy food box between two small tables and the floor.",
-   "film_at": null,
-   "poster_at": 12.16,
-   "has_audio": false,
-   "tiles": null
-  },
   "compare:P0018_15ad9743": {
    "id": "compare:P0018_15ad9743",
    "family": "compare",
@@ -1371,9 +1305,7 @@ window.MEDIA = {
    "gallery:oi2L_99369773ed",
    "gallery:oi2L_9b00499d20",
    "gallery:oi2L_24d76506f0",
-   "gallery:oi2L_b29ee6fc3a",
-   "gallery:P0003_47c5f35c",
-   "gallery:P0001_4bf4e21a_scan"
+   "gallery:oi2L_b29ee6fc3a"
   ],
   "compare": [
    "compare:P0018_15ad9743",
@@ -1389,7 +1321,7 @@ window.MEDIA = {
   ]
  },
  "defaults": {
-  "gallery": "gallery:P0003_47c5f35c",
+  "gallery": "gallery:P0018_15ad9743",
   "compare": "compare:P0018_15ad9743",
   "hands": "hands:P0013_6836c65f"
  }

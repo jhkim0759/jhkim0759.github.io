@@ -298,35 +298,5 @@ window.CLIPS = {
   "successes": "224.5 ± 23.3",
   "gallery": true,
   "order": 20
- },
- "P0003_47c5f35c": {
-  "id": "P0003_47c5f35c",
-  "title": "Mugs and birdhouse toy",
-  "dataset": "HOT3D",
-  "duration_s": 65.26,
-  "duration_label": "65.3 s",
-  "n_objects": 6,
-  "n_moved_objects": 5,
-  "articulated": false,
-  "moving_phrase": "a white mug, a patterned mug, a black holder, a tomato sauce can, and a birdhouse toy",
-  "completed": true,
-  "successes": "247.0 ± 4.2",
-  "gallery": true,
-  "order": 101
- },
- "P0001_4bf4e21a_scan": {
-  "id": "P0001_4bf4e21a_scan",
-  "title": "Glasses and puzzle toy",
-  "dataset": "HOT3D",
-  "duration_s": 60.8,
-  "duration_label": "60.8 s",
-  "n_objects": 3,
-  "n_moved_objects": 3,
-  "articulated": false,
-  "moving_phrase": "glasses, a puzzle toy, and a toy food box",
-  "completed": true,
-  "successes": "126.0 ± 178.2",
-  "gallery": true,
-  "order": 102
  }
 };
